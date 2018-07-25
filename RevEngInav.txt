@@ -1,0 +1,20 @@
+Variables:
+
+ <<ppmRead ();>> - readed value of PPM Input signal (see: rx_pwn),
+ number of channels are defined <<PWM_PORTS_OR_PPM_CAPTURE_COUNT>>
+
+
+ <<<File: rx_pwm.c>>> - it is not visible outside module
+
+----
+#define PPM_CAPTURE_COUNT 16
+#define PWM_INPUT_PORT_COUNT 8
+
+#if PPM_CAPTURE_COUNT > MAX_PWM_INPUT_PORTS
+#define PWM_PORTS_OR_PPM_CAPTURE_COUNT PPM_CAPTURE_COUNT
+#else
+#define PWM_PORTS_OR_PPM_CAPTURE_COUNT PWM_INPUT_PORT_COUNT
+#endif
+----
+
+ <<pwmRead ();>> - readed value of PWM signal
