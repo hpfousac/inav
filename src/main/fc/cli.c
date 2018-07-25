@@ -1051,7 +1051,10 @@ static void cliMotorMix(char *cmdline)
                 customMotorMixerMutable(i)->yaw = fastA2F(ptr);
                 check++;
             }
-            if (check != 4) {
+			
+			addBootlogEvent6(BOOT_EVENT_MMIX_MAP, BOOT_EVENT_FLAGS_WARNING, i, i, customMotorMixerMutable(i)->throttle*100, customMotorMixerMutable(i)->yaw*100);
+			
+			if (check != 4) {
                 cliShowParseError();
             } else {
                 printMotorMix(DUMP_MASTER, customMotorMixer(0), NULL);
@@ -1498,6 +1501,9 @@ static void cliServoMix(char *cmdline)
             customServoMixersMutable(i)->inputSource = args[INPUT];
             customServoMixersMutable(i)->rate = args[RATE];
             customServoMixersMutable(i)->speed = args[SPEED];
+
+			addBootlogEvent6(BOOT_EVENT_SMIX_MAP, BOOT_EVENT_FLAGS_WARNING, i, customServoMixersMutable(i)->targetChannel, customServoMixersMutable(i)->inputSource, customServoMixersMutable(i)->rate);
+			
             cliServoMix("");
         } else {
             cliShowParseError();

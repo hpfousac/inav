@@ -28,10 +28,10 @@ const timerHardware_t timerHardware[] = {
     // PB5 / TIM3 CH2 is connected to USBPresent
 
     // PWM2-PWM5
-    { TIM8,  IO_TAG(PB8),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_10, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_MOTOR },// Pin PWM1 - PB8
-    { TIM4,  IO_TAG(PB9),  TIM_Channel_4, 1, IOCFG_AF_PP, GPIO_AF_2,  TIM_USE_MC_MOTOR | TIM_USE_FW_MOTOR }, // Pin PWM2 - PB9
-    { TIM15, IO_TAG(PA3),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_9,  TIM_USE_MC_MOTOR | TIM_USE_FW_SERVO }, // Pin PWM3 - PA3
-    { TIM15, IO_TAG(PA2),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_9,  TIM_USE_MC_MOTOR | TIM_USE_FW_SERVO }, // Pin PWM4 - PA2
+    { TIM8,  IO_TAG(PB8),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_10, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR },// Pin PWM1 - PB8
+    { TIM4,  IO_TAG(PB9),  TIM_Channel_4, 1, IOCFG_AF_PP, GPIO_AF_2,  TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // Pin PWM2 - PB9
+    { TIM15, IO_TAG(PA3),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_9,  TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // Pin PWM3 - PA3
+    { TIM15, IO_TAG(PA2),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_9,  TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // Pin PWM4 - PA2
 
     // For iNav, PWM6&7 (PWM pins 5&6) are shared with UART3
     { TIM2,  IO_TAG(PB10), TIM_Channel_3, 1, IOCFG_AF_PP, GPIO_AF_1,  TIM_USE_MC_MOTOR | TIM_USE_FW_SERVO }, // Pin PWM5 - PB10 - TIM2_CH3 / UART3_TX (AF7)

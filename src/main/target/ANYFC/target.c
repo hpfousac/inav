@@ -33,8 +33,8 @@ const timerHardware_t timerHardware[] = {
     { TIM2,  IO_TAG(PB3),  TIM_Channel_2, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM2,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S10_OUT 16
     { TIM5,  IO_TAG(PA0),  TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM5,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S6_OUT 12
     { TIM5,  IO_TAG(PA1),  TIM_Channel_2, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM5,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S5_OUT 11
-    { TIM3,  IO_TAG(PB1),  TIM_Channel_4, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM3,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_MOTOR }, // S1_OUT 7
-    { TIM3,  IO_TAG(PB0),  TIM_Channel_3, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM3,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_MOTOR }, // S2_OUT 8
+    { TIM3,  IO_TAG(PB1),  TIM_Channel_4, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM3,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // S1_OUT 7
+    { TIM3,  IO_TAG(PB0),  TIM_Channel_3, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM3,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // S2_OUT 8
     { TIM2,  IO_TAG(PA3),  TIM_Channel_4, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM2,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S3_OUT 9
     { TIM2,  IO_TAG(PA2),  TIM_Channel_3, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM2,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S4_OUT 10
     { TIM2,  IO_TAG(PA15), TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM2,  TIM_USE_MC_MOTOR |                      TIM_USE_FW_SERVO }, // S7_OUT 13

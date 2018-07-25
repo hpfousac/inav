@@ -39,8 +39,8 @@ const timerHardware_t timerHardware[] = {
     { TIM12, IO_TAG(PB15), TIM_Channel_2, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM12, TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // S4_OUT
     { TIM3,  IO_TAG(PB5),  TIM_Channel_2, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM3,  TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // S5_OUT
     { TIM12, IO_TAG(PB14), TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM12, TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // S6_OUT
-    { TIM10, IO_TAG(PB8),  TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM10, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_MOTOR }, // S7_OUT
-    { TIM11, IO_TAG(PB9),  TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM11, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_MOTOR }, // S8_OUT
+    { TIM10, IO_TAG(PB8),  TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM10, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // S7_OUT
+    { TIM11, IO_TAG(PB9),  TIM_Channel_1, 1, IOCFG_AF_PP_PD, GPIO_AF_TIM11, TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // S8_OUT
 };
 
 const int timerHardwareCount = sizeof(timerHardware) / sizeof(timerHardware[0]);

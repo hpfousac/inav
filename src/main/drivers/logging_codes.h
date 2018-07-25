@@ -51,6 +51,9 @@ typedef enum {
     BOOT_EVENT_HARDWARE_IO_CONFLICT     = 21,   // Hardware IO resource conflict, parameters: #1 - current owner, #2 - requested owner
     BOOT_EVENT_OPFLOW_DETECTION         = 22,
 
+	BOOT_EVENT_MMIX_MAP                 = 23, // index, channel, thr*100, rudd*100 (aile elev ignored)
+	BOOT_EVENT_SMIX_MAP                 = 24, // index, out channel, in ch, rate
+
     BOOT_EVENT_CODE_COUNT
 } bootLogEventCode_e;
 

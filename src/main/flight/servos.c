@@ -34,6 +34,7 @@
 #include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
 
+#include "drivers/logging.h"
 #include "drivers/pwm_output.h"
 #include "drivers/time.h"
 
@@ -165,6 +166,8 @@ void loadCustomServoMixer(void)
             maxServoIndex = customServoMixers(i)->targetChannel;
         }
 
+		addBootlogEvent6(BOOT_EVENT_SMIX_MAP, BOOT_EVENT_FLAGS_WARNING, i, currentServoMixer[i].targetChannel, currentServoMixer[i].inputSource, currentServoMixer[i].rate);
+		
         memcpy(&currentServoMixer[i], customServoMixers(i), sizeof(servoMixer_t));
         servoRuleCount++;
     }

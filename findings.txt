@@ -110,4 +110,9 @@ command (misleadingly) shows customsetup even such setup is ignored by specific 
 
 see: cli.c: "cliServoMix(char *cmdline)" invocation of "printServoMix ()"
 
+----
+V2 nema cli na nastaveni platformy
+
+proposal platform: (set see iNAV configurator)
+
   

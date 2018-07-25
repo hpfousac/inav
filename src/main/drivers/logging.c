@@ -58,6 +58,9 @@ static const char *     eventDescription[BOOT_EVENT_CODE_COUNT] = {
     [BOOT_EVENT_PITOT_DETECTION]            = "PITOT_DETECTION",
     [BOOT_EVENT_HARDWARE_IO_CONFLICT]       = "HARDWARE_CONFLICT",
     [BOOT_EVENT_OPFLOW_DETECTION]           = "OPFLOW_DETECTION",
+
+	[BOOT_EVENT_MMIX_MAP]                   = "MMIX_MAP",
+	[BOOT_EVENT_SMIX_MAP]                   = "SMIX_MAP",
 };
 
 const char * getBootlogEventDescription(bootLogEventCode_e eventCode)

@@ -62,6 +62,7 @@ smix reverse 3 9 r # ? (25.2. not working as expected)
 smix reverse 5 5 r # tady reverzovani na vyskovku funguje
 
 # smix 1:1
+mmix reset
 smix reset
 smix 0 0  4 100 0
 smix 1 1  5 100 0
@@ -73,15 +74,27 @@ smix 6 6 10 100 0
 smix 7 7 11 100 0
 
 
+
 save
 
-commit: 92447e147ec4575fbc7085cffb2e726009e9d690
-0 - Ch3 
-1 - Ch5
-2 - Ch2 +stab
-3 - Ch1 +stab
-4 - Ch1 +stab
-5 - Ch4 +stab
-6 - Ch?
-7 - Ch?
+# mmix + smix
+mmix reset
+mmix 0  1.000  0.000  0.000  0.000
+mmix 1  1.000  0.000  0.000  0.000
 
+smix reset
+smix 0 2  6 100 0
+smix 1 3  7 100 0
+smix 2 4  8 100 0
+smix 3 5  9 100 0
+smix 4 6 10 100 0
+smix 5 7 11 100 0
+
+# actual behaviour
+# TxCh3 -> FcCh0
+# ...
+# TxCh8 -> FcCh5
+# FcCh6-7: no signal
+#
+
+save
