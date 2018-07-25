@@ -35,10 +35,6 @@ servo 6 1000 2000 1500 100 -1
 servo 7 1000 2000 1500 100 -1 
 
 servo
-
-
-# name
-name ModelY
  
 # servo mix
 

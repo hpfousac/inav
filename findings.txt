@@ -1,0 +1,113 @@
+# mixer CUSTOMSAILPLANEcliMixer(CUSTOMSAILPLANE);
+cliMixer();mixerMode=26
+cliMixer();
+
+Mixer: CUSTOMSAILPLANE
+
+# save
+Saving
+RebootingfMspInitialised = 1;
+servosInit(void)
+findMixer(26);
+findMixer();ii=0
+findMixer();ii=1
+findMixer();ii=2
+findMixer();ii=3
+findMixer();ii=4
+findMixer();ii=5
+findMixer();ii=6
+findMixer();ii=7
+
+findMixer();ii=8
+findMixer();ii=9
+loadCustomServoMixer(void)
+mixerUpdateStateFlags(void)
+findMixer(42);  ----------- !!! type was chaged !!!
+findMixer();ii=0
+findMixer();ii=1
+findMixer();ii=2
+findMixer();ii=3
+findMixer();ii=4
+findMixer();ii=5
+findMixer();ii=6
+findMixer();ii=7
+findMixer();ii=8
+findMixer();ii=9
+findMixer();ii=10
+findMixer();ii=11
+findMixer();ii=12
+findMixer();ii=13
+findMixer();ii=14
+findMixer();ii=15
+findMixer();ii=16
+findMixer();ii=17
+findMixer();ii=18
+
+./src/main/flight/servos.c:203; mixerMode=26
+./src/main/flight/servos.c:215; mixerMode=26
+./src/main/flight/servos.c:235; mixerMode=42
+
+----
+
+./src/main/flight/servos.c:235; i=162; mixerMode=26
+./src/main/flight/servos.c:235; i=163; mixerMode=26
+./src/main/flight/servos.c:235; i=164; mixerMode=26
+./src/main/flight/servos.c:235; i=165; mixerMode=42
+./src/main/flight/servos.c:235; i=166; mixerMode=42
+./src/main/flight/servos.c:235; i=167; mixerMode=42
+./src/main/flight/servos.c:235; i=168; mixerMode=42
+
+Nutno fixnout:
+	src/main/flight/servos.c
+	const mixerRules_t servoMixers[] = {
+
+Summary:
+    based on my try to change code to be able to use all 8 outputs as a servos:  MIXER_CUSTOM_SAILPLANE/"CUSTOMSAILPLANE"
+	The code is not safe:
+The value returned from findMixer(); is not checked against NULL.
+
+Mixed approach for array creation: "indexed" list (which is indexed by "enum mixerMode") against list with included "enum mixerMode" as an ID of record
+	this wants to carefully usage of such arrays.
+
+-----
+timerHardware_t for particular target has to be modified
+ The output pins
+
+TIM_USE_MC/FW_SERVO - zjistit jestli jden na jednom citaci kombinovat servo i motor, u MC to v originalnim kodu je u FW ne (uvidime)
+kod v pwm_mapping.c uprednostnuje MOTOR jak pro FW tal i pro MC, u CUSTOM_SAILPLANE to funguje
+
+
+funkce: pwmInit()
+	co do no nakonec spadne, ma to byt kombinace HW definice a konfigurace
+
+---
+ACC calibration
+GYRO if exists calibration
+?
+
+fc_tasks.c - obsahuje ulohy
+
+--
+neumoznuje menit neutral na jednotlivyvh vstupech
+neutral na vystupu jsem zatim nezkoumal
+ 
+
+---- 
+Multiple places for mixer mode
+there are multiple places where related data for specific mixer are stored
+(BTW: it causes dificulty with adding specific mixer)
+- mixer.h: "enum mixerMode"
+- mixer.c: "mixerTable" and related "motorMixer_t"
+- servos.c: "servoMixers" and related "servoMixer_t"
+
+especially "mixerTable" & "servoMixers" should be unified
+
+
+----
+SMIX
+
+command (misleadingly) shows customsetup even such setup is ignored by specific mixer and "hardcoded" settings is used.
+
+see: cli.c: "cliServoMix(char *cmdline)" invocation of "printServoMix ()"
+
+  

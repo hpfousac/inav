@@ -24,8 +24,8 @@
 #include "drivers/bus.h"
 
 const timerHardware_t timerHardware[] = {
-    { TIM16, IO_TAG(PA6),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_MC_MOTOR |                    TIM_USE_FW_MOTOR }, // PWM1
-    { TIM17, IO_TAG(PA7),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_MC_MOTOR |                    TIM_USE_FW_MOTOR }, // PWM2
+    { TIM16, IO_TAG(PA6),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // PWM1
+    { TIM17, IO_TAG(PA7),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO | TIM_USE_FW_MOTOR }, // PWM2
     { TIM4,  IO_TAG(PA11), TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // PWM3
     { TIM4,  IO_TAG(PA12), TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // PWM4
     { TIM4,  IO_TAG(PB8),  TIM_Channel_3, 1, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_MC_MOTOR |                    TIM_USE_FW_SERVO }, // PWM5

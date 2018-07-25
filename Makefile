@@ -16,7 +16,7 @@
 #
 
 # The target to build, see VALID_TARGETS below
-TARGET    ?= REVO
+TARGET    ?= SPRACINGF3
 
 # Compile-time options
 OPTIONS   ?=
