@@ -61,6 +61,18 @@ smix 9 7 9 100 100 # FLAPS
 smix reverse 3 9 r # ? (25.2. not working as expected)
 smix reverse 5 5 r # tady reverzovani na vyskovku funguje
 
+# smix 1:1
+smix reset
+smix 0 0  4 100 0
+smix 1 1  5 100 0
+smix 2 2  6 100 0
+smix 3 3  7 100 0
+smix 4 4  8 100 0
+smix 5 5  9 100 0
+smix 6 6 10 100 0
+smix 7 7 11 100 0
+
+
 save
 
 commit: 92447e147ec4575fbc7085cffb2e726009e9d690
