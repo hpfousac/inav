@@ -16,7 +16,7 @@
 #
 
 # The target to build, see VALID_TARGETS below
-TARGET    ?= NAZE
+TARGET    ?= BLUEPILL
 
 # Compile-time options
 OPTIONS   ?=
@@ -831,10 +831,12 @@ ifneq ($(TOOLCHAINPATH),)
 CROSS_CC    = $(TOOLCHAINPATH)/arm-none-eabi-gcc
 OBJCOPY     = $(TOOLCHAINPATH)/arm-none-eabi-objcopy
 SIZE        = $(TOOLCHAINPATH)/arm-none-eabi-size
+OBJDUMP     = $(TOOLCHAINPATH)/arm-none-eabi-objdump
 else
 CROSS_CC    = arm-none-eabi-gcc
 OBJCOPY     = arm-none-eabi-objcopy
 SIZE        = arm-none-eabi-size
+OBJDUMP     = arm-none-eabi-objdump
 endif
 
 #
@@ -908,6 +910,7 @@ TARGET_ELF      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).elf
 TARGET_OBJS     = $(addsuffix .o,$(addprefix $(OBJECT_DIR)/$(TARGET)/,$(basename $(TARGET_SRC))))
 TARGET_DEPS     = $(addsuffix .d,$(addprefix $(OBJECT_DIR)/$(TARGET)/,$(basename $(TARGET_SRC))))
 TARGET_MAP      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).map
+TARGET_UASM     = $(BIN_DIR)/$(FORKNAME)_$(FC_VER)_$(TARGET).uasm
 
 
 CLEAN_ARTIFACTS := $(TARGET_BIN)
@@ -942,6 +945,9 @@ $(OBJECT_DIR)/$(TARGET)/fc/settings.o: settings
 
 # List of buildable ELF files and their object dependencies.
 # It would be nice to compute these lists, but that seems to be just beyond make.
+
+$(TARGET_UASM): $(TARGET_ELF)
+	$(V0) $(OBJDUMP) -d $(TARGET_ELF) > $@
 
 $(TARGET_HEX): $(TARGET_ELF)
 	$(V0) $(OBJCOPY) -O ihex --set-start 0x8000000 $< $@
@@ -1007,10 +1013,8 @@ clean_all:$(CLEAN_TARGETS)
 ## all_clean         : clean all valid targets (alias for above)
 all_clean:$(TARGETS_CLEAN)
 
-flash_$(TARGET): $(TARGET_HEX)
-	$(V0) stty -F $(SERIAL_DEVICE) raw speed 115200 -crtscts cs8 -parenb -cstopb -ixon
-	$(V0) echo -n 'R' >$(SERIAL_DEVICE)
-	$(V0) stm32flash -w $(TARGET_HEX) -v -g 0x0 -b 115200 $(SERIAL_DEVICE)
+flash_$(TARGET): $(TARGET_BIN)
+	$(V0) stm32flash -w $(TARGET_BIN) $(SERIAL_DEVICE)
 
 ## flash             : flash firmware (.hex) onto flight controller
 flash: flash_$(TARGET)
@@ -1023,6 +1027,7 @@ st-flash: st-flash_$(TARGET)
 
 binary: $(TARGET_BIN)
 hex:    $(TARGET_HEX)
+uasm:   $(TARGET_UASM)
 
 unbrick_$(TARGET): $(TARGET_HEX)
 	$(V0) stty -F $(SERIAL_DEVICE) raw speed 115200 -crtscts cs8 -parenb -cstopb -ixon
