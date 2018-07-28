@@ -135,31 +135,9 @@ typedef struct mixerRules_s {
 
 const mixerRules_t servoMixers[] = {
     { 0, 0, 0, NULL },                // entry 0
-    { COUNT_SERVO_RULES(servoMixerTri), SERVO_RUDDER, SERVO_RUDDER, servoMixerTri },       // MULTITYPE_TRI
-    { 0, 0, 0, NULL },                // MULTITYPE_QUADP
-    { 0, 0, 0, NULL },                // MULTITYPE_QUADX
-    { 0, 0, 0, NULL },                // MULTITYPE_BI
-    { 0, 0, 0, NULL },                // MULTITYPE_GIMBAL / MIXER_GIMBAL -> disabled
-    { 0, 0, 0, NULL },                // MULTITYPE_Y6
-    { 0, 0, 0, NULL },                // MULTITYPE_HEX6
     { COUNT_SERVO_RULES(servoMixerFlyingWing), SERVO_FLAPPERONS_MIN, SERVO_FLAPPERONS_MAX, servoMixerFlyingWing },// * MULTITYPE_FLYING_WING
-    { 0, 0, 0, NULL },                // MULTITYPE_Y4
-    { 0, 0, 0, NULL },                // MULTITYPE_HEX6X
-    { 0, 0, 0, NULL },                // MULTITYPE_OCTOX8
-    { 0, 0, 0, NULL },                // MULTITYPE_OCTOFLATP
-    { 0, 0, 0, NULL },                // MULTITYPE_OCTOFLATX
     { COUNT_SERVO_RULES(servoMixerAirplane), SERVO_PLANE_INDEX_MIN, SERVO_PLANE_INDEX_MAX, servoMixerAirplane },  // * MULTITYPE_AIRPLANE
-    { 0, 0, 0, NULL },                // * MIXER_HELI_120_CCPM -> disabled, never fully implemented in CF
-    { 0, 0, 0, NULL },                // * MIXER_HELI_90_DEG -> disabled, never fully implemented in CF
-    { 0, 0, 0, NULL },                // MULTITYPE_VTAIL4
-    { 0, 0, 0, NULL },                // MULTITYPE_HEX6H
-    { 0, 0, 0, NULL },                // * MULTITYPE_PPM_TO_SERVO
-    { 0, 0, 0, NULL },                // MULTITYPE_DUALCOPTER
-    { 0, 0, 0, NULL },                // MULTITYPE_SINGLECOPTER
-    { 0, 0, 0, NULL },                // MULTITYPE_ATAIL4
-    { 0, 2, 5, NULL },                // MULTITYPE_CUSTOM
     { 0, SERVO_PLANE_INDEX_MIN, SERVO_PLANE_INDEX_MAX, NULL },                // MULTITYPE_CUSTOM_PLANE
-    { 0, SERVO_RUDDER, SERVO_RUDDER, NULL },                // MULTITYPE_CUSTOM_TRI
 };
 
 int16_t getFlaperonDirection(uint8_t servoPin)
@@ -226,9 +204,7 @@ void servosInit(void)
      * When we are dealing with CUSTOM mixers, load mixes defined with
      * smix and update internal variables
      */
-    if (currentMixerMode == MIXER_CUSTOM_AIRPLANE ||
-        currentMixerMode == MIXER_CUSTOM_TRI ||
-        currentMixerMode == MIXER_CUSTOM)
+    if (currentMixerMode == MIXER_CUSTOM_AIRPLANE)
     {
         loadCustomServoMixer();
 
@@ -327,15 +303,12 @@ void writeServos(void)
 
     int servoIndex = 0;
 
-    bool zeroServoValue = false;
+    bool zeroServoValue = true;
 
     /*
      * in case of tricopters, there might me a need to zero servo output when unarmed
      */
     const mixerMode_e currentMixerMode = mixerConfig()->mixerMode;
-    if ((currentMixerMode == MIXER_TRI || currentMixerMode == MIXER_CUSTOM_TRI) && !ARMING_FLAG(ARMED) && !servoConfig()->tri_unarmed_servo) {
-        zeroServoValue = true;
-    }
 
     // Write mixer servo outputs
     //      mixerUsesServos might indicate SERVO_TILT, servoRuleCount indicate if mixer alone uses servos

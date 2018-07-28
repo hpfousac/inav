@@ -54,11 +54,13 @@ SECTIONS
   } >FLASH
 
 
-   .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
+   .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*)     . = ALIGN(4);
+} >FLASH
     .ARM : {
     __exidx_start = .;
       *(.ARM.exidx*)
       __exidx_end = .;
+    . = ALIGN(4);
     } >FLASH
 
   .preinit_array     :
@@ -66,6 +68,8 @@ SECTIONS
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
+	      . = ALIGN(4);
+
   } >FLASH
   .init_array :
   {
@@ -73,6 +77,7 @@ SECTIONS
     KEEP (*(SORT(.init_array.*)))
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
+    . = ALIGN(4);
   } >FLASH
   .fini_array :
   {
@@ -80,6 +85,7 @@ SECTIONS
     KEEP (*(.fini_array*))
     KEEP (*(SORT(.fini_array.*)))
     PROVIDE_HIDDEN (__fini_array_end = .);
+    . = ALIGN(4);
   } >FLASH
   .pg_registry :
   {
@@ -87,12 +93,14 @@ SECTIONS
     KEEP (*(.pg_registry))
     KEEP (*(SORT(.pg_registry.*)))
     PROVIDE_HIDDEN (__pg_registry_end = .);
+    . = ALIGN(4);
   } >FLASH
   .pg_resetdata :
   {
     PROVIDE_HIDDEN (__pg_resetdata_start = .);
     KEEP (*(.pg_resetdata))
     PROVIDE_HIDDEN (__pg_resetdata_end = .);
+    . = ALIGN(4);
   } >FLASH
 
   /* used by the startup to initialize data */
@@ -148,6 +156,7 @@ SECTIONS
     *(.mb1text*)       /* .mb1text* sections (code)  */
     *(.mb1rodata)      /* read-only data (constants) */
     *(.mb1rodata*)
+    . = ALIGN(4);
   } >MEMORY_B1
 
   /* Remove information from the standard libraries */
