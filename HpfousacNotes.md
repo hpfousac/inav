@@ -22,3 +22,30 @@ inav-1.9.1-servosOut
  typo found there: USE_PMW_SERVO_DRIVER
 
  found *servos[index]->ccr as pointer to HW registers
+
+Elimination unnecessary code as discovered in On branch extractPpmIn
+
+ The one codefile with defined symbols USE_
+
+ * src/main/target/common.h
+
+ * src/main/target/<USED BOARD>/target.h
+
+   - here was found 2 interesting symbols:
+
+   * DEFAULT_FEATURES *investigate*
+ 
+   * DEFAULT_RX_TYPE *investigate*
+
+ some code was commented out in Makefile, but this is not a good way how to do.
+
+ <Side effect> somewhere is defined symbol <FLASH_SIZE>, *investigate*
+
+ The other thoughts: the resulting code size can be lowered by excluding unused features and/or modules
+
+Other investigation should go there:
+
+ Check if some commands/features in CLI is disabled when related USE_ is commented out
+
+Probably found typo: <USE_PMW_SERVO_DRIVER>
+
