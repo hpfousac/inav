@@ -34,11 +34,11 @@
 //#define USE_GYRO_MPU6050
 //#define GYRO_MPU6050_ALIGN      CW270_DEG
 
-#define USE_ACC
-#define USE_ACC_MPU6050
-#define ACC_MPU6050_ALIGN       CW270_DEG
+//#define USE_ACC
+//#define USE_ACC_MPU6050
+//#define ACC_MPU6050_ALIGN       CW270_DEG
 
-#define MPU6050_I2C_BUS         BUS_I2C1
+//#define MPU6050_I2C_BUS         BUS_I2C1
 
 //#define USE_BARO
 //#define BARO_I2C_BUS            BUS_I2C1
