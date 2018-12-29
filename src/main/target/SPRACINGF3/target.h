@@ -25,14 +25,14 @@
 #define BEEPER_INVERTED
 
 #define USE_EXTI
-#define GYRO_INT_EXTI            PC13
+//#define GYRO_INT_EXTI            PC13
 #define EXTI_CALLBACK_HANDLER_COUNT 2 // MPU data ready and MAG data ready
 #define USE_MPU_DATA_READY_SIGNAL
 #define ENSURE_MPU_DATA_READY_IS_LOW
 
-#define USE_GYRO
-#define USE_GYRO_MPU6050
-#define GYRO_MPU6050_ALIGN      CW270_DEG
+//#define USE_GYRO
+//#define USE_GYRO_MPU6050
+//#define GYRO_MPU6050_ALIGN      CW270_DEG
 
 #define USE_ACC
 #define USE_ACC_MPU6050
