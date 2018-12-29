@@ -396,6 +396,7 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_D, newValue);
             schedulePidGainsUpdate();
             break;
+#if defined(USE_NAV)
         case ADJUSTMENT_NAV_FW_CRUISE_THR:
             newValue = constrain((int16_t)navConfig()->fw.cruise_throttle + delta, 1000, 2000);
             navConfigMutable()->fw.cruise_throttle = newValue;
@@ -406,6 +407,7 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             navConfigMutable()->fw.pitch_to_throttle = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_NAV_FW_PITCH2THR, newValue);
             break;
+#endif // USE_NAV
         case ADJUSTMENT_ROLL_BOARD_ALIGNMENT:
             updateBoardAlignment(delta, 0);
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_BOARD_ALIGNMENT, boardAlignment()->rollDeciDegrees);

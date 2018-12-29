@@ -589,9 +589,6 @@ COMMON_SRC = \
             drivers/light_led.c \
             drivers/logging.c \
             drivers/resource.c \
-            drivers/rx_nrf24l01.c \
-            drivers/rx_spi.c \
-            drivers/rx_xn297.c \
             drivers/pitotmeter_adc.c \
             drivers/pwm_esc_detect.c \
             drivers/pwm_mapping.c \
@@ -639,23 +636,12 @@ COMMON_SRC = \
             io/rcdevice.c \
             io/rcdevice_cam.c \
             msp/msp_serial.c \
-            rx/fport.c \
             rx/ibus.c \
-            rx/jetiexbus.c \
             rx/msp.c \
             rx/uib_rx.c \
-            rx/nrf24_cx10.c \
-            rx/nrf24_inav.c \
-            rx/nrf24_h8_3d.c \
-            rx/nrf24_syma.c \
-            rx/nrf24_v202.c \
             rx/pwm.c \
             rx/rx.c \
-            rx/rx_spi.c \
             rx/crsf.c \
-            rx/sbus.c \
-            rx/sbus_channels.c \
-            rx/spektrum.c \
             rx/sumd.c \
             rx/sumh.c \
             rx/xbus.c \
@@ -699,10 +685,8 @@ HIGHEND_SRC = \
             drivers/opflow/opflow_virtual.c \
             drivers/vtx_common.c \
             io/opflow_cxof.c \
-            io/dashboard.c \
             io/displayport_max7456.c \
             io/displayport_msp.c \
-            io/displayport_oled.c \
             io/gps.c \
             io/gps_ublox.c \
             io/gps_nmea.c \
@@ -723,8 +707,6 @@ HIGHEND_SRC = \
             telemetry/crsf.c \
             telemetry/frsky.c \
             telemetry/hott.c \
-            telemetry/ibus_shared.c \
-            telemetry/ibus.c \
             telemetry/ltm.c \
             telemetry/mavlink.c \
             telemetry/msp_shared.c \

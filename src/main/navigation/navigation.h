@@ -343,5 +343,6 @@ extern int16_t navAccNEU[3];
 #define getEstimatedActualVelocity(axis) (0)
 #define navigationIsControllingThrottle() (0)
 #define navigationRTHAllowsLanding() (0)
-
+#define navigationIsFlyingAutonomousMode() (0)
+#define getTotalTravelDistance() ((int32_t) 0)
 #endif

@@ -40,11 +40,11 @@
 
 #define MPU6050_I2C_BUS         BUS_I2C1
 
-#define USE_BARO
-#define BARO_I2C_BUS            BUS_I2C1
-#define USE_BARO_MS5611
-#define USE_BARO_BMP085
-#define USE_BARO_BMP280
+//#define USE_BARO
+//#define BARO_I2C_BUS            BUS_I2C1
+//#define USE_BARO_MS5611
+//#define USE_BARO_BMP085
+//#define USE_BARO_BMP280
 
 #define USE_MAG
 #define MAG_I2C_BUS             BUS_I2C1
@@ -97,24 +97,24 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_2
 #define RSSI_ADC_CHANNEL                ADC_CHN_3
 
-#define USE_LED_STRIP
-#define WS2811_PIN                      PA8
-#define WS2811_DMA_STREAM               DMA1_Channel2
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
+//#define USE_LED_STRIP
+//#define WS2811_PIN                      PA8
+//#define WS2811_DMA_STREAM               DMA1_Channel2
+//#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
 
-#define USE_RANGEFINDER
-#define USE_RANGEFINDER_HCSR04
-#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
-#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
-#define USE_RANGEFINDER_HCSR04_I2C
-#define RANGEFINDER_I2C_BUS             BUS_I2C1
+//#define USE_RANGEFINDER
+//#define USE_RANGEFINDER_HCSR04
+//#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
+//#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
+//#define USE_RANGEFINDER_HCSR04_I2C
+//#define RANGEFINDER_I2C_BUS             BUS_I2C1
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
 #define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT)
 #define DEFAULT_RX_TYPE         RX_TYPE_PPM
 
-#define USE_SPEKTRUM_BIND
+//#define USE_SPEKTRUM_BIND
 #define BIND_PIN                PB11 // UART3
 
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE

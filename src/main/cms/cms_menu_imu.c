@@ -181,7 +181,9 @@ static long cmsx_menuPidAltMag_onExit(const OSD_Entry *self)
     cmsx_WritebackPidFromArray(cmsx_pidVelZ, PID_VEL_Z);
     pidBankMutable()->pid[PID_HEADING].P = cmsx_pidHead[0];
 
+#if defined(USE_NAV)
     navigationUsePIDs();
+#endif // USE_NAV
 
     return 0;
 }
@@ -232,7 +234,9 @@ static long cmsx_menuPidGpsnav_onExit(const OSD_Entry *self)
     cmsx_WritebackPidFromArray(cmsx_pidPosXY, PID_POS_XY);
     cmsx_WritebackPidFromArray(cmsx_pidVelXY, PID_VEL_XY);
 
+#if defined(USE_NAV)
     navigationUsePIDs();
+#endif // USE_NAV
 
     return 0;
 }

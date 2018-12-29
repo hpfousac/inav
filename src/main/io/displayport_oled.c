@@ -42,7 +42,9 @@ static int oledRelease(displayPort_t *displayPort)
 static int oledClearScreen(displayPort_t *displayPort)
 {
     UNUSED(displayPort);
+#ifdef USE_OLED_UG2864	
     i2c_OLED_clear_display_quick();
+#endif // USE_OLED_UG2864	
     return 0;
 }
 
@@ -61,8 +63,14 @@ static int oledWriteString(displayPort_t *displayPort, uint8_t x, uint8_t y, con
 {
     UNUSED(displayPort);
     UNUSED(attr);
+#ifdef USE_OLED_UG2864	
     i2c_OLED_set_xy(x, y);
     i2c_OLED_send_string(s);
+#else	
+    UNUSED(x);
+    UNUSED(y);
+    UNUSED(s);
+#endif // USE_OLED_UG2864	
     return 0;
 }
 
@@ -70,8 +78,14 @@ static int oledWriteChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint8
 {
     UNUSED(displayPort);
     UNUSED(attr);
+#ifdef USE_OLED_UG2864	
     i2c_OLED_set_xy(x, y);
     i2c_OLED_send_char(c);
+#else	
+    UNUSED(x);
+    UNUSED(y);
+    UNUSED(c);
+#endif // USE_OLED_UG2864	
     return 0;
 }
 
