@@ -1,4 +1,4 @@
-inav-1.9.1-servosOut
+# inav-1.9.1-servosOut #
 
  New branch, mostly for study on STM32 behaviour
 
@@ -23,7 +23,7 @@ inav-1.9.1-servosOut
 
  found *servos[index]->ccr as pointer to HW registers
 
-Elimination unnecessary code as discovered in On branch extractPpmIn
+# Elimination unnecessary code as discovered in On branch extractPpmIn #
 
  The one codefile with defined symbols USE_
 
