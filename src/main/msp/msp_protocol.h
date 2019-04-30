@@ -69,6 +69,7 @@
 #define BETAFLIGHT_IDENTIFIER "BTFL"
 #define CLEANFLIGHT_IDENTIFIER "CLFL"
 #define INAV_IDENTIFIER "INAV"
+#define HPFOUSAC_IDENTIFIER "HPFO"
 #define RACEFLIGHT_IDENTIFIER "RCFL"
 
 #define FLIGHT_CONTROLLER_IDENTIFIER_LENGTH 4
@@ -324,6 +325,10 @@
 #define MSP_SET_4WAY_IF          245    //in message          Sets 4way interface
 #define MSP_RTC                  246    //out message         Gets the RTC clock (returns: secs(i32) millis(u16) - (0,0) if time is not known)
 #define MSP_SET_RTC              247    //in message          Sets the RTC clock (args: secs(i32) millis(u16))
+
+// HpFousac - custom codes
+#define MSP_RCOUT_NEUTRAL       170     // in-out message   gets/sets neeutral for particular channels
+#define MSP_RCOUT_REVERSES      171     // in/out message   get/set bitmap of out reverses (16-bit as a reserve for more channels than original)
 
 // MSPv2 includes
 #include "msp_protocol_v2_common.h"

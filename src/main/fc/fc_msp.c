@@ -443,6 +443,15 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
     case MSP_SERVO:
         sbufWriteData(dst, &servo, MAX_SUPPORTED_SERVOS * 2);
         break;
+
+    case MSP_RCOUT_NEUTRAL:
+        return MSP_RESULT_ERROR;
+//        break;
+
+    case MSP_RCOUT_REVERSES:
+        return MSP_RESULT_ERROR;
+//        break;
+
     case MSP_SERVO_CONFIGURATIONS:
         for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
             sbufWriteU16(dst, servoParams(i)->min);
