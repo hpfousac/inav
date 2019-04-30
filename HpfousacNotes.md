@@ -37,7 +37,7 @@
   found message *MSP_SERVO_CONFIGURATIONS* and *MSP_SET_SERVO_CONFIGURATION*
   
 
- ---
+ ~~~~
  case MSP_SERVO_CONFIGURATIONS:
         for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
             sbufWriteU16(dst, servoParams(i)->min);
@@ -49,7 +49,7 @@
             sbufWriteU8(dst, servoParams(i)->forwardFromChannel);
             sbufWriteU32(dst, servoParams(i)->reversedSources);
         }
- ---
+ ~~~~
 
 
 ## planned steps ##
