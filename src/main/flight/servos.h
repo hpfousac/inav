@@ -31,10 +31,10 @@ enum {
     INPUT_RC_PITCH              = 5,
     INPUT_RC_YAW                = 6,
     INPUT_RC_THROTTLE           = 7,
-    INPUT_RC_CH5                = 8,
-    INPUT_RC_CH6                = 9,
-    INPUT_RC_CH7                = 10,
-    INPUT_RC_CH8                = 11,
+    INPUT_RC_AUX1               = 8,  // INPUT_RC_CH5
+    INPUT_RC_AUX2               = 9,  // INPUT_RC_CH6
+    INPUT_RC_AUX3               = 10, // INPUT_RC_CH7
+    INPUT_RC_AUX4               = 11, // INPUT_RC_CH8
     INPUT_GIMBAL_PITCH          = 12,
     INPUT_GIMBAL_ROLL           = 13,
     INPUT_FEATURE_FLAPS         = 14,
