@@ -22,7 +22,7 @@
 #if defined(USE_QUAD_MIXER_ONLY)
 #define MAX_SUPPORTED_SERVOS 1
 #else
-#define MAX_SUPPORTED_SERVOS 8
+#define MAX_SUPPORTED_SERVOS 10
 #endif
 
 // These must be consecutive, see 'reversedSources'

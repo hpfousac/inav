@@ -85,7 +85,7 @@
 
  Check if some commands/features in CLI is disabled when related USE_ is commented out
 
-# Probably found typo: <USE_PMW_SERVO_DRIVER> #
+  Probably found typo: <USE_PMW_SERVO_DRIVER>
 
 Best practice/way (recomandations)
 
