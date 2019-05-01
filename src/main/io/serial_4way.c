@@ -49,24 +49,10 @@
 #define Bit_RESET GPIO_PIN_RESET
 #endif
 
-#define USE_TXRX_LED
-
-#ifdef  USE_TXRX_LED
-#define RX_LED_OFF LED0_OFF
-#define RX_LED_ON LED0_ON
-#ifdef  LED1
-#define TX_LED_OFF LED1_OFF
-#define TX_LED_ON LED1_ON
-#else
-#define TX_LED_OFF LED0_OFF
-#define TX_LED_ON LED0_ON
-#endif
-#else
 #define RX_LED_OFF
 #define RX_LED_ON
 #define TX_LED_OFF
 #define TX_LED_ON
-#endif
 
 #define SERIAL_4WAY_INTERFACE_NAME_STR "m4wFCIntf"
 // *** change to adapt Revision

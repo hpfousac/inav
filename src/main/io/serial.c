@@ -528,8 +528,8 @@ void serialPassthrough(serialPort_t *left, serialPort_t *right, serialConsumer
     if (!rightC)
         rightC = &nopConsumer;
 
-    LED0_OFF;
-    LED1_OFF;
+//    LED0_OFF;
+//    LED1_OFF;
 
     // Either port might be open in a mode other than MODE_RXTX. We rely on
     // serialRxBytesWaiting() to do the right thing for a TX only port. No
@@ -540,18 +540,18 @@ void serialPassthrough(serialPort_t *left, serialPort_t *right, serialConsumer
         // to return to CLI command mode.
         // https://en.wikipedia.org/wiki/Escape_sequence#Modem_control
         if (serialRxBytesWaiting(left)) {
-            LED0_ON;
+//            LED0_ON;
             uint8_t c = serialRead(left);
             serialWrite(right, c);
             leftC(c);
-            LED0_OFF;
+//            LED0_OFF;
          }
          if (serialRxBytesWaiting(right)) {
-             LED0_ON;
+//             LED0_ON;
              uint8_t c = serialRead(right);
              serialWrite(left, c);
              rightC(c);
-             LED0_OFF;
+//             LED0_OFF;
          }
      }
  }

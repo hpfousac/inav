@@ -86,23 +86,14 @@
 
 #include "scheduler/scheduler.h"
 
-#include "sensors/boardalignment.h"
-#include "sensors/sensors.h"
 #include "sensors/diagnostics.h"
-#include "sensors/battery.h"
-#include "sensors/rangefinder.h"
-#include "sensors/acceleration.h"
-#include "sensors/barometer.h"
-#include "sensors/pitotmeter.h"
-#include "sensors/compass.h"
-#include "sensors/gyro.h"
-#include "sensors/opflow.h"
 
-#include "telemetry/telemetry.h"
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
 #include "hardware_revision.h"
 #endif
+
+#undef USE_NAV
 
 extern timeDelta_t cycleTime; // FIXME dependency on mw.c
 
@@ -182,8 +173,6 @@ static void mspRebootFn(serialPort_t *serialPort)
 {
     UNUSED(serialPort);
 
-    stopMotors();
-    stopPwmAllMotors();
 
     // extra delay before reboot to give ESCs chance to reset
     delay(1000);
@@ -360,16 +349,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 #endif
 
     case MSP_SENSOR_STATUS:
-        sbufWriteU8(dst, isHardwareHealthy() ? 1 : 0);
-        sbufWriteU8(dst, getHwGyroStatus());
-        sbufWriteU8(dst, getHwAccelerometerStatus());
-        sbufWriteU8(dst, getHwCompassStatus());
-        sbufWriteU8(dst, getHwBarometerStatus());
-        sbufWriteU8(dst, getHwGPSStatus());
-        sbufWriteU8(dst, getHwRangefinderStatus());
-        sbufWriteU8(dst, getHwPitotmeterStatus());
-        sbufWriteU8(dst, getHwOpticalFlowStatus());
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_ACTIVEBOXES:
         {
@@ -398,7 +378,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
             if (cmdMSP == MSP_STATUS_EX) {
                 sbufWriteU16(dst, averageSystemLoadPercent);
                 sbufWriteU16(dst, armingFlags);
-                sbufWriteU8(dst, accGetCalibrationAxisFlags());
+                sbufWriteU8(dst, 0);
             }
         }
         break;
@@ -424,20 +404,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_RAW_IMU:
-        {
-            // Hack scale due to choice of units for sensor data in multiwii
-            const uint8_t scale = (acc.dev.acc_1G > 1024) ? 8 : 1;
-            for (int i = 0; i < 3; i++) {
-                sbufWriteU16(dst, (int16_t)lrintf(acc.accADCf[i] * acc.dev.acc_1G / scale));
-            }
-            for (int i = 0; i < 3; i++) {
-                sbufWriteU16(dst, gyroRateDps(i));
-            }
-            for (int i = 0; i < 3; i++) {
-                sbufWriteU16(dst, mag.magADC[i]);
-            }
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_SERVOS
     case MSP_SERVO:
@@ -478,19 +445,11 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 #endif
 
     case MSP2_COMMON_MOTOR_MIXER:
-        for (uint8_t i = 0; i < MAX_SUPPORTED_MOTORS; i++) {
-            sbufWriteU16(dst, customMotorMixer(i)->throttle * 1000);
-            sbufWriteU16(dst, constrainf(customMotorMixer(i)->roll + 1.0f, 0.0f, 2.0f) * 1000);
-            sbufWriteU16(dst, constrainf(customMotorMixer(i)->pitch + 1.0f, 0.0f, 2.0f) * 1000);
-            sbufWriteU16(dst, constrainf(customMotorMixer(i)->yaw + 1.0f, 0.0f, 2.0f) * 1000);
-        }
-        break;
+        return MSP_RESULT_ERROR;
+
 
     case MSP_MOTOR:
-        for (unsigned i = 0; i < 8; i++) {
-            sbufWriteU16(dst, i < MAX_SUPPORTED_MOTORS ? motor[i] : 0);
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RC:
         for (int i = 0; i < rxRuntimeConfig.channelCount; i++) {
@@ -544,24 +503,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_ANALOG:
-        sbufWriteU8(dst, (uint8_t)constrain(getBatteryVoltage() / 10, 0, 255));
-        sbufWriteU16(dst, (uint16_t)constrain(getMAhDrawn(), 0, 0xFFFF)); // milliamp hours drawn from battery
-        sbufWriteU16(dst, getRSSI());
-        sbufWriteU16(dst, (int16_t)constrain(getAmperage(), -0x8000, 0x7FFF)); // send amperage in 0.01 A steps, range is -320A to 320A
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_ANALOG:
-        sbufWriteU16(dst, getBatteryVoltage());
-        sbufWriteU8(dst, getBatteryCellCount());
-        sbufWriteU8(dst, calculateBatteryPercentage());
-        sbufWriteU16(dst, constrain(getPower(), 0, 0x7FFFFFFF));           // power draw
-        sbufWriteU16(dst, (uint16_t)constrain(getMAhDrawn(), 0, 0xFFFF)); // milliamp hours drawn from battery
-        sbufWriteU16(dst, (uint16_t)constrain(getMWhDrawn(), 0, 0xFFFF)); // milliWatt hours drawn from battery
-        sbufWriteU16(dst, getRSSI());
-        sbufWriteU16(dst, (int16_t)constrain(getAmperage(), -0x8000, 0x7FFF)); // send amperage in 0.01 A steps, range is -320A to 320A
-        sbufWriteU8(dst, batteryWasFullWhenPluggedIn() | (batteryUsesCapacityThresholds() << 1) | (getBatteryState() << 2));
-        sbufWriteU32(dst, getBatteryRemainingCapacity());
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_ARMING_CONFIG:
         sbufWriteU8(dst, armingConfig()->auto_disarm_delay);
@@ -569,8 +514,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_LOOP_TIME:
-        sbufWriteU16(dst, gyroConfig()->looptime);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RC_TUNING:
         sbufWriteU8(dst, 100); //rcRate8 kept for compatibity reasons, this setting is no longer used
@@ -659,82 +603,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_MISC:
-        sbufWriteU16(dst, rxConfig()->midrc);
-
-        sbufWriteU16(dst, motorConfig()->minthrottle);
-        sbufWriteU16(dst, motorConfig()->maxthrottle);
-        sbufWriteU16(dst, motorConfig()->mincommand);
-
-        sbufWriteU16(dst, failsafeConfig()->failsafe_throttle);
-
-#ifdef USE_GPS
-        sbufWriteU8(dst, gpsConfig()->provider); // gps_type
-        sbufWriteU8(dst, 0); // TODO gps_baudrate (an index, cleanflight uses a uint32_t
-        sbufWriteU8(dst, gpsConfig()->sbasMode); // gps_ubx_sbas
-#else
-        sbufWriteU8(dst, 0); // gps_type
-        sbufWriteU8(dst, 0); // TODO gps_baudrate (an index, cleanflight uses a uint32_t
-        sbufWriteU8(dst, 0); // gps_ubx_sbas
-#endif
-        sbufWriteU8(dst, 0); // multiwiiCurrentMeterOutput
-        sbufWriteU8(dst, rxConfig()->rssi_channel);
-        sbufWriteU8(dst, 0);
-
-        sbufWriteU16(dst, compassConfig()->mag_declination / 10);
-
-        sbufWriteU8(dst, batteryConfig()->voltage.scale / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellMin / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellMax / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellWarning / 10);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_MISC:
-        sbufWriteU16(dst, rxConfig()->midrc);
-
-        sbufWriteU16(dst, motorConfig()->minthrottle);
-        sbufWriteU16(dst, motorConfig()->maxthrottle);
-        sbufWriteU16(dst, motorConfig()->mincommand);
-
-        sbufWriteU16(dst, failsafeConfig()->failsafe_throttle);
-
-#ifdef USE_GPS
-        sbufWriteU8(dst, gpsConfig()->provider); // gps_type
-        sbufWriteU8(dst, 0); // TODO gps_baudrate (an index, cleanflight uses a uint32_t
-        sbufWriteU8(dst, gpsConfig()->sbasMode); // gps_ubx_sbas
-#else
-        sbufWriteU8(dst, 0); // gps_type
-        sbufWriteU8(dst, 0); // TODO gps_baudrate (an index, cleanflight uses a uint32_t
-        sbufWriteU8(dst, 0); // gps_ubx_sbas
-#endif
-        sbufWriteU8(dst, rxConfig()->rssi_channel);
-
-        sbufWriteU16(dst, compassConfig()->mag_declination / 10);
-
-        sbufWriteU16(dst, batteryConfig()->voltage.scale);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellMin);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellMax);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellWarning);
-
-        sbufWriteU32(dst, batteryConfig()->capacity.value);
-        sbufWriteU32(dst, batteryConfig()->capacity.warning);
-        sbufWriteU32(dst, batteryConfig()->capacity.critical);
-        sbufWriteU8(dst, batteryConfig()->capacity.unit);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_BATTERY_CONFIG:
-        sbufWriteU16(dst, batteryConfig()->voltage.scale);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellMin);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellMax);
-        sbufWriteU16(dst, batteryConfig()->voltage.cellWarning);
-
-        sbufWriteU16(dst, batteryConfig()->current.offset);
-        sbufWriteU16(dst, batteryConfig()->current.scale);
-
-        sbufWriteU32(dst, batteryConfig()->capacity.value);
-        sbufWriteU32(dst, batteryConfig()->capacity.warning);
-        sbufWriteU32(dst, batteryConfig()->capacity.critical);
-        sbufWriteU8(dst, batteryConfig()->capacity.unit);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_MOTOR_PINS:
         // FIXME This is hardcoded and should not be.
@@ -813,24 +688,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_BOARD_ALIGNMENT:
-        sbufWriteU16(dst, boardAlignment()->rollDeciDegrees);
-        sbufWriteU16(dst, boardAlignment()->pitchDeciDegrees);
-        sbufWriteU16(dst, boardAlignment()->yawDeciDegrees);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_VOLTAGE_METER_CONFIG:
-        sbufWriteU8(dst, batteryConfig()->voltage.scale / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellMin / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellMax / 10);
-        sbufWriteU8(dst, batteryConfig()->voltage.cellWarning / 10);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_CURRENT_METER_CONFIG:
-        sbufWriteU16(dst, batteryConfig()->current.scale);
-        sbufWriteU16(dst, batteryConfig()->current.offset);
-        sbufWriteU8(dst, batteryConfig()->current.type);
-        sbufWriteU16(dst, constrain(batteryConfig()->capacity.value, 0, 0xFFFF));
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_MIXER:
         sbufWriteU8(dst, mixerConfig()->mixerMode);
@@ -879,19 +743,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_BF_CONFIG:
-        sbufWriteU8(dst, mixerConfig()->mixerMode);
-
-        sbufWriteU32(dst, featureMask());
-
-        sbufWriteU8(dst, rxConfig()->serialrx_provider);
-
-        sbufWriteU16(dst, boardAlignment()->rollDeciDegrees);
-        sbufWriteU16(dst, boardAlignment()->pitchDeciDegrees);
-        sbufWriteU16(dst, boardAlignment()->yawDeciDegrees);
-
-        sbufWriteU16(dst, batteryConfig()->current.scale);
-        sbufWriteU16(dst, batteryConfig()->current.offset);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_CF_SERIAL_CONFIG:
         for (int i = 0; i < SERIAL_PORT_COUNT; i++) {
@@ -964,28 +816,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_OSD_CONFIG:
-#ifdef USE_OSD
-        sbufWriteU8(dst, 1); // OSD supported
-        // send video system (AUTO/PAL/NTSC)
-#ifdef USE_MAX7456
-        sbufWriteU8(dst, osdConfig()->video_system);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-        sbufWriteU8(dst, osdConfig()->units);
-        sbufWriteU8(dst, osdConfig()->rssi_alarm);
-        sbufWriteU16(dst, batteryConfig()->capacity.warning);
-        sbufWriteU16(dst, osdConfig()->time_alarm);
-        sbufWriteU16(dst, osdConfig()->alt_alarm);
-        sbufWriteU16(dst, osdConfig()->dist_alarm);
-        sbufWriteU16(dst, osdConfig()->neg_alt_alarm);
-        for (int i = 0; i < OSD_ITEM_COUNT; i++) {
-            sbufWriteU16(dst, osdConfig()->item_pos[i]);
-        }
-#else
-        sbufWriteU8(dst, 0); // OSD not supported
-#endif
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_BF_BUILD_INFO:
         sbufWriteData(dst, buildDate, 11); // MMM DD YYYY as ascii, MMM = Jan/Feb... etc
@@ -1007,53 +838,13 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_SENSOR_ALIGNMENT:
-        sbufWriteU8(dst, gyroConfig()->gyro_align);
-        sbufWriteU8(dst, accelerometerConfig()->acc_align);
-        sbufWriteU8(dst, compassConfig()->mag_align);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_ADVANCED_CONFIG:
-        sbufWriteU8(dst, 1);    // gyroConfig()->gyroSyncDenominator
-        sbufWriteU8(dst, 1);    // BF: masterConfig.pid_process_denom
-        sbufWriteU8(dst, 1);    // BF: motorConfig()->useUnsyncedPwm
-        sbufWriteU8(dst, motorConfig()->motorPwmProtocol);
-        sbufWriteU16(dst, motorConfig()->motorPwmRate);
-#ifdef USE_SERVOS
-        sbufWriteU16(dst, servoConfig()->servoPwmRate);
-#else
-        sbufWriteU16(dst, 0);
-#endif
-        sbufWriteU8(dst, gyroConfig()->gyroSync);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_FILTER_CONFIG :
-        sbufWriteU8(dst, gyroConfig()->gyro_soft_lpf_hz);
-        sbufWriteU16(dst, pidProfile()->dterm_lpf_hz);
-        sbufWriteU16(dst, pidProfile()->yaw_lpf_hz);
-#ifdef USE_GYRO_NOTCH_1
-        sbufWriteU16(dst, gyroConfig()->gyro_soft_notch_hz_1); //masterConfig.gyro_soft_notch_hz_1
-        sbufWriteU16(dst, gyroConfig()->gyro_soft_notch_cutoff_1); //BF: masterConfig.gyro_soft_notch_cutoff_1
-#else
-        sbufWriteU16(dst, 0); //masterConfig.gyro_soft_notch_hz_1
-        sbufWriteU16(dst, 1); //BF: masterConfig.gyro_soft_notch_cutoff_1
-#endif
-
-#ifdef USE_DTERM_NOTCH
-        sbufWriteU16(dst, pidProfile()->dterm_soft_notch_hz); //BF: pidProfile()->dterm_notch_hz
-        sbufWriteU16(dst, pidProfile()->dterm_soft_notch_cutoff); //pidProfile()->dterm_notch_cutoff
-#else
-        sbufWriteU16(dst, 0); //BF: pidProfile()->dterm_notch_hz
-        sbufWriteU16(dst, 1); //pidProfile()->dterm_notch_cutoff
-#endif
-
-#ifdef USE_GYRO_NOTCH_2
-        sbufWriteU16(dst, gyroConfig()->gyro_soft_notch_hz_2); //BF: masterConfig.gyro_soft_notch_hz_2
-        sbufWriteU16(dst, gyroConfig()->gyro_soft_notch_cutoff_2); //BF: masterConfig.gyro_soft_notch_cutoff_2
-#else
-        sbufWriteU16(dst, 0); //BF: masterConfig.gyro_soft_notch_hz_2
-        sbufWriteU16(dst, 1); //BF: masterConfig.gyro_soft_notch_cutoff_2
-#endif
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_PID_ADVANCED:
         sbufWriteU16(dst, pidProfile()->rollPitchItermIgnoreRate);
@@ -1075,54 +866,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_INAV_PID:
-    #ifdef USE_ASYNC_GYRO_PROCESSING
-        sbufWriteU8(dst, systemConfig()->asyncMode);
-        sbufWriteU16(dst, systemConfig()->accTaskFrequency);
-        sbufWriteU16(dst, systemConfig()->attitudeTaskFrequency);
-    #else
-        sbufWriteU8(dst, 0);
-        sbufWriteU16(dst, 0);
-        sbufWriteU16(dst, 0);
-    #endif
-        sbufWriteU8(dst, pidProfile()->heading_hold_rate_limit);
-        sbufWriteU8(dst, HEADING_HOLD_ERROR_LPF_FREQ);
-        sbufWriteU16(dst, mixerConfig()->yaw_jump_prevention_limit);
-        sbufWriteU8(dst, gyroConfig()->gyro_lpf);
-        sbufWriteU8(dst, pidProfile()->acc_soft_lpf_hz);
-        sbufWriteU8(dst, 0); //reserved
-        sbufWriteU8(dst, 0); //reserved
-        sbufWriteU8(dst, 0); //reserved
-        sbufWriteU8(dst, 0); //reserved
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SENSOR_CONFIG:
-        sbufWriteU8(dst, accelerometerConfig()->acc_hardware);
-#ifdef USE_BARO
-        sbufWriteU8(dst, barometerConfig()->baro_hardware);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-#ifdef USE_MAG
-        sbufWriteU8(dst, compassConfig()->mag_hardware);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-#ifdef USE_PITOT
-        sbufWriteU8(dst, pitotmeterConfig()->pitot_hardware);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-#ifdef USE_RANGEFINDER
-        sbufWriteU8(dst, rangefinderConfig()->rangefinder_hardware);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-#ifdef USE_OPTICAL_FLOW
-        sbufWriteU8(dst, opticalFlowConfig()->opflow_hardware);
-#else
-        sbufWriteU8(dst, 0);
-#endif
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_NAV
     case MSP_NAV_POSHOLD:
@@ -1164,15 +911,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 #endif
 
     case MSP_CALIBRATION_DATA:
-    #ifdef USE_ACC
-        sbufWriteU8(dst, accGetCalibrationAxisFlags());
-        sbufWriteU16(dst, accelerometerConfig()->accZero.raw[X]);
-        sbufWriteU16(dst, accelerometerConfig()->accZero.raw[Y]);
-        sbufWriteU16(dst, accelerometerConfig()->accZero.raw[Z]);
-        sbufWriteU16(dst, accelerometerConfig()->accGain.raw[X]);
-        sbufWriteU16(dst, accelerometerConfig()->accGain.raw[Y]);
-        sbufWriteU16(dst, accelerometerConfig()->accGain.raw[Z]);
-    #else
         sbufWriteU8(dst, 0);
         sbufWriteU16(dst, 0);
         sbufWriteU16(dst, 0);
@@ -1180,17 +918,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU16(dst, 0);
         sbufWriteU16(dst, 0);
         sbufWriteU16(dst, 0);
-    #endif
 
-    #ifdef USE_MAG
-        sbufWriteU16(dst, compassConfig()->magZero.raw[X]);
-        sbufWriteU16(dst, compassConfig()->magZero.raw[Y]);
-        sbufWriteU16(dst, compassConfig()->magZero.raw[Z]);
-    #else
         sbufWriteU16(dst, 0);
         sbufWriteU16(dst, 0);
         sbufWriteU16(dst, 0);
-    #endif
         break;
 
     case MSP_POSITION_ESTIMATION_CONFIG:
@@ -1224,18 +955,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_WP_GETINFO:
-#ifdef USE_NAV
-        sbufWriteU8(dst, 0);                        // Reserved for waypoint capabilities
-        sbufWriteU8(dst, NAV_MAX_WAYPOINTS);        // Maximum number of waypoints supported
-        sbufWriteU8(dst, isWaypointListValid());    // Is current mission valid
-        sbufWriteU8(dst, getWaypointCount());       // Number of waypoints in current mission
-#else
-        sbufWriteU8(dst, 0);
-        sbufWriteU8(dst, 0);
-        sbufWriteU8(dst, 0);
-        sbufWriteU8(dst, 0);
-#endif
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_TX_INFO:
         sbufWriteU8(dst, getRSSISource());
@@ -1304,12 +1024,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP2_INAV_AIR_SPEED:
-#ifdef USE_PITOT
-        sbufWriteU32(dst, pitot.airSpeed);
-#else
-        sbufWriteU32(dst, 0);
-#endif
-        break;
+        return MSP_RESULT_ERROR;
 
     default:
         return false;
@@ -1405,30 +1120,14 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_LOOP_TIME:
-        if (sbufReadU16Safe(&tmp_u16, src))
-            gyroConfigMutable()->looptime = tmp_u16;
-        else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_PID_CONTROLLER:
         // FIXME: Do nothing
         break;
 
     case MSP_SET_PID:
-        if (dataSize >= PID_ITEM_COUNT * 3) {
-            for (int i = 0; i < PID_ITEM_COUNT; i++) {
-                pidBankMutable()->pid[i].P = sbufReadU8(src);
-                pidBankMutable()->pid[i].I = sbufReadU8(src);
-                pidBankMutable()->pid[i].D = sbufReadU8(src);
-            }
-            schedulePidGainsUpdate();
-#if defined(USE_NAV)
-            navigationUsePIDs();
-#endif
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_MODE_RANGE:
         sbufReadU8Safe(&tmp_u8, src);
@@ -1540,125 +1239,16 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_MISC:
-        if (dataSize >= 22) {
-        rxConfigMutable()->midrc = constrain(sbufReadU16(src), MIDRC_MIN, MIDRC_MAX);
-
-        motorConfigMutable()->minthrottle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-        motorConfigMutable()->maxthrottle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-        motorConfigMutable()->mincommand = constrain(sbufReadU16(src), PWM_RANGE_ZERO, PWM_RANGE_MAX);
-
-        failsafeConfigMutable()->failsafe_throttle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-
-#ifdef USE_GPS
-        gpsConfigMutable()->provider = sbufReadU8(src); // gps_type
-        sbufReadU8(src); // gps_baudrate
-        gpsConfigMutable()->sbasMode = sbufReadU8(src); // gps_ubx_sbas
-#else
-        sbufReadU8(src); // gps_type
-        sbufReadU8(src); // gps_baudrate
-        sbufReadU8(src); // gps_ubx_sbas
-#endif
-        sbufReadU8(src); // multiwiiCurrentMeterOutput
-        tmp_u8 = sbufReadU8(src);
-        if (tmp_u8 <= MAX_SUPPORTED_RC_CHANNEL_COUNT)
-            rxConfigMutable()->rssi_channel = tmp_u8;
-        rxUpdateRSSISource(); // Changing rssi_channel might change the RSSI source
-        sbufReadU8(src);
-
-#ifdef USE_MAG
-        compassConfigMutable()->mag_declination = sbufReadU16(src) * 10;
-#else
-        sbufReadU16(src);
-#endif
-
-        batteryConfigMutable()->voltage.scale = sbufReadU8(src) * 10;
-        batteryConfigMutable()->voltage.cellMin = sbufReadU8(src) * 10;         // vbatlevel_warn1 in MWC2.3 GUI
-        batteryConfigMutable()->voltage.cellMax = sbufReadU8(src) * 10;         // vbatlevel_warn2 in MWC2.3 GUI
-        batteryConfigMutable()->voltage.cellWarning = sbufReadU8(src) * 10;     // vbatlevel when buzzer starts to alert
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_SET_MISC:
-        if (dataSize == 37) {
-            rxConfigMutable()->midrc = constrain(sbufReadU16(src), MIDRC_MIN, MIDRC_MAX);
-
-            motorConfigMutable()->minthrottle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-            motorConfigMutable()->maxthrottle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-            motorConfigMutable()->mincommand = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-
-            failsafeConfigMutable()->failsafe_throttle = constrain(sbufReadU16(src), PWM_RANGE_MIN, PWM_RANGE_MAX);
-
-#ifdef USE_GPS
-            gpsConfigMutable()->provider = sbufReadU8(src); // gps_type
-            sbufReadU8(src); // gps_baudrate
-            gpsConfigMutable()->sbasMode = sbufReadU8(src); // gps_ubx_sbas
-#else
-            sbufReadU8(src); // gps_type
-            sbufReadU8(src); // gps_baudrate
-            sbufReadU8(src); // gps_ubx_sbas
-#endif
-
-            tmp_u8 = sbufReadU8(src);
-            if (tmp_u8 <= MAX_SUPPORTED_RC_CHANNEL_COUNT)
-                rxConfigMutable()->rssi_channel = tmp_u8;
-
-#ifdef USE_MAG
-            compassConfigMutable()->mag_declination = sbufReadU16(src) * 10;
-#else
-            sbufReadU16(src);
-#endif
-
-            batteryConfigMutable()->voltage.scale = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellMin = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellMax = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellWarning = sbufReadU16(src);
-
-            batteryConfigMutable()->capacity.value = sbufReadU32(src);
-            batteryConfigMutable()->capacity.warning = sbufReadU32(src);
-            batteryConfigMutable()->capacity.critical = sbufReadU32(src);
-            batteryConfigMutable()->capacity.unit = sbufReadU8(src);
-            if ((batteryConfig()->capacity.unit != BAT_CAPACITY_UNIT_MAH) && (batteryConfig()->capacity.unit != BAT_CAPACITY_UNIT_MWH)) {
-                batteryConfigMutable()->capacity.unit = BAT_CAPACITY_UNIT_MAH;
-                return MSP_RESULT_ERROR;
-            }
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_SET_BATTERY_CONFIG:
-        if (dataSize == 25) {
-            batteryConfigMutable()->voltage.scale = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellMin = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellMax = sbufReadU16(src);
-            batteryConfigMutable()->voltage.cellWarning = sbufReadU16(src);
-
-            batteryConfigMutable()->current.offset = sbufReadU16(src);
-            batteryConfigMutable()->current.scale = sbufReadU16(src);
-
-            batteryConfigMutable()->capacity.value = sbufReadU32(src);
-            batteryConfigMutable()->capacity.warning = sbufReadU32(src);
-            batteryConfigMutable()->capacity.critical = sbufReadU32(src);
-            batteryConfigMutable()->capacity.unit = sbufReadU8(src);
-            if ((batteryConfig()->capacity.unit != BAT_CAPACITY_UNIT_MAH) && (batteryConfig()->capacity.unit != BAT_CAPACITY_UNIT_MWH)) {
-                batteryConfigMutable()->capacity.unit = BAT_CAPACITY_UNIT_MAH;
-                return MSP_RESULT_ERROR;
-            }
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_MOTOR:
-        if (dataSize >= 8 * sizeof(uint16_t)) {
-            for (int i = 0; i < 8; i++) {
-                const int16_t disarmed = sbufReadU16(src);
-                if (i < MAX_SUPPORTED_MOTORS) {
-                    motor_disarmed[i] = disarmed;
-                }
-            }
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_SERVOS
     case MSP_SET_SERVO_CONFIGURATION:
@@ -1699,15 +1289,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 #endif
 
     case MSP2_COMMON_SET_MOTOR_MIXER:
-        sbufReadU8Safe(&tmp_u8, src);
-        if ((dataSize == 9) && (tmp_u8 < MAX_SUPPORTED_MOTORS)) {
-            customMotorMixerMutable(tmp_u8)->throttle = constrainf(sbufReadU16(src) / 1000.0f, 0.0f, 1.0f);
-            customMotorMixerMutable(tmp_u8)->roll = constrainf(sbufReadU16(src) / 1000.0f, 0.0f, 2.0f) - 1.0f;
-            customMotorMixerMutable(tmp_u8)->pitch = constrainf(sbufReadU16(src) / 1000.0f, 0.0f, 2.0f) - 1.0f;
-            customMotorMixerMutable(tmp_u8)->yaw = constrainf(sbufReadU16(src) / 1000.0f, 0.0f, 2.0f) - 1.0f;
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_3D:
         if (dataSize >= 6) {
@@ -1733,66 +1315,13 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_SENSOR_ALIGNMENT:
-        if (dataSize >= 3) {
-            gyroConfigMutable()->gyro_align = sbufReadU8(src);
-            accelerometerConfigMutable()->acc_align = sbufReadU8(src);
-#ifdef USE_MAG
-            compassConfigMutable()->mag_align = sbufReadU8(src);
-#else
-            sbufReadU8(src);
-#endif
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_ADVANCED_CONFIG:
-        if (dataSize >= 9) {
-            sbufReadU8(src);    // gyroConfig()->gyroSyncDenominator
-            sbufReadU8(src);    // BF: masterConfig.pid_process_denom
-            sbufReadU8(src);    // BF: motorConfig()->useUnsyncedPwm
-            motorConfigMutable()->motorPwmProtocol = sbufReadU8(src);
-            motorConfigMutable()->motorPwmRate = sbufReadU16(src);
-#ifdef USE_SERVOS
-            servoConfigMutable()->servoPwmRate = sbufReadU16(src);
-#else
-            sbufReadU16(src);
-#endif
-            gyroConfigMutable()->gyroSync = sbufReadU8(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_FILTER_CONFIG :
-        if (dataSize >= 5) {
-            gyroConfigMutable()->gyro_soft_lpf_hz = sbufReadU8(src);
-            pidProfileMutable()->dterm_lpf_hz = constrain(sbufReadU16(src), 0, 255);
-            pidProfileMutable()->yaw_lpf_hz = constrain(sbufReadU16(src), 0, 255);
-#ifdef USE_GYRO_NOTCH_1
-            if (dataSize >= 9) {
-                gyroConfigMutable()->gyro_soft_notch_hz_1 = constrain(sbufReadU16(src), 0, 500);
-                gyroConfigMutable()->gyro_soft_notch_cutoff_1 = constrain(sbufReadU16(src), 1, 500);
-            } else
-                return MSP_RESULT_ERROR;
-#endif
-#ifdef USE_DTERM_NOTCH
-            if (dataSize >= 13) {
-                pidProfileMutable()->dterm_soft_notch_hz = constrain(sbufReadU16(src), 0, 500);
-                pidProfileMutable()->dterm_soft_notch_cutoff = constrain(sbufReadU16(src), 1, 500);
-                pidInitFilters();
-            } else
-                return MSP_RESULT_ERROR;
-#endif
-#ifdef USE_GYRO_NOTCH_2
-            if (dataSize >= 17) {
-                gyroConfigMutable()->gyro_soft_notch_hz_2 = constrain(sbufReadU16(src), 0, 500);
-                gyroConfigMutable()->gyro_soft_notch_cutoff_2 = constrain(sbufReadU16(src), 1, 500);
-            } else
-                return MSP_RESULT_ERROR;
-#endif
-        } else
-            return MSP_RESULT_ERROR;
-        break;
-
+         return MSP_RESULT_ERROR;
     case MSP_SET_PID_ADVANCED:
         if (dataSize >= 17) {
             pidProfileMutable()->rollPitchItermIgnoreRate = sbufReadU16(src);
@@ -1817,60 +1346,10 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_INAV_PID:
-        if (dataSize >= 15) {
-#ifdef USE_ASYNC_GYRO_PROCESSING
-            systemConfigMutable()->asyncMode = sbufReadU8(src);
-            systemConfigMutable()->accTaskFrequency = sbufReadU16(src);
-            systemConfigMutable()->attitudeTaskFrequency = sbufReadU16(src);
-#else
-            sbufReadU8(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-#endif
-            pidProfileMutable()->heading_hold_rate_limit = sbufReadU8(src);
-            sbufReadU8(src); //HEADING_HOLD_ERROR_LPF_FREQ
-            mixerConfigMutable()->yaw_jump_prevention_limit = sbufReadU16(src);
-            gyroConfigMutable()->gyro_lpf = sbufReadU8(src);
-            pidProfileMutable()->acc_soft_lpf_hz = sbufReadU8(src);
-            sbufReadU8(src); //reserved
-            sbufReadU8(src); //reserved
-            sbufReadU8(src); //reserved
-            sbufReadU8(src); //reserved
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_SENSOR_CONFIG:
-        if (dataSize >= 6) {
-            accelerometerConfigMutable()->acc_hardware = sbufReadU8(src);
-#ifdef USE_BARO
-            barometerConfigMutable()->baro_hardware = sbufReadU8(src);
-#else
-            sbufReadU8(src);
-#endif
-#ifdef USE_MAG
-            compassConfigMutable()->mag_hardware = sbufReadU8(src);
-#else
-            sbufReadU8(src);
-#endif
-#ifdef USE_PITOT
-            pitotmeterConfigMutable()->pitot_hardware = sbufReadU8(src);
-#else
-            sbufReadU8(src);
-#endif
-#ifdef USE_RANGEFINDER
-            rangefinderConfigMutable()->rangefinder_hardware = sbufReadU8(src);
-#else
-            sbufReadU8(src);        // rangefinder hardware
-#endif
-#ifdef USE_OPTICAL_FLOW
-            opticalFlowConfigMutable()->opflow_hardware = sbufReadU8(src);
-#else
-            sbufReadU8(src);        // optical flow hardware
-#endif
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_NAV
     case MSP_SET_NAV_POSHOLD:
@@ -1921,35 +1400,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 #endif
 
     case MSP_SET_CALIBRATION_DATA:
-        if (dataSize >= 18) {
-#ifdef USE_ACC
-            accelerometerConfigMutable()->accZero.raw[X] = sbufReadU16(src);
-            accelerometerConfigMutable()->accZero.raw[Y] = sbufReadU16(src);
-            accelerometerConfigMutable()->accZero.raw[Z] = sbufReadU16(src);
-            accelerometerConfigMutable()->accGain.raw[X] = sbufReadU16(src);
-            accelerometerConfigMutable()->accGain.raw[Y] = sbufReadU16(src);
-            accelerometerConfigMutable()->accGain.raw[Z] = sbufReadU16(src);
-#else
-            sbufReadU16(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-#endif
-
-#ifdef USE_MAG
-            compassConfigMutable()->magZero.raw[X] = sbufReadU16(src);
-            compassConfigMutable()->magZero.raw[Y] = sbufReadU16(src);
-            compassConfigMutable()->magZero.raw[Z] = sbufReadU16(src);
-#else
-            sbufReadU16(src);
-            sbufReadU16(src);
-            sbufReadU16(src);
-#endif
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_NAV
     case MSP_SET_POSITION_ESTIMATION_CONFIG:
@@ -1975,18 +1426,10 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_ACC_CALIBRATION:
-        if (!ARMING_FLAG(ARMED))
-            accSetCalibrationCycles(CALIBRATING_ACC_CYCLES);
-        else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_MAG_CALIBRATION:
-        if (!ARMING_FLAG(ARMED))
-            ENABLE_STATE(CALIBRATE_MAG);
-        else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_EEPROM_WRITE:
         if (!ARMING_FLAG(ARMED)) {
@@ -2008,56 +1451,6 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 #endif
 
-#ifdef USE_OSD
-    case MSP_SET_OSD_CONFIG:
-        sbufReadU8Safe(&tmp_u8, src);
-        // set all the other settings
-        if ((int8_t)tmp_u8 == -1) {
-            if (dataSize >= 10) {
-#ifdef USE_MAX7456
-                osdConfigMutable()->video_system = sbufReadU8(src);
-#else
-                sbufReadU8(src); // Skip video system
-#endif
-                osdConfigMutable()->units = sbufReadU8(src);
-                osdConfigMutable()->rssi_alarm = sbufReadU8(src);
-                batteryConfigMutable()->capacity.warning = sbufReadU16(src);
-                osdConfigMutable()->time_alarm = sbufReadU16(src);
-                osdConfigMutable()->alt_alarm = sbufReadU16(src);
-                // Won't be read if they weren't provided
-                sbufReadU16Safe(&osdConfigMutable()->dist_alarm, src);
-                sbufReadU16Safe(&osdConfigMutable()->neg_alt_alarm, src);
-            } else
-                return MSP_RESULT_ERROR;
-        } else {
-            // set a position setting
-            if ((dataSize >= 3) && (tmp_u8 < OSD_ITEM_COUNT)) // tmp_u8 == addr
-                osdConfigMutable()->item_pos[tmp_u8] = sbufReadU16(src);
-            else
-                return MSP_RESULT_ERROR;
-        }
-        // Either a element position change or a units change needs
-        // a full redraw, since an element can change size significantly
-        // and the old position or the now unused space due to the
-        // size change need to be erased.
-        osdStartFullRedraw();
-        break;
-
-    case MSP_OSD_CHAR_WRITE:
-#ifdef USE_MAX7456
-        if (dataSize >= 55) {
-            uint8_t font_data[64];
-            const uint8_t addr = sbufReadU8(src);
-            for (int i = 0; i < 54; i++) {
-                font_data[i] = sbufReadU8(src);
-            }
-            // !!TODO - replace this with a device independent implementation
-            max7456WriteNvm(addr, font_data);
-        } else
-            return MSP_RESULT_ERROR;
-#endif // USE_MAX7456
-        break;
-#endif // USE_OSD
 
 #if defined(VTX_COMMON)
     case MSP_SET_VTX_CONFIG:
@@ -2100,31 +1493,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 
 #ifdef USE_GPS
     case MSP_SET_RAW_GPS:
-        if (dataSize >= 14) {
-            if (sbufReadU8(src)) {
-                ENABLE_STATE(GPS_FIX);
-            } else {
-                DISABLE_STATE(GPS_FIX);
-            }
-            gpsSol.flags.validVelNE = 0;
-            gpsSol.flags.validVelD = 0;
-            gpsSol.flags.validEPE = 0;
-            gpsSol.numSat = sbufReadU8(src);
-            gpsSol.llh.lat = sbufReadU32(src);
-            gpsSol.llh.lon = sbufReadU32(src);
-            gpsSol.llh.alt = sbufReadU16(src);
-            gpsSol.groundSpeed = sbufReadU16(src);
-            gpsSol.velNED[X] = 0;
-            gpsSol.velNED[Y] = 0;
-            gpsSol.velNED[Z] = 0;
-            gpsSol.eph = 100;
-            gpsSol.epv = 100;
-            // Feed data to navigation
-            sensorsSet(SENSOR_GPS);
-            onNewGPSData();
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 #endif
 
 #ifdef USE_NAV
@@ -2140,7 +1509,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
             msp_wp.p2 = sbufReadU16(src);       // P2
             msp_wp.p3 = sbufReadU16(src);       // P3
             msp_wp.flag = sbufReadU8(src);      // future: to set nav flag
-            setWaypoint(msp_wp_no, &msp_wp);
+//            setWaypoint(msp_wp_no, &msp_wp);
         } else
             return MSP_RESULT_ERROR;
         break;
@@ -2156,33 +1525,13 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_BOARD_ALIGNMENT:
-        if (dataSize >= 6) {
-            boardAlignmentMutable()->rollDeciDegrees = sbufReadU16(src);
-            boardAlignmentMutable()->pitchDeciDegrees = sbufReadU16(src);
-            boardAlignmentMutable()->yawDeciDegrees = sbufReadU16(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_VOLTAGE_METER_CONFIG:
-        if (dataSize >= 4) {
-            batteryConfigMutable()->voltage.scale = sbufReadU8(src) * 10;
-            batteryConfigMutable()->voltage.cellMin = sbufReadU8(src) * 10;
-            batteryConfigMutable()->voltage.cellMax = sbufReadU8(src) * 10;
-            batteryConfigMutable()->voltage.cellWarning = sbufReadU8(src) * 10;
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_CURRENT_METER_CONFIG:
-        if (dataSize >= 7) {
-            batteryConfigMutable()->current.scale = sbufReadU16(src);
-            batteryConfigMutable()->current.offset = sbufReadU16(src);
-            batteryConfigMutable()->current.type = sbufReadU8(src);
-            batteryConfigMutable()->capacity.value = sbufReadU16(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifndef USE_QUAD_MIXER_ONLY
     case MSP_SET_MIXER:
@@ -2252,28 +1601,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_BF_CONFIG:
-        if (dataSize >= 16) {
-#ifdef USE_QUAD_MIXER_ONLY
-            sbufReadU8(src); // mixerMode ignored
-#else
-            mixerConfigMutable()->mixerMode = sbufReadU8(src); // mixerMode
-            mixerUpdateStateFlags();    // Required for correct preset functionality
-#endif
-
-            featureClearAll();
-            featureSet(sbufReadU32(src)); // features bitmap
-
-            rxConfigMutable()->serialrx_provider = sbufReadU8(src); // serialrx_type
-
-            boardAlignmentMutable()->rollDeciDegrees = sbufReadU16(src); // board_align_roll
-            boardAlignmentMutable()->pitchDeciDegrees = sbufReadU16(src); // board_align_pitch
-            boardAlignmentMutable()->yawDeciDegrees = sbufReadU16(src); // board_align_yaw
-
-            batteryConfigMutable()->current.scale = sbufReadU16(src);
-            batteryConfigMutable()->current.offset = sbufReadU16(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_CF_SERIAL_CONFIG:
         {

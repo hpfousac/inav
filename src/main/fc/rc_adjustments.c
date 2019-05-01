@@ -287,7 +287,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             controlRateConfig->stabilized.rates[FD_PITCH] = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_RATE, newValue);
             if (adjustmentFunction == ADJUSTMENT_PITCH_RATE) {
-                schedulePidGainsUpdate();
                 break;
             }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_RATE
@@ -297,7 +296,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             newValue = constrain((int)controlRateConfig->stabilized.rates[FD_ROLL] + delta, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MIN, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MAX);
             controlRateConfig->stabilized.rates[FD_ROLL] = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_RATE, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_MANUAL_PITCH_ROLL_RATE:
         case ADJUSTMENT_MANUAL_ROLL_RATE:
@@ -317,7 +315,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             newValue = constrain((int)controlRateConfig->stabilized.rates[FD_YAW] + delta, CONTROL_RATE_CONFIG_YAW_RATE_MIN, CONTROL_RATE_CONFIG_YAW_RATE_MAX);
             controlRateConfig->stabilized.rates[FD_YAW] = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_RATE, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_MANUAL_YAW_RATE:
             newValue = constrain((int)controlRateConfig->manual.rates[FD_YAW] + delta, 0, 100);
@@ -330,7 +327,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             pidBankMutable()->pid[PID_PITCH].P = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_P, newValue);
             if (adjustmentFunction == ADJUSTMENT_PITCH_P) {
-                schedulePidGainsUpdate();
                 break;
             }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_P
@@ -340,7 +336,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             newValue = constrain((int)pidBank()->pid[PID_ROLL].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_ROLL].P = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_P, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_PITCH_ROLL_I:
         case ADJUSTMENT_PITCH_I:
@@ -348,7 +343,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             pidBankMutable()->pid[PID_PITCH].I = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_I, newValue);
             if (adjustmentFunction == ADJUSTMENT_PITCH_I) {
-                schedulePidGainsUpdate();
                 break;
             }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_I
@@ -358,7 +352,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             newValue = constrain((int)pidBank()->pid[PID_ROLL].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_ROLL].I = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_I, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_PITCH_ROLL_D:
         case ADJUSTMENT_PITCH_D:
@@ -366,7 +359,6 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             pidBankMutable()->pid[PID_PITCH].D = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_D, newValue);
             if (adjustmentFunction == ADJUSTMENT_PITCH_D) {
-                schedulePidGainsUpdate();
                 break;
             }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_D
@@ -376,25 +368,21 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             newValue = constrain((int)pidBank()->pid[PID_ROLL].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_ROLL].D = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_D, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_YAW_P:
             newValue = constrain((int)pidBank()->pid[PID_YAW].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_YAW].P = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_P, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_YAW_I:
             newValue = constrain((int)pidBank()->pid[PID_YAW].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_YAW].I = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_I, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_YAW_D:
             newValue = constrain((int)pidBank()->pid[PID_YAW].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
             pidBankMutable()->pid[PID_YAW].D = newValue;
             blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_D, newValue);
-            schedulePidGainsUpdate();
             break;
         case ADJUSTMENT_NAV_FW_CRUISE_THR:
             newValue = constrain((int16_t)navConfig()->fw.cruise_throttle + delta, 1000, 2000);

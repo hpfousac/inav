@@ -194,7 +194,7 @@
 #endif
 
 #if defined(USE_FLASH_M25P16)
-    BUSDEV_REGISTER_SPI(busdev_m25p16,      DEVHW_M25P16,       M25P16_SPI_BUS,     M25P16_CS_PIN,      NONE,           DEVFLAGS_NONE);
+//    BUSDEV_REGISTER_SPI(busdev_m25p16,      DEVHW_M25P16,       M25P16_SPI_BUS,     M25P16_CS_PIN,      NONE,           DEVFLAGS_NONE);
 #endif
 
 #if defined(USE_OLED_UG2864)

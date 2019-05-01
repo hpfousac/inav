@@ -60,8 +60,6 @@ uint32_t enableFlightMode(flightModeFlags_e mask)
     uint32_t oldVal = flightModeFlags;
 
     flightModeFlags |= (mask);
-    if (flightModeFlags != oldVal)
-        beeperConfirmationBeeps(1);
     return flightModeFlags;
 }
 
@@ -74,8 +72,6 @@ uint32_t disableFlightMode(flightModeFlags_e mask)
     uint32_t oldVal = flightModeFlags;
 
     flightModeFlags &= ~(mask);
-    if (flightModeFlags != oldVal)
-        beeperConfirmationBeeps(1);
     return flightModeFlags;
 }
 

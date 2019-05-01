@@ -49,12 +49,6 @@ typedef struct rangefinderIOConfig_s {
     ioTag_t echoTag;
 } rangefinderIOConfig_t;
 
-typedef enum {
-    PLATFORM_MULTIROTOR     = 0,
-    PLATFORM_AIRPLANE       = 1,
-    PLATFORM_HELICOPTER     = 2
-} flyingPlatformType_e;
-
 typedef struct drv_pwm_config_s {
     int flyingPlatformType;
 

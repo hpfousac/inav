@@ -574,37 +574,26 @@ COMMON_SRC = \
             config/config_streamer.c \
             config/feature.c \
             config/parameter_group.c \
-            drivers/adc.c \
             drivers/buf_writer.c \
             drivers/bus.c \
             drivers/bus_busdev_i2c.c \
             drivers/bus_busdev_spi.c \
             drivers/bus_i2c_soft.c \
             drivers/bus_spi.c \
-            drivers/display.c \
             drivers/exti.c \
-            drivers/gps_i2cnav.c \
             drivers/io.c \
             drivers/io_pca9685.c \
-            drivers/light_led.c \
             drivers/logging.c \
             drivers/resource.c \
-            drivers/rx_nrf24l01.c \
-            drivers/rx_spi.c \
-            drivers/rx_xn297.c \
-            drivers/pitotmeter_adc.c \
             drivers/pwm_esc_detect.c \
             drivers/pwm_mapping.c \
             drivers/pwm_output.c \
             drivers/rcc.c \
-            drivers/rx_pwm.c \
             drivers/serial.c \
             drivers/serial_uart.c \
-            drivers/sound_beeper.c \
             drivers/stack_check.c \
             drivers/system.c \
             drivers/timer.c \
-            drivers/lights_io.c \
             fc/cli.c \
             fc/config.c \
             fc/controlrate_profile.c \
@@ -623,13 +612,7 @@ COMMON_SRC = \
             fc/stats.c \
             flight/failsafe.c \
             flight/hil.c \
-            flight/imu.c \
-            flight/mixer.c \
-            flight/pid.c \
-            flight/pid_autotune.c \
             flight/servos.c \
-            io/beeper.c \
-            io/lights.c \
             io/pwmdriver_i2c.c \
             io/serial.c \
             io/serial_4way.c \
@@ -644,11 +627,6 @@ COMMON_SRC = \
             rx/jetiexbus.c \
             rx/msp.c \
             rx/uib_rx.c \
-            rx/nrf24_cx10.c \
-            rx/nrf24_inav.c \
-            rx/nrf24_h8_3d.c \
-            rx/nrf24_syma.c \
-            rx/nrf24_v202.c \
             rx/pwm.c \
             rx/rx.c \
             rx/rx_spi.c \
@@ -661,16 +639,8 @@ COMMON_SRC = \
             rx/xbus.c \
             rx/eleres.c \
             scheduler/scheduler.c \
-            sensors/acceleration.c \
-            sensors/battery.c \
-            sensors/temperature.c \
-            sensors/boardalignment.c \
-            sensors/compass.c \
             sensors/diagnostics.c \
-            sensors/gyro.c \
             sensors/initialisation.c \
-            uav_interconnect/uav_interconnect_bus.c \
-            uav_interconnect/uav_interconnect_rangefinder.c \
             $(CMSIS_SRC) \
             $(DEVICE_STDPERIPH_SRC)
 
@@ -681,7 +651,6 @@ HIGHEND_SRC = \
             cms/cms.c \
             cms/cms_menu_blackbox.c \
             cms/cms_menu_builtin.c \
-            cms/cms_menu_imu.c \
             cms/cms_menu_ledstrip.c \
             cms/cms_menu_misc.c \
             cms/cms_menu_navigation.c \
@@ -690,19 +659,8 @@ HIGHEND_SRC = \
             cms/cms_menu_vtx_tramp.c \
             common/colorconversion.c \
             common/gps_conversion.c \
-            drivers/display_ug2864hsweg01.c \
-            drivers/rangefinder/rangefinder_hcsr04.c \
-            drivers/rangefinder/rangefinder_hcsr04_i2c.c \
-            drivers/rangefinder/rangefinder_srf10.c \
-            drivers/rangefinder/rangefinder_vl53l0x.c \
-            drivers/opflow/opflow_fake.c \
-            drivers/opflow/opflow_virtual.c \
             drivers/vtx_common.c \
             io/opflow_cxof.c \
-            io/dashboard.c \
-            io/displayport_max7456.c \
-            io/displayport_msp.c \
-            io/displayport_oled.c \
             io/gps.c \
             io/gps_ublox.c \
             io/gps_nmea.c \
@@ -710,26 +668,6 @@ HIGHEND_SRC = \
             io/gps_i2cnav.c \
             io/ledstrip.c \
             io/osd.c \
-            navigation/navigation.c \
-            navigation/navigation_fixedwing.c \
-            navigation/navigation_fw_launch.c \
-            navigation/navigation_geo.c \
-            navigation/navigation_multicopter.c \
-            navigation/navigation_pos_estimator.c \
-            sensors/barometer.c \
-            sensors/pitotmeter.c \
-            sensors/rangefinder.c \
-            sensors/opflow.c \
-            telemetry/crsf.c \
-            telemetry/frsky.c \
-            telemetry/hott.c \
-            telemetry/ibus_shared.c \
-            telemetry/ibus.c \
-            telemetry/ltm.c \
-            telemetry/mavlink.c \
-            telemetry/msp_shared.c \
-            telemetry/smartport.c \
-            telemetry/telemetry.c \
             io/vtx_string.c \
             io/vtx_smartaudio.c \
             io/vtx_tramp.c \

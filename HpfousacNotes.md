@@ -36,7 +36,6 @@
 
   found message *MSP_SERVO_CONFIGURATIONS* and *MSP_SET_SERVO_CONFIGURATION*
   
-
  ~~~~
  case MSP_SERVO_CONFIGURATIONS:
         for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
@@ -51,6 +50,29 @@
         }
  ~~~~
 
+## Proceeded steps ##
+
+ * removed symbols **TIM_USE_xxx** except **TIM_USE_ANY** and **TIM_USE_FW_SERVO**
+
+ * removed mixers
+
+ * excluded many HW components from *Makefile*
+
+
+### System State ###
+
+bit array containig rew stages.
+
+### IO Port map ###
+
+ Defined type: **ioRec_t** array with size **DEFIO_IO_USED_COUNT** defined in 
+ *src/main/drivers/io.c*. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
+ particular *target.c* file.
+
+
+### Parameters ###
+
+ The code is comming from Cleanflight project and definitions are in *parameter_group.h*.
 
 ## planned steps ##
 

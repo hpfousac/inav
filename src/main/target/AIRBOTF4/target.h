@@ -72,12 +72,6 @@
 #define USE_PITOT_MS4525
 #define PITOT_I2C_BUS           BUS_I2C2
 
-#define M25P16_CS_PIN           PB3
-#define M25P16_SPI_BUS          BUS_SPI3
-
-#define USE_FLASHFS
-#define USE_FLASH_M25P16
-
 #define USE_VCP
 #define VBUS_SENSING_PIN        PC5
 #define VBUS_SENSING_ENABLED

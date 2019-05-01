@@ -453,22 +453,22 @@ void gpsEnablePassthrough(serialPort_t *gpsPassthroughPort)
     if (!(gpsState.gpsPort->mode & MODE_TX))
     serialSetMode(gpsState.gpsPort, gpsState.gpsPort->mode | MODE_TX);
 
-    LED0_OFF;
-    LED1_OFF;
+//    LED0_OFF;
+//    LED1_OFF;
 
     char c;
     while (1) {
         if (serialRxBytesWaiting(gpsState.gpsPort)) {
-            LED0_ON;
+//            LED0_ON;
             c = serialRead(gpsState.gpsPort);
             serialWrite(gpsPassthroughPort, c);
-            LED0_OFF;
+//            LED0_OFF;
         }
         if (serialRxBytesWaiting(gpsPassthroughPort)) {
-            LED1_ON;
+//            LED1_ON;
             c = serialRead(gpsPassthroughPort);
             serialWrite(gpsState.gpsPort, c);
-            LED1_OFF;
+//            LED1_OFF;
         }
     }
 }
@@ -478,7 +478,7 @@ void updateGpsIndicator(timeUs_t currentTimeUs)
     static timeUs_t GPSLEDTime;
     if ((int32_t)(currentTimeUs - GPSLEDTime) >= 0 && (gpsSol.numSat>= 5)) {
         GPSLEDTime = currentTimeUs + 150000;
-        LED1_TOGGLE;
+//        LED1_TOGGLE;
     }
 }
 

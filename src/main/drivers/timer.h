@@ -78,15 +78,15 @@ typedef struct timerDef_s {
 
 typedef enum {
     TIM_USE_ANY             = 0,
-    TIM_USE_PPM             = (1 << 0),
-    TIM_USE_PWM             = (1 << 1),
-    TIM_USE_MC_MOTOR        = (1 << 2),     // Multicopter motor output
-    TIM_USE_MC_SERVO        = (1 << 3),     // Multicopter servo output (i.e. TRI)
-    TIM_USE_MC_CHNFW        = (1 << 4),     // Multicopter servo output if channel forwarding is used
-    TIM_USE_FW_MOTOR        = (1 << 5),     // Fixed Wing Motor
+//    TIM_USE_PPM             = (1 << 0),
+//    TIM_USE_PWM             = (1 << 1),
+//    TIM_USE_MC_MOTOR        = (1 << 2),     // Multicopter motor output
+//    TIM_USE_MC_SERVO        = (1 << 3),     // Multicopter servo output (i.e. TRI)
+//    TIM_USE_MC_CHNFW        = (1 << 4),     // Multicopter servo output if channel forwarding is used
+//    TIM_USE_FW_MOTOR        = (1 << 5),     // Fixed Wing Motor
     TIM_USE_FW_SERVO        = (1 << 6),     // Fixed Wing Servo
-    TIM_USE_LED             = (1 << 24),
-    TIM_USE_BEEPER          = (1 << 25),
+//    TIM_USE_LED             = (1 << 24),
+//    TIM_USE_BEEPER          = (1 << 25),
 } timerUsageFlag_e;
 
 typedef struct timerHardware_s {

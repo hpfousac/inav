@@ -974,111 +974,6 @@ static void cliAdjustmentRange(char *cmdline)
     }
 }
 
-#ifndef USE_QUAD_MIXER_ONLY
-static void printMotorMix(uint8_t dumpMask, const motorMixer_t *customMotorMixer, const motorMixer_t *defaultCustomMotorMixer)
-{
-    const char *format = "mmix %d %s %s %s %s";
-    char buf0[FTOA_BUFFER_SIZE];
-    char buf1[FTOA_BUFFER_SIZE];
-    char buf2[FTOA_BUFFER_SIZE];
-    char buf3[FTOA_BUFFER_SIZE];
-    for (uint32_t i = 0; i < MAX_SUPPORTED_MOTORS; i++) {
-        if (customMotorMixer[i].throttle == 0.0f)
-            break;
-        const float thr = customMotorMixer[i].throttle;
-        const float roll = customMotorMixer[i].roll;
-        const float pitch = customMotorMixer[i].pitch;
-        const float yaw = customMotorMixer[i].yaw;
-        bool equalsDefault = false;
-        if (defaultCustomMotorMixer) {
-            const float thrDefault = defaultCustomMotorMixer[i].throttle;
-            const float rollDefault = defaultCustomMotorMixer[i].roll;
-            const float pitchDefault = defaultCustomMotorMixer[i].pitch;
-            const float yawDefault = defaultCustomMotorMixer[i].yaw;
-            const bool equalsDefault = thr == thrDefault && roll == rollDefault && pitch == pitchDefault && yaw == yawDefault;
-
-            cliDefaultPrintLinef(dumpMask, equalsDefault, format,
-                i,
-                ftoa(thrDefault, buf0),
-                ftoa(rollDefault, buf1),
-                ftoa(pitchDefault, buf2),
-                ftoa(yawDefault, buf3));
-        }
-        cliDumpPrintLinef(dumpMask, equalsDefault, format,
-            i,
-            ftoa(thr, buf0),
-            ftoa(roll, buf1),
-            ftoa(pitch, buf2),
-            ftoa(yaw, buf3));
-    }
-}
-
-static void cliMotorMix(char *cmdline)
-{
-    int check = 0;
-    uint8_t len;
-    const char *ptr;
-
-    if (isEmpty(cmdline)) {
-        printMotorMix(DUMP_MASTER, customMotorMixer(0), NULL);
-    } else if (sl_strncasecmp(cmdline, "reset", 5) == 0) {
-        // erase custom mixer
-        for (uint32_t i = 0; i < MAX_SUPPORTED_MOTORS; i++) {
-            customMotorMixerMutable(i)->throttle = 0.0f;
-        }
-    } else if (sl_strncasecmp(cmdline, "load", 4) == 0) {
-        ptr = nextArg(cmdline);
-        if (ptr) {
-            len = strlen(ptr);
-            for (uint32_t i = 0; ; i++) {
-                if (mixerNames[i] == NULL) {
-                    cliPrintLine("Invalid name");
-                    break;
-                }
-                if (sl_strncasecmp(ptr, mixerNames[i], len) == 0) {
-                    mixerLoadMix(i, customMotorMixerMutable(0));
-                    cliPrintLinef("Loaded %s", mixerNames[i]);
-                    cliMotorMix("");
-                    break;
-                }
-            }
-        }
-    } else {
-        ptr = cmdline;
-        uint32_t i = fastA2I(ptr); // get motor number
-        if (i < MAX_SUPPORTED_MOTORS) {
-            ptr = nextArg(ptr);
-            if (ptr) {
-                customMotorMixerMutable(i)->throttle = fastA2F(ptr);
-                check++;
-            }
-            ptr = nextArg(ptr);
-            if (ptr) {
-                customMotorMixerMutable(i)->roll = fastA2F(ptr);
-                check++;
-            }
-            ptr = nextArg(ptr);
-            if (ptr) {
-                customMotorMixerMutable(i)->pitch = fastA2F(ptr);
-                check++;
-            }
-            ptr = nextArg(ptr);
-            if (ptr) {
-                customMotorMixerMutable(i)->yaw = fastA2F(ptr);
-                check++;
-            }
-            if (check != 4) {
-                cliShowParseError();
-            } else {
-                printMotorMix(DUMP_MASTER, customMotorMixer(0), NULL);
-            }
-        } else {
-            cliShowArgumentRangeError("index", 0, MAX_SUPPORTED_MOTORS - 1);
-        }
-    }
-}
-#endif // USE_QUAD_MIXER_ONLY
-
 static void printRxRange(uint8_t dumpMask, const rxChannelRangeConfig_t *channelRangeConfigs, const rxChannelRangeConfig_t *defaultChannelRangeConfigs)
 {
     const char *format = "rxrange %u %u %u";
@@ -1791,89 +1686,6 @@ static void cliFeature(char *cmdline)
     }
 }
 
-#ifdef BEEPER
-static void printBeeper(uint8_t dumpMask, const beeperConfig_t *beeperConfig, const beeperConfig_t *beeperConfigDefault)
-{
-    const uint8_t beeperCount = beeperTableEntryCount();
-    const uint32_t mask = beeperConfig->beeper_off_flags;
-    const uint32_t defaultMask = beeperConfigDefault->beeper_off_flags;
-    for (int i = 0; i < beeperCount - 2; i++) {
-        const char *formatOff = "beeper -%s";
-        const char *formatOn = "beeper %s";
-        cliDefaultPrintLinef(dumpMask, ~(mask ^ defaultMask) & (1 << i), mask & (1 << i) ? formatOn : formatOff, beeperNameForTableIndex(i));
-        cliDumpPrintLinef(dumpMask, ~(mask ^ defaultMask) & (1 << i), mask & (1 << i) ? formatOff : formatOn, beeperNameForTableIndex(i));
-    }
-}
-
-static void cliBeeper(char *cmdline)
-{
-    uint32_t len = strlen(cmdline);
-    uint8_t beeperCount = beeperTableEntryCount();
-    uint32_t mask = getBeeperOffMask();
-
-    if (len == 0) {
-        cliPrintf("Disabled:");
-        for (int32_t i = 0; ; i++) {
-            if (i == beeperCount - 2){
-                if (mask == 0)
-                    cliPrint("  none");
-                break;
-            }
-            if (mask & (1 << (beeperModeForTableIndex(i) - 1)))
-                cliPrintf("  %s", beeperNameForTableIndex(i));
-        }
-        cliPrintLinefeed();
-    } else if (sl_strncasecmp(cmdline, "list", len) == 0) {
-        cliPrint("Available:");
-        for (uint32_t i = 0; i < beeperCount; i++)
-            cliPrintf("  %s", beeperNameForTableIndex(i));
-        cliPrintLinefeed();
-        return;
-    } else {
-        bool remove = false;
-        if (cmdline[0] == '-') {
-            remove = true;     // this is for beeper OFF condition
-            cmdline++;
-            len--;
-        }
-
-        for (uint32_t i = 0; ; i++) {
-            if (i == beeperCount) {
-                cliPrintLine("Invalid name");
-                break;
-            }
-            if (sl_strncasecmp(cmdline, beeperNameForTableIndex(i), len) == 0) {
-                if (remove) { // beeper off
-                    if (i == BEEPER_ALL-1)
-                        beeperOffSetAll(beeperCount-2);
-                    else
-                        if (i == BEEPER_PREFERENCE-1)
-                            setBeeperOffMask(getPreferredBeeperOffMask());
-                        else {
-                            mask = 1 << (beeperModeForTableIndex(i) - 1);
-                            beeperOffSet(mask);
-                        }
-                    cliPrint("Disabled");
-                }
-                else { // beeper on
-                    if (i == BEEPER_ALL-1)
-                        beeperOffClearAll();
-                    else
-                        if (i == BEEPER_PREFERENCE-1)
-                            setPreferredBeeperOffMask(getBeeperOffMask());
-                        else {
-                            mask = 1 << (beeperModeForTableIndex(i) - 1);
-                            beeperOffClear(mask);
-                        }
-                    cliPrint("Enabled");
-                }
-            cliPrintLinef(" %s", beeperNameForTableIndex(i));
-            break;
-            }
-        }
-    }
-}
-#endif
 
 static void printMap(uint8_t dumpMask, const rxConfig_t *rxConfig, const rxConfig_t *defaultRxConfig)
 {
@@ -1944,8 +1756,8 @@ static void cliRebootEx(bool bootLoader)
     bufWriterFlush(cliWriter);
     waitForSerialPortToFinishTransmitting(cliPort);
 
-    stopMotors();
-    stopPwmAllMotors();
+//    stopMotors();
+//    stopPwmAllMotors();
 
     delay(1000);
     if (bootLoader) {
@@ -2002,7 +1814,7 @@ static void cliExit(char *cmdline)
     bufferIndex = 0;
     cliMode = 0;
     // incase a motor was left running during motortest, clear it here
-    mixerResetDisarmedMotors();
+//    mixerResetDisarmedMotors();
     cliReboot();
 
     cliWriter = NULL;
@@ -2025,7 +1837,7 @@ static void cliMixer(char *cmdline)
     len = strlen(cmdline);
 
     if (len == 0) {
-        cliPrintLinef("Mixer: %s", mixerNames[mixerConfigMutable()->mixerMode - 1]);
+        cliPrintLinef("Mixer: UNSUPPORTED");
         return;
     } else if (sl_strncasecmp(cmdline, "list", len) == 0) {
         cliPrint("Available mixers: ");
@@ -2044,7 +1856,7 @@ static void cliMixer(char *cmdline)
             return;
         }
         if (sl_strncasecmp(cmdline, mixerNames[i], len) == 0) {
-            mixerConfigMutable()->mixerMode = i + 1;
+//            mixerConfigMutable()->mixerMode = i + 1;
             break;
         }
     }
@@ -2052,51 +1864,6 @@ static void cliMixer(char *cmdline)
     cliMixer("");
 }
 #endif
-
-static void cliMotor(char *cmdline)
-{
-    int motor_index = 0;
-    int motor_value = 0;
-    int index = 0;
-    char *pch = NULL;
-    char *saveptr;
-
-    if (isEmpty(cmdline)) {
-        cliShowParseError();
-
-        return;
-    }
-
-    pch = strtok_r(cmdline, " ", &saveptr);
-    while (pch != NULL) {
-        switch (index) {
-            case 0:
-                motor_index = fastA2I(pch);
-                break;
-            case 1:
-                motor_value = fastA2I(pch);
-                break;
-        }
-        index++;
-        pch = strtok_r(NULL, " ", &saveptr);
-    }
-
-    if (motor_index < 0 || motor_index >= MAX_SUPPORTED_MOTORS) {
-        cliShowArgumentRangeError("index", 0, MAX_SUPPORTED_MOTORS - 1);
-        return;
-    }
-
-    if (index == 2) {
-        if (motor_value < PWM_RANGE_MIN || motor_value > PWM_RANGE_MAX) {
-            cliShowArgumentRangeError("value", 1000, 2000);
-            return;
-        } else {
-            motor_disarmed[motor_index] = motor_value;
-        }
-    }
-
-    cliPrintLinef("motor %d: %d", motor_index, motor_disarmed[motor_index]);
-}
 
 static void printName(uint8_t dumpMask, const systemConfig_t * sConfig)
 {
@@ -2115,41 +1882,6 @@ static void cliName(char *cmdline)
     }
     printName(DUMP_MASTER, systemConfig());
 }
-
-#ifdef PLAY_SOUND
-static void cliPlaySound(char *cmdline)
-{
-    int i;
-    const char *name;
-    static int lastSoundIdx = -1;
-
-    if (isEmpty(cmdline)) {
-        i = lastSoundIdx + 1;     //next sound index
-        if ((name=beeperNameForTableIndex(i)) == NULL) {
-            while (true) {   //no name for index; try next one
-                if (++i >= beeperTableEntryCount())
-                    i = 0;   //if end then wrap around to first entry
-                if ((name=beeperNameForTableIndex(i)) != NULL)
-                    break;   //if name OK then play sound below
-                if (i == lastSoundIdx + 1) {     //prevent infinite loop
-                    cliPrintLine("Error playing sound");
-                    return;
-                }
-            }
-        }
-    } else {       //index value was given
-        i = fastA2I(cmdline);
-        if ((name=beeperNameForTableIndex(i)) == NULL) {
-            cliPrintLinef("No sound for index %d", i);
-            return;
-        }
-    }
-    lastSoundIdx = i;
-    beeperSilence();
-    cliPrintLinef("Playing sound %d: %s", i, name);
-    beeper(beeperModeForTableIndex(i));
-}
-#endif
 
 static void cliProfile(char *cmdline)
 {
@@ -2583,36 +2315,9 @@ static void printConfig(const char *cmdline, bool doDiff)
         cliPrintHashLine("resources");
         //printResource(dumpMask, &defaultConfig);
 
-#ifndef USE_QUAD_MIXER_ONLY
-        cliPrintHashLine("mixer");
-        const bool equalsDefault = mixerConfig_Copy.mixerMode == mixerConfig()->mixerMode;
-        const char *formatMixer = "mixer %s";
-        cliDefaultPrintLinef(dumpMask, equalsDefault, formatMixer, mixerNames[mixerConfig()->mixerMode - 1]);
-        cliDumpPrintLinef(dumpMask, equalsDefault, formatMixer, mixerNames[mixerConfig_Copy.mixerMode - 1]);
-
-        cliDumpPrintLinef(dumpMask, customMotorMixer(0)->throttle == 0.0f, "\r\nmmix reset\r\n");
-
-        printMotorMix(dumpMask, customMotorMixer_CopyArray, customMotorMixer(0));
-
-#ifdef USE_SERVOS
-        // print custom servo mixer if exists
-        cliPrintHashLine("servo mix");
-        cliDumpPrintLinef(dumpMask, customServoMixers(0)->rate == 0, "smix reset\r\n");
-        printServoMix(dumpMask, customServoMixers_CopyArray, customServoMixers(0));
-
-        // print servo parameters
-        cliPrintHashLine("servo");
-        printServo(dumpMask, servoParams_CopyArray, servoParams(0));
-#endif
-#endif
 
         cliPrintHashLine("feature");
         printFeature(dumpMask, &featureConfig_Copy, featureConfig());
-
-#ifdef BEEPER
-        cliPrintHashLine("beeper");
-        printBeeper(dumpMask, &beeperConfig_Copy, beeperConfig());
-#endif
 
         cliPrintHashLine("map");
         printMap(dumpMask, &rxConfig_Copy, rxConfig());
@@ -2714,10 +2419,6 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("assert", "", NULL, cliAssert),
 #endif
     CLI_COMMAND_DEF("aux", "configure modes", NULL, cliAux),
-#ifdef BEEPER
-    CLI_COMMAND_DEF("beeper", "turn on/off beeper", "list\r\n"
-            "\t<+|->[name]", cliBeeper),
-#endif
 #if defined(USE_BOOTLOG)
     CLI_COMMAND_DEF("bootlog", "show boot events", NULL, cliBootlog),
 #endif
@@ -2759,13 +2460,8 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("mixer", "configure mixer",
         "list\r\n"
         "\t<name>", cliMixer),
-    CLI_COMMAND_DEF("mmix", "custom motor mixer", NULL, cliMotorMix),
 #endif
-    CLI_COMMAND_DEF("motor",  "get/set motor", "<index> [<value>]", cliMotor),
     CLI_COMMAND_DEF("name", "name of craft", NULL, cliName),
-#ifdef PLAY_SOUND
-    CLI_COMMAND_DEF("play_sound", NULL, "[<index>]\r\n", cliPlaySound),
-#endif
     CLI_COMMAND_DEF("profile", "change profile",
         "[<index>]", cliProfile),
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)

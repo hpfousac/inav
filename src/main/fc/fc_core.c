@@ -109,31 +109,6 @@ static disarmReason_t lastDisarmReason = DISARM_NONE;
 
 bool isCalibrating(void)
 {
-#ifdef USE_BARO
-    if (sensors(SENSOR_BARO) && !baroIsCalibrationComplete()) {
-        return true;
-    }
-#endif
-
-#ifdef USE_PITOT
-    if (sensors(SENSOR_PITOT) && !pitotIsCalibrationComplete()) {
-        return true;
-    }
-#endif
-
-#ifdef USE_NAV
-    if (!navIsCalibrationComplete()) {
-        return true;
-    }
-#endif
-
-    if (!accIsCalibrationComplete() && sensors(SENSOR_ACC)) {
-        return true;
-    }
-
-    if (!gyroIsCalibrationComplete()) {
-        return true;
-    }
 
     return false;
 }
@@ -346,7 +321,6 @@ void mwDisarm(disarmReason_t disarmReason)
 
         statsOnDisarm();
 
-        beeper(BEEPER_DISARMING);      // emit disarm tone
     }
 }
 
@@ -391,15 +365,6 @@ void mwArm(void)
 #endif
         disarmAt = millis() + armingConfig()->auto_disarm_delay * 1000;   // start disarm timeout, will be extended when throttle is nonzero
 
-        //beep to indicate arming
-#ifdef USE_NAV
-        if (navigationPositionEstimateIsHealthy())
-            beeper(BEEPER_ARMING_GPS_FIX);
-        else
-            beeper(BEEPER_ARMING);
-#else
-        beeper(BEEPER_ARMING);
-#endif
         statsOnArm();
 
 #ifdef USE_RANGEFINDER
@@ -413,9 +378,6 @@ void mwArm(void)
         return;
     }
 
-    if (!ARMING_FLAG(ARMED)) {
-        beeperConfirmationBeeps(1);
-    }
 }
 
 void processRx(timeUs_t currentTimeUs)
@@ -458,7 +420,6 @@ void processRx(timeUs_t currentTimeUs)
                     armedBeeperOn = false;
                 } else {
                     // still armed; do warning beeps while armed
-                    beeper(BEEPER_ARMED);
                     armedBeeperOn = true;
                 }
             } else {
@@ -476,10 +437,8 @@ void processRx(timeUs_t currentTimeUs)
         } else {
             // arming is via AUX switch; beep while throttle low
             if (throttleStatus == THROTTLE_LOW) {
-                beeper(BEEPER_ARMED);
                 armedBeeperOn = true;
             } else if (armedBeeperOn) {
-                beeperSilence();
                 armedBeeperOn = false;
             }
         }
@@ -674,32 +633,6 @@ void filterRc(bool isRXDataNew)
     }
 }
 
-// Function for loop trigger
-void taskGyro(timeUs_t currentTimeUs) {
-    // getTaskDeltaTime() returns delta time frozen at the moment of entering the scheduler. currentTime is frozen at the very same point.
-    // To make busy-waiting timeout work we need to account for time spent within busy-waiting loop
-    const timeDelta_t currentDeltaTime = getTaskDeltaTime(TASK_SELF);
-    timeUs_t gyroUpdateUs = currentTimeUs;
-
-    if (gyroConfig()->gyroSync) {
-        while (true) {
-            gyroUpdateUs = micros();
-            if (gyroSyncCheckUpdate() || ((currentDeltaTime + cmpTimeUs(gyroUpdateUs, currentTimeUs)) >= (getGyroUpdateRate() + GYRO_WATCHDOG_DELAY))) {
-                break;
-            }
-        }
-    }
-
-    /* Update actual hardware readings */
-    gyroUpdate(currentDeltaTime + (timeDelta_t)(gyroUpdateUs - currentTimeUs));
-
-#ifdef USE_OPTICAL_FLOW
-    if (sensors(SENSOR_OPFLOW)) {
-        opflowGyroUpdateCallback((timeUs_t)currentDeltaTime + (gyroUpdateUs - currentTimeUs));
-    }
-#endif
-}
-
 static float calculateThrottleTiltCompensationFactor(uint8_t throttleTiltCompensationStrength)
 {
     if (throttleTiltCompensationStrength) {
@@ -714,22 +647,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 {
     cycleTime = getTaskDeltaTime(TASK_SELF);
     dT = (float)cycleTime * 0.000001f;
-
-#ifdef USE_ASYNC_GYRO_PROCESSING
-    if (getAsyncMode() == ASYNC_MODE_NONE) {
-        taskGyro(currentTimeUs);
-    }
-
-    if (getAsyncMode() != ASYNC_MODE_ALL && sensors(SENSOR_ACC)) {
-        imuUpdateAccelerometer();
-        imuUpdateAttitude(currentTimeUs);
-    }
-#else
-    /* Update gyroscope */
-    taskGyro(currentTimeUs);
-    imuUpdateAccelerometer();
-    imuUpdateAttitude(currentTimeUs);
-#endif
 
 
     annexCode();

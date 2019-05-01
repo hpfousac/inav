@@ -247,14 +247,15 @@ void taskSyncPwmDriver(timeUs_t currentTimeUs)
 #ifdef USE_ASYNC_GYRO_PROCESSING
 void taskAttitude(timeUs_t currentTimeUs)
 {
-    imuUpdateAttitude(currentTimeUs);
+    UNUSED(currentTimeUs);
+//    imuUpdateAttitude(currentTimeUs);
 }
 
 void taskAcc(timeUs_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
 
-    imuUpdateAccelerometer();
+//    imuUpdateAccelerometer();
 }
 #endif
 
