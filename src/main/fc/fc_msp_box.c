@@ -302,20 +302,6 @@ void packBoxModeFlags(boxBitmask_t * mspBoxModeFlags)
 
 uint16_t packSensorStatus(void)
 {
-    // Sensor bits
-    uint16_t sensorStatus =
-            IS_ENABLED(sensors(SENSOR_ACC))     << 0 |
-            IS_ENABLED(sensors(SENSOR_BARO))    << 1 |
-            IS_ENABLED(sensors(SENSOR_MAG))     << 2 |
-            IS_ENABLED(sensors(SENSOR_GPS))     << 3 |
-            IS_ENABLED(sensors(SENSOR_RANGEFINDER))   << 4 |
-            //IS_ENABLED(sensors(SENSOR_OPFLOW))  << 5 |
-            IS_ENABLED(sensors(SENSOR_PITOT))   << 6;
 
-    // Hardware failure indication bit
-    if (!isHardwareHealthy()) {
-        sensorStatus |= 1 << 15;        // Bit 15 of sensor bit field indicates hardware failure
-    }
-
-    return sensorStatus;
+    return 0;
 }

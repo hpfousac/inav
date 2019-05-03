@@ -84,6 +84,14 @@
 
 #include "config/feature.h"
 
+#undef USE_BLACKBOX
+#undef USE_PITOT
+#undef USE_TELEMETRY
+#undef USE_CMS
+#undef USE_DASHBOARD
+#undef USE_NAV
+#undef USE_GPS
+
 // June 2013     V2.2-dev
 
 enum {
@@ -139,17 +147,17 @@ static void updateArmingStatus(void)
 
             if (!calibratingFinishedBeep) {
                 calibratingFinishedBeep = true;
-                beeper(BEEPER_RUNTIME_CALIBRATION_DONE);
+//                beeper(BEEPER_RUNTIME_CALIBRATION_DONE);
             }
         }
 
         /* CHECK: RX signal */
-        if (!failsafeIsReceivingRxData()) {
-            ENABLE_ARMING_FLAG(ARMING_DISABLED_RC_LINK);
-        }
-        else {
-            DISABLE_ARMING_FLAG(ARMING_DISABLED_RC_LINK);
-        }
+        // if (!failsafeIsReceivingRxData()) {
+        //     ENABLE_ARMING_FLAG(ARMING_DISABLED_RC_LINK);
+        // }
+        // else {
+        //     DISABLE_ARMING_FLAG(ARMING_DISABLED_RC_LINK);
+        // }
 
         /* CHECK: Throttle */
         if (!armingConfig()->fixed_wing_auto_arm) {
@@ -223,45 +231,45 @@ static void updateArmingStatus(void)
         }
 
         /* CHECK: Arming switch */
-        if (!isUsingSticksForArming()) {
-            // If arming is disabled and the ARM switch is on
-            if (isArmingDisabled() && IS_RC_MODE_ACTIVE(BOXARM)) {
-                ENABLE_ARMING_FLAG(ARMING_DISABLED_ARM_SWITCH);
-            } else if (!IS_RC_MODE_ACTIVE(BOXARM)) {
-                DISABLE_ARMING_FLAG(ARMING_DISABLED_ARM_SWITCH);
-            }
-        }
+//        if (!isUsingSticksForArming()) {
+//            // If arming is disabled and the ARM switch is on
+//            if (isArmingDisabled() && IS_RC_MODE_ACTIVE(BOXARM)) {
+//                ENABLE_ARMING_FLAG(ARMING_DISABLED_ARM_SWITCH);
+//            } else if (!IS_RC_MODE_ACTIVE(BOXARM)) {
+//                DISABLE_ARMING_FLAG(ARMING_DISABLED_ARM_SWITCH);
+//            }
+//        }
 
         /* CHECK: BOXFAILSAFE */
-        if (IS_RC_MODE_ACTIVE(BOXFAILSAFE)) {
-            ENABLE_ARMING_FLAG(ARMING_DISABLED_BOXFAILSAFE);
-        }
-        else {
-            DISABLE_ARMING_FLAG(ARMING_DISABLED_BOXFAILSAFE);
-        }
+        // if (IS_RC_MODE_ACTIVE(BOXFAILSAFE)) {
+        //     ENABLE_ARMING_FLAG(ARMING_DISABLED_BOXFAILSAFE);
+        // }
+        // else {
+        //     DISABLE_ARMING_FLAG(ARMING_DISABLED_BOXFAILSAFE);
+        // }
 
         /* CHECK: BOXFAILSAFE */
-        if (IS_RC_MODE_ACTIVE(BOXKILLSWITCH)) {
-            ENABLE_ARMING_FLAG(ARMING_DISABLED_BOXKILLSWITCH);
-        }
-        else {
-            DISABLE_ARMING_FLAG(ARMING_DISABLED_BOXKILLSWITCH);
-        }
+        // if (IS_RC_MODE_ACTIVE(BOXKILLSWITCH)) {
+        //     ENABLE_ARMING_FLAG(ARMING_DISABLED_BOXKILLSWITCH);
+        // }
+        // else {
+        //     DISABLE_ARMING_FLAG(ARMING_DISABLED_BOXKILLSWITCH);
+        // }
         /* CHECK: Do not allow arming if Servo AutoTrim is enabled */
-        if (IS_RC_MODE_ACTIVE(BOXAUTOTRIM)) {
-	    ENABLE_ARMING_FLAG(ARMING_DISABLED_SERVO_AUTOTRIM);
-	    } 
-        else {
-	    DISABLE_ARMING_FLAG(ARMING_DISABLED_SERVO_AUTOTRIM);
-	    }
+        // if (IS_RC_MODE_ACTIVE(BOXAUTOTRIM)) {
+	    // ENABLE_ARMING_FLAG(ARMING_DISABLED_SERVO_AUTOTRIM);
+	    // } 
+        // else {
+	    // DISABLE_ARMING_FLAG(ARMING_DISABLED_SERVO_AUTOTRIM);
+	    // }
 
-        if (isArmingDisabled()) {
-            warningLedFlash();
-        } else {
-            warningLedDisable();
-        }
+        // if (isArmingDisabled()) {
+        //     warningLedFlash();
+        // } else {
+        //     warningLedDisable();
+        // }
 
-        warningLedUpdate();
+        // warningLedUpdate();
     }
 }
 
@@ -269,11 +277,11 @@ void annexCode(void)
 {
     int32_t throttleValue;
 
-    if (failsafeShouldApplyControlInput()) {
-        // Failsafe will apply rcCommand for us
-        failsafeApplyControlInput();
-    }
-    else {
+//    if (failsafeShouldApplyControlInput()) {
+//        // Failsafe will apply rcCommand for us
+//        failsafeApplyControlInput();
+//    }
+//    else {
         // Compute ROLL PITCH and YAW command
         rcCommand[ROLL] = getAxisRcCommand(rcData[ROLL], FLIGHT_MODE(MANUAL_MODE) ? currentControlRateProfile->manual.rcExpo8 : currentControlRateProfile->stabilized.rcExpo8, rcControlsConfig()->deadband);
         rcCommand[PITCH] = getAxisRcCommand(rcData[PITCH], FLIGHT_MODE(MANUAL_MODE) ? currentControlRateProfile->manual.rcExpo8 : currentControlRateProfile->stabilized.rcExpo8, rcControlsConfig()->deadband);
@@ -292,19 +300,19 @@ void annexCode(void)
         rcCommand[THROTTLE] = rcLookupThrottle(throttleValue);
 
         // Signal updated rcCommand values to Failsafe system
-        failsafeUpdateRcCommandValues();
+//        failsafeUpdateRcCommandValues();
 
         if (FLIGHT_MODE(HEADFREE_MODE)) {
-            const float radDiff = degreesToRadians(DECIDEGREES_TO_DEGREES(attitude.values.yaw) - headFreeModeHold);
+            const float radDiff = degreesToRadians(DECIDEGREES_TO_DEGREES(0) - headFreeModeHold);
             const float cosDiff = cos_approx(radDiff);
             const float sinDiff = sin_approx(radDiff);
             const int16_t rcCommand_PITCH = rcCommand[PITCH] * cosDiff + rcCommand[ROLL] * sinDiff;
             rcCommand[ROLL] = rcCommand[ROLL] * cosDiff - rcCommand[PITCH] * sinDiff;
             rcCommand[PITCH] = rcCommand_PITCH;
         }
-    }
+//    }
 
-    updateArmingStatus();
+//    updateArmingStatus();
 }
 
 void mwDisarm(disarmReason_t disarmReason)
@@ -350,9 +358,9 @@ void mwArm(void)
 
         ENABLE_ARMING_FLAG(ARMED);
         ENABLE_ARMING_FLAG(WAS_EVER_ARMED);
-        headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw);
+        headFreeModeHold = DECIDEGREES_TO_DEGREES(0);
 
-        resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(attitude.values.yaw));
+        resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
 
 #ifdef USE_BLACKBOX
         if (feature(FEATURE_BLACKBOX)) {
@@ -384,7 +392,7 @@ void processRx(timeUs_t currentTimeUs)
 {
     static bool armedBeeperOn = false;
 
-    calculateRxChannelsAndUpdateFailsafe(currentTimeUs);
+//    calculateRxChannelsAndUpdateFailsafe(currentTimeUs);
 
     // in 3D mode, we need to be able to disarm by switch at any time
     if (feature(FEATURE_3D)) {
@@ -392,14 +400,14 @@ void processRx(timeUs_t currentTimeUs)
             mwDisarm(DISARM_SWITCH_3D);
     }
 
-    updateRSSI(currentTimeUs);
+//    updateRSSI(currentTimeUs);
 
     // Update failsafe monitoring system
-    if (currentTimeUs > FAILSAFE_POWER_ON_DELAY_US && !failsafeIsMonitoring()) {
-        failsafeStartMonitoring();
-    }
+    // if (currentTimeUs > FAILSAFE_POWER_ON_DELAY_US && !failsafeIsMonitoring()) {
+    //            failsafeStartMonitoring();
+    // }
 
-    failsafeUpdateState();
+//    failsafeUpdateState();
 
     const throttleStatus_e throttleStatus = calculateThrottleStatus();
 
@@ -429,18 +437,18 @@ void processRx(timeUs_t currentTimeUs)
                     disarmAt = millis() + armingConfig()->auto_disarm_delay * 1000;
                 }
 
-                if (armedBeeperOn) {
-                    beeperSilence();
-                    armedBeeperOn = false;
-                }
+                // if (armedBeeperOn) {
+                //     beeperSilence();
+                //     armedBeeperOn = false;
+                // }
             }
         } else {
             // arming is via AUX switch; beep while throttle low
-            if (throttleStatus == THROTTLE_LOW) {
-                armedBeeperOn = true;
-            } else if (armedBeeperOn) {
-                armedBeeperOn = false;
-            }
+            // if (throttleStatus == THROTTLE_LOW) {
+            //     armedBeeperOn = true;
+            // } else if (armedBeeperOn) {
+            //     armedBeeperOn = false;
+            // }
         }
     }
 
@@ -455,16 +463,16 @@ void processRx(timeUs_t currentTimeUs)
 
     bool canUseHorizonMode = true;
 
-    if ((IS_RC_MODE_ACTIVE(BOXANGLE) || failsafeRequiresAngleMode() || navigationRequiresAngleMode()) && sensors(SENSOR_ACC)) {
-        // bumpless transfer to Level mode
-        canUseHorizonMode = false;
-
-        if (!FLIGHT_MODE(ANGLE_MODE)) {
-            ENABLE_FLIGHT_MODE(ANGLE_MODE);
-        }
-    } else {
-        DISABLE_FLIGHT_MODE(ANGLE_MODE); // failsafe support
-    }
+//    if ((IS_RC_MODE_ACTIVE(BOXANGLE) || failsafeRequiresAngleMode() || navigationRequiresAngleMode()) && sensors(SENSOR_ACC)) {
+//        // bumpless transfer to Level mode
+//        canUseHorizonMode = false;
+//
+//        if (!FLIGHT_MODE(ANGLE_MODE)) {
+//            ENABLE_FLIGHT_MODE(ANGLE_MODE);
+//        }
+//    } else {
+//        DISABLE_FLIGHT_MODE(ANGLE_MODE); // failsafe support
+//    }
 
     if (IS_RC_MODE_ACTIVE(BOXHORIZON) && canUseHorizonMode) {
 
@@ -508,7 +516,7 @@ void processRx(timeUs_t currentTimeUs)
     if (sensors(SENSOR_ACC)) {
         if (IS_RC_MODE_ACTIVE(BOXHEADINGHOLD)) {
             if (!FLIGHT_MODE(HEADING_MODE)) {
-                resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(attitude.values.yaw));
+                resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
                 ENABLE_FLIGHT_MODE(HEADING_MODE);
             }
         } else {
@@ -526,57 +534,57 @@ void processRx(timeUs_t currentTimeUs)
             DISABLE_FLIGHT_MODE(HEADFREE_MODE);
         }
         if (IS_RC_MODE_ACTIVE(BOXHEADADJ)) {
-            headFreeModeHold = DECIDEGREES_TO_DEGREES(attitude.values.yaw); // acquire new heading
+            headFreeModeHold = DECIDEGREES_TO_DEGREES(0); // acquire new heading
         }
     }
 #endif
 
     // Handle passthrough mode
-    if (STATE(FIXED_WING)) {
-        if ((IS_RC_MODE_ACTIVE(BOXMANUAL) && !navigationRequiresAngleMode() && !failsafeRequiresAngleMode()) ||    // Normal activation of passthrough
-            (!ARMING_FLAG(ARMED) && isCalibrating())){                                                              // Backup - if we are not armed - enforce passthrough while calibrating
-            ENABLE_FLIGHT_MODE(MANUAL_MODE);
-        } else {
-            DISABLE_FLIGHT_MODE(MANUAL_MODE);
-        }
-    }
+//    if (STATE(FIXED_WING)) {
+//        if ((IS_RC_MODE_ACTIVE(BOXMANUAL) && !navigationRequiresAngleMode() && !failsafeRequiresAngleMode()) ||    // Normal activation of passthrough
+//            (!ARMING_FLAG(ARMED) && isCalibrating())){                                                              // Backup - if we are not armed - enforce passthrough while calibrating
+//            ENABLE_FLIGHT_MODE(MANUAL_MODE);
+//        } else {
+//            DISABLE_FLIGHT_MODE(MANUAL_MODE);
+//        }
+//    }
 
     /* In airmode Iterm should be prevented to grow when Low thottle and Roll + Pitch Centered.
        This is needed to prevent Iterm winding on the ground, but keep full stabilisation on 0 throttle while in air
        Low Throttle + roll and Pitch centered is assuming the copter is on the ground. Done to prevent complex air/ground detections */
     if (FLIGHT_MODE(MANUAL_MODE) || !ARMING_FLAG(ARMED)) {
         /* In MANUAL mode we reset integrators prevent I-term wind-up (PID output is not used in MANUAL) */
-        pidResetErrorAccumulators();
+//        pidResetErrorAccumulators();
     }
     else {
         if (throttleStatus == THROTTLE_LOW) {
-            if (isAirmodeActive() && !failsafeIsActive() && ARMING_FLAG(ARMED)) {
-                rollPitchStatus_e rollPitchStatus = calculateRollPitchCenterStatus();
-
-                // ANTI_WINDUP at centred stick with MOTOR_STOP is needed on MRs and not needed on FWs
-                if ((rollPitchStatus == CENTERED) || (feature(FEATURE_MOTOR_STOP) && !STATE(FIXED_WING))) {
-                    ENABLE_STATE(ANTI_WINDUP);
-                }
-                else {
-                    DISABLE_STATE(ANTI_WINDUP);
-                }
-            }
-            else {
-                DISABLE_STATE(ANTI_WINDUP);
-                pidResetErrorAccumulators();
-            }
-        }
-        else {
-            DISABLE_STATE(ANTI_WINDUP);
+//            if (isAirmodeActive() && !failsafeIsActive() && ARMING_FLAG(ARMED)) {
+//                rollPitchStatus_e rollPitchStatus = calculateRollPitchCenterStatus();/
+//
+//                // ANTI_WINDUP at centred stick with MOTOR_STOP is needed on MRs and not needed on FWs
+//                if ((rollPitchStatus == CENTERED) || (feature(FEATURE_MOTOR_STOP) && !STATE(FIXED_WING))) {
+//                    ENABLE_STATE(ANTI_WINDUP);
+//                }
+//                else {
+//                    DISABLE_STATE(ANTI_WINDUP);
+//                }
+//            }
+//            else {
+//                DISABLE_STATE(ANTI_WINDUP);
+//                pidResetErrorAccumulators();
+//            }
+//        }
+//        else {
+//            DISABLE_STATE(ANTI_WINDUP);
         }
     }
 
-    if (mixerConfig()->mixerMode == MIXER_FLYING_WING || mixerConfig()->mixerMode == MIXER_AIRPLANE || mixerConfig()->mixerMode == MIXER_CUSTOM_AIRPLANE) {
-        DISABLE_FLIGHT_MODE(HEADFREE_MODE);
-    }
+//    if (mixerConfig()->mixerMode == MIXER_FLYING_WING || mixerConfig()->mixerMode == MIXER_AIRPLANE || mixerConfig()->mixerMode == MIXER_CUSTOM_AIRPLANE) {
+//        DISABLE_FLIGHT_MODE(HEADFREE_MODE);
+//    }
 
 #if defined(AUTOTUNE_FIXED_WING) || defined(AUTOTUNE_MULTIROTOR)
-    autotuneUpdateState();
+//    autotuneUpdateState();
 #endif
 
 #ifdef USE_TELEMETRY
@@ -605,7 +613,7 @@ void filterRc(bool isRXDataNew)
 
     // Calculate average cycle time (1Hz LPF on cycle time)
     if (!filterInitialised) {
-        biquadFilterInitLPF(&filteredCycleTimeState, 1, getPidUpdateRate());
+        // biquadFilterInitLPF(&filteredCycleTimeState, 1, getPidUpdateRate());
         filterInitialised = true;
     }
 
@@ -739,9 +747,9 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
 #endif
 
-    if (motorControlEnable) {
-        writeMotors();
-    }
+//    if (motorControlEnable) {
+//        writeMotors();
+//    }
 
 #ifdef USE_SDCARD
     afatfs_poll();

@@ -69,10 +69,21 @@ bit array containig rew stages.
  *src/main/drivers/io.c*. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
  particular *target.c* file.
 
-
-### Parameters ###
+### Configuration and Parameters ###
 
  The code is comming from Cleanflight project and definitions are in *parameter_group.h*.
+
+ Discover how configuration is stored in persistent store.
+
+### Tasks ###
+
+ In **fc_tasks** there is table containing tasks including its enable, disabe during boot.
+
+ Check for **cfTask_t**
+
+### Features ###
+
+ See **feature()** function. It looks like bitmask.
 
 ## planned steps ##
 
@@ -81,7 +92,6 @@ bit array containig rew stages.
  * add commands (set get) to CLI (possible to change it)
 
  * ported to SP3RACING, BLUEPILL
-
 
 # Elimination unnecessary code as discovered in On branch extractPpmIn #
 
@@ -109,6 +119,31 @@ bit array containig rew stages.
 
   Probably found typo: <USE_PMW_SERVO_DRIVER>
 
-Best practice/way (recomandations)
+# Best practice/way (recomendations) #
 
  Step by step disable one *USE_* then another and see what happens, and or if code is compilable
+
+# Other #
+
+## Compile-time Symbols ##
+
+Some of them are defined somewhere else from *TARGET* and **Makefile**.
+
+USE_ASYNC_GYRO_PROCESSING
+USE_BLACKBOX
+USE_GPS
+USE_NAV
+NAV_NON_VOLATILE_WAYPOINT_STORAGE
+USE_PITOT
+USE_PMW_SERVO_DRIVER
+USE_QUAD_MIXER_ONLY
+
+
+## Config arrays/blocks ##
+
+ Here should be detected **_System** and **_Mutable** and ...
+
+gyroConfig
+navConfig
+rcControlsConfig
+telemetryConfig

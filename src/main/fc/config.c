@@ -160,13 +160,13 @@ uint32_t getPidUpdateRate(void)
         return gyroConfig()->looptime;
     }
 #else
-    return gyro.targetLooptime;
+//    return gyro.targetLooptime;
 #endif
 }
 
 timeDelta_t getGyroUpdateRate(void)
 {
-    return gyro.targetLooptime;
+//    return gyro.targetLooptime;
 }
 
 uint16_t getAccUpdateRate(void)
@@ -180,7 +180,7 @@ uint16_t getAccUpdateRate(void)
     }
 #else
     // ACC updated at same frequency in taskMainPidLoop in mw.c
-    return gyro.targetLooptime;
+//    return gyro.targetLooptime;
 #endif
 }
 
@@ -200,16 +200,16 @@ uint8_t getAsyncMode(void) {
 
 void validateAndFixConfig(void)
 {
-#ifdef USE_GYRO_NOTCH_1
-    if (gyroConfig()->gyro_soft_notch_cutoff_1 >= gyroConfig()->gyro_soft_notch_hz_1) {
-        gyroConfigMutable()->gyro_soft_notch_hz_1 = 0;
-    }
-#endif
-#ifdef USE_GYRO_NOTCH_2
-    if (gyroConfig()->gyro_soft_notch_cutoff_2 >= gyroConfig()->gyro_soft_notch_hz_2) {
-        gyroConfigMutable()->gyro_soft_notch_hz_2 = 0;
-    }
-#endif
+// #ifdef USE_GYRO_NOTCH_1
+//     if (gyroConfig()->gyro_soft_notch_cutoff_1 >= gyroConfig()->gyro_soft_notch_hz_1) {
+//         gyroConfigMutable()->gyro_soft_notch_hz_1 = 0;
+//     }
+// #endif
+// #ifdef USE_GYRO_NOTCH_2
+//     if (gyroConfig()->gyro_soft_notch_cutoff_2 >= gyroConfig()->gyro_soft_notch_hz_2) {
+//         gyroConfigMutable()->gyro_soft_notch_hz_2 = 0;
+//     }
+// #endif
 #ifdef USE_DTERM_NOTCH
     if (pidProfile()->dterm_soft_notch_cutoff >= pidProfile()->dterm_soft_notch_hz) {
         pidProfileMutable()->dterm_soft_notch_hz = 0;
@@ -277,15 +277,15 @@ void validateAndFixConfig(void)
     if (featureConfigured(FEATURE_GPS)) {
         // avoid overloading the CPU when looptime < 2000 and GPS
         uint8_t denominatorLimit = 2;
-        if (gyroConfig()->gyro_lpf == 0) {
-            denominatorLimit = 16;
-        }
-        if (gyroConfig()->gyroSyncDenominator < denominatorLimit) {
-            gyroConfigMutable()->gyroSyncDenominator = denominatorLimit;
-        }
-        if (gyroConfig()->looptime < 2000) {
-            gyroConfigMutable()->looptime = 2000;
-        }
+        // if (gyroConfig()->gyro_lpf == 0) {
+        //     denominatorLimit = 16;
+        // }
+        // if (gyroConfig()->gyroSyncDenominator < denominatorLimit) {
+        //     gyroConfigMutable()->gyroSyncDenominator = denominatorLimit;
+        // }
+        // if (gyroConfig()->looptime < 2000) {
+        //     gyroConfigMutable()->looptime = 2000;
+        // }
     }
 #endif
 
@@ -394,14 +394,14 @@ void validateAndFixConfig(void)
 #endif
 
 #if !defined(USE_MPU_DATA_READY_SIGNAL)
-    gyroConfigMutable()->gyroSync = false;
-    systemConfigMutable()->asyncMode = ASYNC_MODE_NONE;
+//    gyroConfigMutable()->gyroSync = false;
+//    systemConfigMutable()->asyncMode = ASYNC_MODE_NONE;
 #endif
 }
 
 void applyAndSaveBoardAlignmentDelta(int16_t roll, int16_t pitch)
 {
-    updateBoardAlignment(roll, pitch);
+//    updateBoardAlignment(roll, pitch);
     saveConfigAndNotify();
 }
 
@@ -447,17 +447,17 @@ static void activateConfig(void)
 
     updateUsedModeActivationConditionFlags();
 
-    failsafeReset();
+//    failsafeReset();
 
-    accSetCalibrationValues();
-    accInitFilters();
+//    accSetCalibrationValues();
+//    accInitFilters();
 
-    imuConfigure();
+//    imuConfigure();
 
-    pidInit();
+//    pidInit();
 
 #ifdef USE_NAV
-    navigationUsePIDs();
+//    navigationUsePIDs();
 #endif
 }
 
@@ -475,7 +475,7 @@ void readEEPROM(void)
     validateAndFixConfig();
     activateConfig();
 
-    resumeRxSignal();
+//    resumeRxSignal();
 }
 
 void writeEEPROM(void)
@@ -505,7 +505,7 @@ void saveConfigAndNotify(void)
 {
     writeEEPROM();
     readEEPROM();
-    beeperConfirmationBeeps(1);
+//    beeperConfirmationBeeps(1);
 }
 
 uint8_t getConfigProfile(void)
@@ -536,45 +536,45 @@ void setConfigProfileAndWriteEEPROM(uint8_t profileIndex)
         writeEEPROM();
         readEEPROM();
     }
-    beeperConfirmationBeeps(profileIndex + 1);
+//    beeperConfirmationBeeps(profileIndex + 1);
 }
 
 void beeperOffSet(uint32_t mask)
 {
-    beeperConfigMutable()->beeper_off_flags |= mask;
+//    beeperConfigMutable()->beeper_off_flags |= mask;
 }
 
 void beeperOffSetAll(uint8_t beeperCount)
 {
-    beeperConfigMutable()->beeper_off_flags = (1 << beeperCount) -1;
+//    beeperConfigMutable()->beeper_off_flags = (1 << beeperCount) -1;
 }
 
 void beeperOffClear(uint32_t mask)
 {
-    beeperConfigMutable()->beeper_off_flags &= ~(mask);
+//   beeperConfigMutable()->beeper_off_flags &= ~(mask);
 }
 
 void beeperOffClearAll(void)
 {
-    beeperConfigMutable()->beeper_off_flags = 0;
+//    beeperConfigMutable()->beeper_off_flags = 0;
 }
 
 uint32_t getBeeperOffMask(void)
 {
-    return beeperConfig()->beeper_off_flags;
+//    return beeperConfig()->beeper_off_flags;
 }
 
 void setBeeperOffMask(uint32_t mask)
 {
-    beeperConfigMutable()->beeper_off_flags = mask;
+//    beeperConfigMutable()->beeper_off_flags = mask;
 }
 
 uint32_t getPreferredBeeperOffMask(void)
 {
-    return beeperConfig()->preferred_beeper_off_flags;
+//    return beeperConfig()->preferred_beeper_off_flags;
 }
 
 void setPreferredBeeperOffMask(uint32_t mask)
 {
-    beeperConfigMutable()->preferred_beeper_off_flags = mask;
+//    beeperConfigMutable()->preferred_beeper_off_flags = mask;
 }

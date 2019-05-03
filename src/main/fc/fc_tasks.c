@@ -83,6 +83,10 @@
 
 #include "uav_interconnect/uav_interconnect.h"
 
+#undef USE_PITOT
+#undef USE_TELEMETRY
+#undef USE_DASHBOARD
+
 void taskHandleSerial(timeUs_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
@@ -115,7 +119,7 @@ void taskUpdateBattery(timeUs_t currentTimeUs)
 void taskUpdateTemperature(timeUs_t currentTimeUs)
 {
     UNUSED(currentTimeUs);
-    temperatureUpdate();
+//    temperatureUpdate();
 }
 
 #ifdef USE_GPS
@@ -128,9 +132,9 @@ void taskProcessGPS(timeUs_t currentTimeUs)
         gpsThread();
     }
 
-    if (sensors(SENSOR_GPS)) {
-        updateGpsIndicator(currentTimeUs);
-    }
+//    if (sensors(SENSOR_GPS)) {
+//        updateGpsIndicator(currentTimeUs);
+//    }
 }
 #endif
 
@@ -270,15 +274,15 @@ void taskUpdateOsd(timeUs_t currentTimeUs)
 
 #ifdef VTX_CONTROL
 // Everything that listens to VTX devices
-void taskVtxControl(timeUs_t currentTimeUs)
-{
-    if (ARMING_FLAG(ARMED))
-        return;
+//void taskVtxControl(timeUs_t currentTimeUs)
+//{
+//    if (ARMING_FLAG(ARMED))
+//        return;
 
-#ifdef VTX_COMMON
-    vtxCommonProcess(currentTimeUs);
-#endif
-}
+//#ifdef VTX_COMMON
+//    vtxCommonProcess(currentTimeUs);
+//#endif
+//}
 #endif
 
 void fcTasksInit(void)
@@ -289,10 +293,10 @@ void fcTasksInit(void)
     rescheduleTask(TASK_PID, getPidUpdateRate());
     setTaskEnabled(TASK_PID, true);
 
-    if (getAsyncMode() != ASYNC_MODE_NONE) {
-        rescheduleTask(TASK_GYRO, getGyroUpdateRate());
-        setTaskEnabled(TASK_GYRO, true);
-    }
+//    if (getAsyncMode() != ASYNC_MODE_NONE) {
+//        rescheduleTask(TASK_GYRO, getGyroUpdateRate());
+//        setTaskEnabled(TASK_GYRO, true);
+//    }
 
     if (getAsyncMode() == ASYNC_MODE_ALL && sensors(SENSOR_ACC)) {
         rescheduleTask(TASK_ACC, getAccUpdateRate());
@@ -303,8 +307,8 @@ void fcTasksInit(void)
     }
 
 #else
-    rescheduleTask(TASK_GYROPID, getGyroUpdateRate());
-    setTaskEnabled(TASK_GYROPID, true);
+//    rescheduleTask(TASK_GYROPID, getGyroUpdateRate());
+ //   setTaskEnabled(TASK_GYROPID, true);
 #endif
 
     setTaskEnabled(TASK_SERIAL, true);
@@ -315,10 +319,10 @@ void fcTasksInit(void)
     setTaskEnabled(TASK_LIGHTS, true);
 #endif
     setTaskEnabled(TASK_BATTERY, feature(FEATURE_VBAT) || feature(FEATURE_CURRENT_METER));
-    setTaskEnabled(TASK_TEMPERATURE, true);
+//    setTaskEnabled(TASK_TEMPERATURE, true);
     setTaskEnabled(TASK_RX, true);
 #ifdef USE_GPS
-    setTaskEnabled(TASK_GPS, feature(FEATURE_GPS));
+//    setTaskEnabled(TASK_GPS, feature(FEATURE_GPS));
 #endif
 #ifdef USE_MAG
     setTaskEnabled(TASK_COMPASS, sensors(SENSOR_MAG));
@@ -366,7 +370,7 @@ void fcTasksInit(void)
 #endif
 #ifdef VTX_CONTROL
 #if defined(VTX_SMARTAUDIO) || defined(VTX_TRAMP)
-    setTaskEnabled(TASK_VTXCTRL, true);
+//    setTaskEnabled(TASK_VTXCTRL, true);
 #endif
 #endif
 #ifdef USE_UAV_INTERCONNECT
@@ -378,7 +382,9 @@ void fcTasksInit(void)
 }
 
 cfTask_t cfTasks[TASK_COUNT] = {
-    [TASK_SYSTEM] = {
+// -dd- TODO: Check this syntax, what it means. Check .E output
+
+    [TASK_SYSTEM] = {  // -dd-: Ze by to byl index?
         .taskName = "SYSTEM",
         .taskFunc = taskSystem,
         .desiredPeriod = TASK_PERIOD_HZ(10),              // run every 100 ms, 10Hz
@@ -393,26 +399,26 @@ cfTask_t cfTasks[TASK_COUNT] = {
             .staticPriority = TASK_PRIORITY_HIGH,
         },
 
-        [TASK_GYRO] = {
-            .taskName = "GYRO",
-            .taskFunc = taskGyro,
-            .desiredPeriod = TASK_PERIOD_HZ(1000), //Run at 1000Hz
-            .staticPriority = TASK_PRIORITY_REALTIME,
-        },
+//        [TASK_GYRO] = {
+//            .taskName = "GYRO",
+//            .taskFunc = taskGyro,
+//            .desiredPeriod = TASK_PERIOD_HZ(1000), //Run at 1000Hz
+//            .staticPriority = TASK_PRIORITY_REALTIME,
+//        },
 
-        [TASK_ACC] = {
-            .taskName = "ACC",
-            .taskFunc = taskAcc,
-            .desiredPeriod = TASK_PERIOD_HZ(520), //520Hz is ACC bandwidth (260Hz) * 2
-            .staticPriority = TASK_PRIORITY_HIGH,
-        },
+//        [TASK_ACC] = {
+//            .taskName = "ACC",
+//            .taskFunc = taskAcc,
+//            .desiredPeriod = TASK_PERIOD_HZ(520), //520Hz is ACC bandwidth (260Hz) * 2
+//            .staticPriority = TASK_PRIORITY_HIGH,
+//        },
 
-        [TASK_ATTI] = {
-            .taskName = "ATTITUDE",
-            .taskFunc = taskAttitude,
-            .desiredPeriod = TASK_PERIOD_HZ(60), //With acc LPF at 15Hz 60Hz attitude refresh should be enough
-            .staticPriority = TASK_PRIORITY_HIGH,
-        },
+//        [TASK_ATTI] = {
+//            .taskName = "ATTITUDE",
+//            .taskFunc = taskAttitude,
+//            .desiredPeriod = TASK_PERIOD_HZ(60), //With acc LPF at 15Hz 60Hz attitude refresh should be enough
+//            .staticPriority = TASK_PRIORITY_HIGH,
+//        },
 
     #else
 
@@ -421,12 +427,12 @@ cfTask_t cfTasks[TASK_COUNT] = {
          * for 64kB targets and other smaller targets
          */
 
-        [TASK_GYROPID] = {
-            .taskName = "GYRO/PID",
-            .taskFunc = taskMainPidLoop,
-            .desiredPeriod = TASK_PERIOD_US(1000),
-            .staticPriority = TASK_PRIORITY_REALTIME,
-        },
+//        [TASK_GYROPID] = {
+//            .taskName = "GYRO/PID",
+//            .taskFunc = taskMainPidLoop,
+//            .desiredPeriod = TASK_PERIOD_US(1000),
+//            .staticPriority = TASK_PRIORITY_REALTIME,
+//        },
     #endif
 
     [TASK_SERIAL] = {
@@ -454,19 +460,19 @@ cfTask_t cfTasks[TASK_COUNT] = {
     },
 #endif
 
-    [TASK_BATTERY] = {
-        .taskName = "BATTERY",
-        .taskFunc = taskUpdateBattery,
-        .desiredPeriod = TASK_PERIOD_HZ(50),      // 50 Hz
-        .staticPriority = TASK_PRIORITY_MEDIUM,
-    },
+//    [TASK_BATTERY] = {
+//        .taskName = "BATTERY",
+//        .taskFunc = taskUpdateBattery,
+//        .desiredPeriod = TASK_PERIOD_HZ(50),      // 50 Hz
+//        .staticPriority = TASK_PRIORITY_MEDIUM,
+//    },
 
-    [TASK_TEMPERATURE] = {
-        .taskName = "TEMPERATURE",
-        .taskFunc = taskUpdateTemperature,
-        .desiredPeriod = TASK_PERIOD_HZ(1),       // 1 Hz
-        .staticPriority = TASK_PRIORITY_LOW,
-    },
+//    [TASK_TEMPERATURE] = {
+//        .taskName = "TEMPERATURE",
+//        .taskFunc = taskUpdateTemperature,
+//        .desiredPeriod = TASK_PERIOD_HZ(1),       // 1 Hz
+//        .staticPriority = TASK_PRIORITY_LOW,
+//    },
 
     [TASK_RX] = {
         .taskName = "RX",
@@ -477,12 +483,12 @@ cfTask_t cfTasks[TASK_COUNT] = {
     },
 
 #ifdef USE_GPS
-    [TASK_GPS] = {
-        .taskName = "GPS",
-        .taskFunc = taskProcessGPS,
-        .desiredPeriod = TASK_PERIOD_HZ(25),      // GPS usually don't go raster than 10Hz
-        .staticPriority = TASK_PRIORITY_MEDIUM,
-    },
+//    [TASK_GPS] = {
+//        .taskName = "GPS",
+//        .taskFunc = taskProcessGPS,
+//        .desiredPeriod = TASK_PERIOD_HZ(25),      // GPS usually don't go raster than 10Hz
+//        .staticPriority = TASK_PRIORITY_MEDIUM,
+//    },
 #endif
 
 #ifdef USE_MAG
@@ -612,11 +618,11 @@ cfTask_t cfTasks[TASK_COUNT] = {
 #endif
 
 #ifdef VTX_CONTROL
-    [TASK_VTXCTRL] = {
-        .taskName = "VTXCTRL",
-        .taskFunc = taskVtxControl,
-        .desiredPeriod = TASK_PERIOD_HZ(5),          // 5Hz @200msec
-        .staticPriority = TASK_PRIORITY_IDLE,
-    },
+//    [TASK_VTXCTRL] = {
+//        .taskName = "VTXCTRL",
+//        .taskFunc = taskVtxControl,
+//        .desiredPeriod = TASK_PERIOD_HZ(5),          // 5Hz @200msec
+//        .staticPriority = TASK_PRIORITY_IDLE,
+//    },
 #endif
 };

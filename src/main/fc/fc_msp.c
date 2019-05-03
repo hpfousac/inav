@@ -94,6 +94,10 @@
 #endif
 
 #undef USE_NAV
+#undef VTX_COMMON
+#undef USE_GPS
+#undef NAV_NON_VOLATILE_WAYPOINT_STORAGE
+#undef USE_BLACKBOX
 
 extern timeDelta_t cycleTime; // FIXME dependency on mw.c
 
@@ -334,7 +338,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
     // DEPRECATED - Use MSP_API_VERSION
     case MSP_IDENT:
         sbufWriteU8(dst, MW_VERSION);
-        sbufWriteU8(dst, mixerConfig()->mixerMode);
+        sbufWriteU8(dst, 0);
         sbufWriteU8(dst, MSP_PROTOCOL_VERSION);
         sbufWriteU32(dst, CAP_PLATFORM_32BIT | CAP_DYNBALANCE | CAP_FLAPS | CAP_NAVCAP | CAP_EXTAUX); // "capability"
         break;
@@ -432,16 +436,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         }
         break;
     case MSP_SERVO_MIX_RULES:
-        for (int i = 0; i < MAX_SERVO_RULES; i++) {
-            sbufWriteU8(dst, customServoMixers(i)->targetChannel);
-            sbufWriteU8(dst, customServoMixers(i)->inputSource);
-            sbufWriteU8(dst, customServoMixers(i)->rate);
-            sbufWriteU8(dst, customServoMixers(i)->speed);
-            sbufWriteU8(dst, 0);
-            sbufWriteU8(dst, 100);
-            sbufWriteU8(dst, 0);
-        }
-        break;
+        return MSP_RESULT_ERROR;
 #endif
 
     case MSP2_COMMON_MOTOR_MIXER:
@@ -458,10 +453,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_ATTITUDE:
-        sbufWriteU16(dst, attitude.values.roll);
-        sbufWriteU16(dst, attitude.values.pitch);
-        sbufWriteU16(dst, DECIDEGREES_TO_DEGREES(attitude.values.yaw));
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_ALTITUDE:
 #if defined(USE_NAV)
@@ -552,12 +544,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_PID:
-        for (int i = 0; i < PID_ITEM_COUNT; i++) {
-            sbufWriteU8(dst, pidBank()->pid[i].P);
-            sbufWriteU8(dst, pidBank()->pid[i].I);
-            sbufWriteU8(dst, pidBank()->pid[i].D);
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_PIDNAMES:
         for (const char *c = pidnames; *c; c++) {
@@ -697,8 +684,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_MIXER:
-        sbufWriteU8(dst, mixerConfig()->mixerMode);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RX_CONFIG:
         sbufWriteU8(dst, rxConfig()->serialrx_provider);
@@ -719,24 +705,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_FAILSAFE_CONFIG:
-        sbufWriteU8(dst, failsafeConfig()->failsafe_delay);
-        sbufWriteU8(dst, failsafeConfig()->failsafe_off_delay);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_throttle);
-        sbufWriteU8(dst, 0);    // was failsafe_kill_switch
-        sbufWriteU16(dst, failsafeConfig()->failsafe_throttle_low_delay);
-        sbufWriteU8(dst, failsafeConfig()->failsafe_procedure);
-        sbufWriteU8(dst, failsafeConfig()->failsafe_recovery_delay);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_fw_roll_angle);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_fw_pitch_angle);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_fw_yaw_rate);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_stick_motion_threshold);
-        sbufWriteU16(dst, failsafeConfig()->failsafe_min_distance);
-        sbufWriteU8(dst, failsafeConfig()->failsafe_min_distance_procedure);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RSSI_CONFIG:
-        sbufWriteU8(dst, rxConfig()->rssi_channel);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RX_MAP:
         sbufWriteData(dst, rxConfig()->rcmap, MAX_MAPPABLE_RX_INPUTS);
@@ -825,17 +797,10 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         break;
 
     case MSP_3D:
-        sbufWriteU16(dst, flight3DConfig()->deadband3d_low);
-        sbufWriteU16(dst, flight3DConfig()->deadband3d_high);
-        sbufWriteU16(dst, flight3DConfig()->neutral3d);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RC_DEADBAND:
-        sbufWriteU8(dst, rcControlsConfig()->deadband);
-        sbufWriteU8(dst, rcControlsConfig()->yaw_deadband);
-        sbufWriteU8(dst, rcControlsConfig()->alt_hold_deadband);
-        sbufWriteU16(dst, rcControlsConfig()->deadband3d_throttle);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SENSOR_ALIGNMENT:
         return MSP_RESULT_ERROR;
@@ -847,23 +812,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_PID_ADVANCED:
-        sbufWriteU16(dst, pidProfile()->rollPitchItermIgnoreRate);
-        sbufWriteU16(dst, pidProfile()->yawItermIgnoreRate);
-        sbufWriteU16(dst, pidProfile()->yaw_p_limit);
-        sbufWriteU8(dst, 0); //BF: pidProfile()->deltaMethod
-        sbufWriteU8(dst, 0); //BF: pidProfile()->vbatPidCompensation
-        sbufWriteU8(dst, 0); //BF: pidProfile()->setpointRelaxRatio
-        sbufWriteU8(dst, constrain(pidProfile()->dterm_setpoint_weight * 100, 0, 255));
-        sbufWriteU16(dst, pidProfile()->pidSumLimit);
-        sbufWriteU8(dst, 0); //BF: pidProfile()->itermThrottleGain
-
-        /*
-         * To keep compatibility on MSP frame length level with Betaflight, axis axisAccelerationLimitYaw
-         * limit will be sent and received in [dps / 10]
-         */
-        sbufWriteU16(dst, constrain(pidProfile()->axisAccelerationLimitRollPitch / 10, 0, 65535));
-        sbufWriteU16(dst, constrain(pidProfile()->axisAccelerationLimitYaw / 10, 0, 65535));
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_INAV_PID:
         return MSP_RESULT_ERROR;
@@ -958,14 +907,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_TX_INFO:
-        sbufWriteU8(dst, getRSSISource());
-        uint8_t rtcDateTimeIsSet = 0;
-        dateTime_t dt;
-        if (rtcGetDateTime(&dt)) {
-            rtcDateTimeIsSet = 1;
-        }
-        sbufWriteU8(dst, rtcDateTimeIsSet);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_RTC:
         {
@@ -1088,11 +1030,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_HEAD:
-        if (sbufReadU16Safe(&tmp_u16, src))
-            updateHeadingHoldTarget(tmp_u16);
-        else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
 #ifdef USE_RX_MSP
     case MSP_SET_RAW_RC:
@@ -1105,6 +1043,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
                 for (int i = 0; i < channelCount; i++) {
                     frame[i] = sbufReadU16(src);
                 }
+// NOTE: It can be usefull for settings a data                
                 rxMspFrameReceive(frame, channelCount);
             }
         }
@@ -1171,72 +1110,10 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_RC_TUNING:
-        if ((dataSize >= 10) && (dataSize <= 11)) {
-            sbufReadU8(src); //Read rcRate8, kept for protocol compatibility reasons
-            // need to cast away const to set controlRateProfile
-            ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcExpo8 = sbufReadU8(src);
-            for (int i = 0; i < 3; i++) {
-                tmp_u8 = sbufReadU8(src);
-                if (i == FD_YAW) {
-                    ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_YAW_RATE_MIN, CONTROL_RATE_CONFIG_YAW_RATE_MAX);
-                }
-                else {
-                    ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MIN, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MAX);
-                }
-            }
-            tmp_u8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.dynPID = MIN(tmp_u8, CONTROL_RATE_CONFIG_TPA_MAX);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.rcMid8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.rcExpo8 = sbufReadU8(src);
-            ((controlRateConfig_t*)currentControlRateProfile)->throttle.pa_breakpoint = sbufReadU16(src);
-            if (dataSize > 10) {
-                ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcYawExpo8 = sbufReadU8(src);
-            }
-
-            schedulePidGainsUpdate();
-        } else {
-            return MSP_RESULT_ERROR;
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP2_INAV_SET_RATE_PROFILE:
-        if (dataSize == 15) {
-            controlRateConfig_t *currentControlRateProfile_p = (controlRateConfig_t*)currentControlRateProfile; // need to cast away const to set controlRateProfile
-
-            // throttle
-            currentControlRateProfile_p->throttle.rcMid8 = sbufReadU8(src);
-            currentControlRateProfile_p->throttle.rcExpo8 = sbufReadU8(src);
-            currentControlRateProfile_p->throttle.dynPID = sbufReadU8(src);
-            currentControlRateProfile_p->throttle.pa_breakpoint = sbufReadU16(src);
-
-            // stabilized
-            currentControlRateProfile_p->stabilized.rcExpo8 = sbufReadU8(src);
-            currentControlRateProfile_p->stabilized.rcYawExpo8 = sbufReadU8(src);
-            for (uint8_t i = 0; i < 3; ++i) {
-                tmp_u8 = sbufReadU8(src);
-                if (i == FD_YAW) {
-                    currentControlRateProfile_p->stabilized.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_YAW_RATE_MIN, CONTROL_RATE_CONFIG_YAW_RATE_MAX);
-                } else {
-                    currentControlRateProfile_p->stabilized.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MIN, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MAX);
-                }
-            }
-
-            // manual
-            currentControlRateProfile_p->manual.rcExpo8 = sbufReadU8(src);
-            currentControlRateProfile_p->manual.rcYawExpo8 = sbufReadU8(src);
-            for (uint8_t i = 0; i < 3; ++i) {
-                tmp_u8 = sbufReadU8(src);
-                if (i == FD_YAW) {
-                    currentControlRateProfile_p->manual.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_YAW_RATE_MIN, CONTROL_RATE_CONFIG_YAW_RATE_MAX);
-                } else {
-                    currentControlRateProfile_p->manual.rates[i] = constrain(tmp_u8, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MIN, CONTROL_RATE_CONFIG_ROLL_PITCH_RATE_MAX);
-                }
-            }
-
-        } else {
-            return MSP_RESULT_ERROR;
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_MISC:
         return MSP_RESULT_ERROR;
@@ -1274,18 +1151,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 
 #ifdef USE_SERVOS
     case MSP_SET_SERVO_MIX_RULE:
-        sbufReadU8Safe(&tmp_u8, src);
-        if ((dataSize >= 8) && (tmp_u8 < MAX_SERVO_RULES)) {
-            customServoMixersMutable(tmp_u8)->targetChannel = sbufReadU8(src);
-            customServoMixersMutable(tmp_u8)->inputSource = sbufReadU8(src);
-            customServoMixersMutable(tmp_u8)->rate = sbufReadU8(src);
-            customServoMixersMutable(tmp_u8)->speed = sbufReadU8(src);
-            sbufReadU16(src); //Read 2bytes for min/max and ignore it
-            sbufReadU8(src); //Read 1 byte for `box` and ignore it
-            loadCustomServoMixer();
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 #endif
 
     case MSP2_COMMON_SET_MOTOR_MIXER:
@@ -1311,9 +1177,8 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_RESET_CURR_PID:
-        PG_RESET_CURRENT(pidProfile);
-        break;
-
+        return MSP_RESULT_ERROR;
+        
     case MSP_SET_SENSOR_ALIGNMENT:
         return MSP_RESULT_ERROR;
 
@@ -1516,13 +1381,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 #endif
 
     case MSP_SET_FEATURE:
-        if (dataSize >= 4) {
-            featureClearAll();
-            featureSet(sbufReadU32(src)); // features bitmap
-            rxUpdateRSSISource(); // For FEATURE_RSSI_ADC
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_BOARD_ALIGNMENT:
         return MSP_RESULT_ERROR;
@@ -1535,12 +1394,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 
 #ifndef USE_QUAD_MIXER_ONLY
     case MSP_SET_MIXER:
-        if (dataSize >= 1) {
-            mixerConfigMutable()->mixerMode = sbufReadU8(src);
-            mixerUpdateStateFlags();    // Required for correct preset functionality
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 #endif
 
     case MSP_SET_RX_CONFIG:
@@ -1565,31 +1419,10 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_FAILSAFE_CONFIG:
-        if (dataSize >= 20) {
-            failsafeConfigMutable()->failsafe_delay = sbufReadU8(src);
-            failsafeConfigMutable()->failsafe_off_delay = sbufReadU8(src);
-            failsafeConfigMutable()->failsafe_throttle = sbufReadU16(src);
-            sbufReadU8(src); // was failsafe_kill_switch
-            failsafeConfigMutable()->failsafe_throttle_low_delay = sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_procedure = sbufReadU8(src);
-            failsafeConfigMutable()->failsafe_recovery_delay = sbufReadU8(src);
-            failsafeConfigMutable()->failsafe_fw_roll_angle = (int16_t)sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_fw_pitch_angle = (int16_t)sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_fw_yaw_rate = (int16_t)sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_stick_motion_threshold = sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_min_distance = sbufReadU16(src);
-            failsafeConfigMutable()->failsafe_min_distance_procedure = sbufReadU8(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_RSSI_CONFIG:
-        sbufReadU8Safe(&tmp_u8, src);
-        if ((dataSize >= 1) && (tmp_u8 <= MAX_SUPPORTED_RC_CHANNEL_COUNT))
-            rxConfigMutable()->rssi_channel = tmp_u8;
-        else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_RX_MAP:
         if (dataSize >= MAX_MAPPABLE_RX_INPUTS) {
@@ -1698,16 +1531,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         break;
 
     case MSP_SET_TX_INFO:
-        {
-            // This message will be sent while the aircraft is
-            // armed. Better to guard ourselves against potentially
-            // malformed requests.
-            uint8_t rssi;
-            if (sbufReadU8Safe(&rssi, src)) {
-                setRSSIFromMSP(rssi);
-            }
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_NAME:
         if (dataSize <= MAX_NAME_LENGTH) {

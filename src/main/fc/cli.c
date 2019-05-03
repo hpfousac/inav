@@ -176,9 +176,9 @@ static const char * const sensorTypeNames[] = {
 
 #define SENSOR_NAMES_MASK (SENSOR_GYRO | SENSOR_ACC | SENSOR_BARO | SENSOR_MAG | SENSOR_RANGEFINDER | SENSOR_PITOT | SENSOR_OPFLOW)
 
-static const char * const hardwareSensorStatusNames[] = {
-    "NONE", "OK", "UNAVAILABLE", "FAILING"
-};
+//static const char * const hardwareSensorStatusNames[] = {
+//    "NONE", "OK", "UNAVAILABLE", "FAILING"
+//  };
 
 static const char * const *sensorHardwareNames[] = {
         gyroNames,
@@ -1729,13 +1729,13 @@ static void cliMap(char *cmdline)
             cliShowParseError();
             return;
         }
-        parseRcChannels(cmdline);
+//        parseRcChannels(cmdline);
     } else if (len != 0)
         cliShowParseError();
     cliPrint("Map: ");
     uint32_t i;
     for (i = 0; i < 4; i++)
-        out[rxConfig()->rcmap[i]] = rcChannelLetters[i];
+//        out[rxConfig()->rcmap[i]] = rcChannelLetters[i];
     out[i] = '\0';
     cliPrintLinef("%s", out);
 }
@@ -1825,7 +1825,7 @@ static void cliGpsPassthrough(char *cmdline)
 {
     UNUSED(cmdline);
 
-    gpsEnablePassthrough(cliPort);
+//    gpsEnablePassthrough(cliPort);
 }
 #endif
 
@@ -2055,13 +2055,6 @@ static void cliSet(char *cmdline)
     }
 }
 
-static const char * getBatteryStateString(void)
-{
-    static const char * const batteryStateStrings[] = {"OK", "WARNING", "CRITICAL", "NOT PRESENT"};
-
-    return batteryStateStrings[getBatteryState()];
-}
-
 static void cliStatus(char *cmdline)
 {
     UNUSED(cmdline);
@@ -2073,7 +2066,7 @@ static void cliStatus(char *cmdline)
     rtcGetDateTime(&dt);
     dateTimeFormatLocal(buf, &dt);
     cliPrintLinef("Current Time: %s", buf);
-    cliPrintLinef("Voltage: %d.%dV (%dS battery - %s)", getBatteryVoltage() / 100, getBatteryVoltage() % 100, getBatteryCellCount(), getBatteryStateString());
+//    cliPrintLinef("Voltage: %d.%dV (%dS battery - %s)", getBatteryVoltage() / 100, getBatteryVoltage() % 100, getBatteryCellCount(), getBatteryStateString());
     cliPrintf("CPU Clock=%dMHz", (SystemCoreClock / 1000000));
 
 #if (FLASH_SIZE > 64)
@@ -2107,15 +2100,6 @@ static void cliStatus(char *cmdline)
     cliPrintLinef("  PCLK2  = %d MHz", clocks.PCLK2_Frequency / 1000000);
 #endif
 
-    cliPrintLinef("Sensor status: GYRO=%s, ACC=%s, MAG=%s, BARO=%s, RANGEFINDER=%s, OPFLOW=%s, GPS=%s",
-        hardwareSensorStatusNames[getHwGyroStatus()],
-        hardwareSensorStatusNames[getHwAccelerometerStatus()],
-        hardwareSensorStatusNames[getHwCompassStatus()],
-        hardwareSensorStatusNames[getHwBarometerStatus()],
-        hardwareSensorStatusNames[getHwRangefinderStatus()],
-        hardwareSensorStatusNames[getHwOpticalFlowStatus()],
-        hardwareSensorStatusNames[getHwGPSStatus()]
-    );
 #endif
 
 #ifdef USE_SDCARD
@@ -2262,13 +2246,13 @@ static void backupConfigs(void)
 
 static void restoreConfigs(void)
 {
-    PG_FOREACH(pg) {
-        if (pgIsProfile(pg)) {
-            memcpy(pg->address, pg->copy, pgSize(pg) * MAX_PROFILE_COUNT);
-        } else {
-            memcpy(pg->address, pg->copy, pgSize(pg));
-        }
-    }
+//    PG_FOREACH(pg) {
+//        if (pgIsProfile(pg)) {
+//            memcpy(pg->address, pg->copy, pgSize(pg) * MAX_PROFILE_COUNT);
+//        } else {
+//            memcpy(pg->address, pg->copy, pgSize(pg));
+//        }
+//    }
 }
 
 static void printConfig(const char *cmdline, bool doDiff)

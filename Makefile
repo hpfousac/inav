@@ -610,7 +610,6 @@ COMMON_SRC = \
             fc/runtime_config.c \
             fc/settings.c \
             fc/stats.c \
-            flight/failsafe.c \
             flight/hil.c \
             flight/servos.c \
             io/pwmdriver_i2c.c \
@@ -622,56 +621,12 @@ COMMON_SRC = \
             io/rcdevice.c \
             io/rcdevice_cam.c \
             msp/msp_serial.c \
-            rx/fport.c \
-            rx/ibus.c \
-            rx/jetiexbus.c \
-            rx/msp.c \
-            rx/uib_rx.c \
-            rx/pwm.c \
-            rx/rx.c \
-            rx/rx_spi.c \
-            rx/crsf.c \
-            rx/sbus.c \
-            rx/sbus_channels.c \
-            rx/spektrum.c \
-            rx/sumd.c \
-            rx/sumh.c \
-            rx/xbus.c \
-            rx/eleres.c \
             scheduler/scheduler.c \
-            sensors/diagnostics.c \
-            sensors/initialisation.c \
             $(CMSIS_SRC) \
             $(DEVICE_STDPERIPH_SRC)
 
-HIGHEND_SRC = \
-            blackbox/blackbox.c \
-            blackbox/blackbox_encoding.c \
-            blackbox/blackbox_io.c \
-            cms/cms.c \
-            cms/cms_menu_blackbox.c \
-            cms/cms_menu_builtin.c \
-            cms/cms_menu_ledstrip.c \
-            cms/cms_menu_misc.c \
-            cms/cms_menu_navigation.c \
-            cms/cms_menu_osd.c \
-            cms/cms_menu_vtx_smartaudio.c \
-            cms/cms_menu_vtx_tramp.c \
-            common/colorconversion.c \
-            common/gps_conversion.c \
-            drivers/vtx_common.c \
-            io/opflow_cxof.c \
-            io/gps.c \
-            io/gps_ublox.c \
-            io/gps_nmea.c \
-            io/gps_naza.c \
-            io/gps_i2cnav.c \
-            io/ledstrip.c \
-            io/osd.c \
-            io/vtx_string.c \
-            io/vtx_smartaudio.c \
-            io/vtx_tramp.c \
-            io/vtx_control.c
+HIGHEND_SRC =
+
 
 ifeq ($(TARGET),$(filter $(TARGET),$(F4_TARGETS)))
 VCP_SRC = \

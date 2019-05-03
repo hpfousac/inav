@@ -32,6 +32,9 @@
 
 #include "rx/rx.h"
 
+
+#undef USE_CMS
+
 #ifdef USE_RCDEVICE
 
 #define IS_HI(X) (rcData[X] > 1750)
@@ -193,14 +196,14 @@ static bool rcdeviceSend5KeyOSDCableSimualtionEvent(rcdeviceCamSimulationKeyEven
         reqResult = runcamDeviceOpen5KeyOSDCableConnection(camDevice);
         if (reqResult) {
             rcdeviceInMenu = true;
-            beeper(BEEPER_CAM_CONNECTION_OPEN);
+//            beeper(BEEPER_CAM_CONNECTION_OPEN);
         }
         break;
     case RCDEVICE_CAM_KEY_CONNECTION_CLOSE:
         reqResult = runcamDeviceClose5KeyOSDCableConnection(camDevice);
         if (reqResult) {
             rcdeviceInMenu = false;
-            beeper(BEEPER_CAM_CONNECTION_CLOSE);
+//            beeper(BEEPER_CAM_CONNECTION_CLOSE);
         }
         break;
     case RCDEVICE_CAM_KEY_ENTER:

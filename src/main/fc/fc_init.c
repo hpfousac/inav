@@ -139,6 +139,14 @@
 extern void initialisePreBootHardware(void);
 #endif
 
+#undef USE_BLACKBOX
+#undef USE_PITOT
+#undef USE_TELEMETRY
+#undef USE_CMS
+#undef USE_DASHBOARD
+#undef USE_NAV
+#undef USE_GPS
+
 extern uint8_t motorControlEnable;
 
 typedef enum {
@@ -216,9 +224,9 @@ void init(void)
     latchActiveFeatures();
 
 #ifdef ALIENFLIGHTF3
-    ledInit(hardwareRevision == AFF3_REV_1 ? false : true);
+//    ledInit(hardwareRevision == AFF3_REV_1 ? false : true);
 #else
-    ledInit(false);
+//    ledInit(false);
 #endif
 
 #ifdef USE_EXTI
@@ -271,7 +279,7 @@ void init(void)
 
 #ifdef USE_SERVOS
     servosInit();
-    mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
+//    mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
 #endif
 
     drv_pwm_config_t pwm_params;
@@ -290,7 +298,7 @@ void init(void)
 #endif
 
     // when using airplane/wing mixer, servo/motor outputs are remapped
-    pwm_params.flyingPlatformType = getFlyingPlatformType();
+//    pwm_params.flyingPlatformType = getFlyingPlatformType();
 
 #if defined(USE_UART2) && defined(STM32F10X)
     pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
@@ -308,14 +316,14 @@ void init(void)
     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
     pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
-    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
-        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
+//    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
+//        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
     pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
     pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
 
 #ifdef USE_SERVOS
-    pwm_params.useServoOutputs = isMixerUsingServos();
+//    pwm_params.useServoOutputs = isMixerUsingServos();
     pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
     pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
     pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
@@ -342,7 +350,7 @@ void init(void)
     pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
 #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
-    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
+//    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
 #endif
 
 #ifdef USE_PMW_SERVO_DRIVER
@@ -359,7 +367,7 @@ void init(void)
     // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
     pwmInit(&pwm_params);
 
-    mixerUsePWMIOConfiguration();
+//    mixerUsePWMIOConfiguration();
 
     if (!pwm_params.useFastPwm)
         motorControlEnable = true;
@@ -484,16 +492,9 @@ void init(void)
     memset(&adc_params, 0, sizeof(adc_params));
 
     // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
-    if (feature(FEATURE_VBAT)) {
-        adc_params.adcFunctionChannel[ADC_BATTERY] = adcChannelConfig()->adcFunctionChannel[ADC_BATTERY];
-    }
 
     if (feature(FEATURE_RSSI_ADC)) {
         adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
-    }
-
-    if (feature(FEATURE_CURRENT_METER) && batteryConfig()->current.type == CURRENT_SENSOR_ADC) {
-        adc_params.adcFunctionChannel[ADC_CURRENT] =  adcChannelConfig()->adcFunctionChannel[ADC_CURRENT];
     }
 
 #if defined(USE_PITOT) && defined(USE_ADC) && defined(USE_PITOT_ADC)
@@ -526,7 +527,7 @@ void init(void)
     }
 #endif
 
-    initBoardAlignment();
+//    initBoardAlignment();
 
 #ifdef USE_CMS
     cmsInit();
@@ -544,21 +545,10 @@ void init(void)
     }
 #endif
 
-    if (!sensorsAutodetect()) {
-        // if gyro was not detected due to whatever reason, we give up now.
-        failureMode(FAILURE_MISSING_ACC);
-    }
-
     addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_SENSORS_READY;
 
     flashLedsAndBeep();
-
-#ifdef USE_DTERM_NOTCH
-    pidInitFilters();
-#endif
-
-    imuInit();
 
     // Sensors have now been detected, mspFcInit() can now be called
     // to set the boxes up
@@ -568,9 +558,9 @@ void init(void)
     cliInit(serialConfig());
 #endif
 
-    failsafeInit();
+//    failsafeInit();
 
-    rxInit();
+//    rxInit();
 
 #if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
     displayPort_t *osdDisplayPort = NULL;
@@ -671,26 +661,26 @@ void init(void)
     blackboxInit();
 #endif
 
-    gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
+//    gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
 #ifdef USE_BARO
     baroStartCalibration();
 #endif
 
 #ifdef USE_PITOT
-    pitotStartCalibration();
+//    pitotStartCalibration();
 #endif
 
 #ifdef VTX_CONTROL
-    vtxControlInit();
+    // vtxControlInit();
 
-    vtxCommonInit();
+    // vtxCommonInit();
 
 #ifdef VTX_SMARTAUDIO
-    vtxSmartAudioInit();
+    // vtxSmartAudioInit();
 #endif
 
 #ifdef VTX_TRAMP
-    vtxTrampInit();
+    // vtxTrampInit();
 #endif
 
 #endif // VTX_CONTROL
@@ -700,8 +690,6 @@ void init(void)
     timerStart();
 
     // Now that everything has powered up the voltage and cell count be determined.
-    if (feature(FEATURE_VBAT | FEATURE_CURRENT_METER))
-        batteryInit();
 
 #ifdef CJMCU
     LED2_ON;

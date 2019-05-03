@@ -97,13 +97,13 @@ bool areSticksDeflectedMoreThanPosHoldDeadband(void)
 
 throttleStatus_e calculateThrottleStatus(void)
 {
-    const uint16_t deadband3d_throttle = rcControlsConfig()->deadband3d_throttle;
-    if (feature(FEATURE_3D) && (rcData[THROTTLE] > (rxConfig()->midrc - deadband3d_throttle) && rcData[THROTTLE] < (rxConfig()->midrc + deadband3d_throttle)))
+//    const uint16_t deadband3d_throttle = rcControlsConfig()->deadband3d_throttle;
+//    if (feature(FEATURE_3D) && (rcData[THROTTLE] > (rxConfig()->midrc - deadband3d_throttle) && rcData[THROTTLE] < (rxConfig()->midrc + deadband3d_throttle)))
         return THROTTLE_LOW;
-    else if (!feature(FEATURE_3D) && (rcData[THROTTLE] < rxConfig()->mincheck))
-        return THROTTLE_LOW;
+//    else if (!feature(FEATURE_3D) && (rcData[THROTTLE] < rxConfig()->mincheck))
+//        return THROTTLE_LOW;
 
-    return THROTTLE_HIGH;
+//    return THROTTLE_HIGH;
 }
 
 rollPitchStatus_e calculateRollPitchCenterStatus(void)
@@ -183,17 +183,17 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
             // Disarming via ARM BOX
             // Don't disarm via switch if failsafe is active or receiver doesn't receive data - we can't trust receiver
             // and can't afford to risk disarming in the air
-            if (ARMING_FLAG(ARMED) && !IS_RC_MODE_ACTIVE(BOXFAILSAFE) && rxIsReceivingSignal() && !failsafeIsActive()) {
-                rcDisarmTicks++;
-                if (rcDisarmTicks > 3) {    // Wait for at least 3 RX ticks (60ms @ 50Hz RX)
-                    if (disarm_kill_switch || (throttleStatus == THROTTLE_LOW)) {
-                        mwDisarm(DISARM_SWITCH);
-                    }
-                }
-            }
-            else {
-                rcDisarmTicks = 0;
-            }
+            // if (ARMING_FLAG(ARMED) && !IS_RC_MODE_ACTIVE(BOXFAILSAFE) && rxIsReceivingSignal() && !failsafeIsActive()) {
+            //     rcDisarmTicks++;
+            //     if (rcDisarmTicks > 3) {    // Wait for at least 3 RX ticks (60ms @ 50Hz RX)
+            //         if (disarm_kill_switch || (throttleStatus == THROTTLE_LOW)) {
+            //             mwDisarm(DISARM_SWITCH);
+            //         }
+            //     }
+            // }
+            // else {
+            //     rcDisarmTicks = 0;
+            // }
         }
     }
 
@@ -217,7 +217,7 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
                 mwDisarm(DISARM_STICKS);
             }
             else {
-                beeper(BEEPER_DISARM_REPEAT);    // sound tone while stick held
+                // beeper(BEEPER_DISARM_REPEAT);    // sound tone while stick held
                 rcDelayCommand = 0;              // reset so disarm tone will repeat
             }
         }
@@ -232,23 +232,23 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
     int i = 0;
 
     // GYRO calibration
-    if (rcSticks == THR_LO + YAW_LO + PIT_LO + ROL_CE) {
-        gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
-        return;
-    }
+    // if (rcSticks == THR_LO + YAW_LO + PIT_LO + ROL_CE) {
+    //     gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
+    //     return;
+    // }
 
 
 #if defined(NAV_NON_VOLATILE_WAYPOINT_STORAGE)
     // Save waypoint list
     if (rcSticks == THR_LO + YAW_CE + PIT_HI + ROL_LO) {
-        const bool success = saveNonVolatileWaypointList();
-        beeper(success ? BEEPER_ACTION_SUCCESS : BEEPER_ACTION_FAIL);
+        // const bool success = saveNonVolatileWaypointList();
+        // beeper(success ? BEEPER_ACTION_SUCCESS : BEEPER_ACTION_FAIL);
     }
 
     // Load waypoint list
     if (rcSticks == THR_LO + YAW_CE + PIT_HI + ROL_HI) {
-        const bool success = loadNonVolatileWaypointList();
-        beeper(success ? BEEPER_ACTION_SUCCESS : BEEPER_ACTION_FAIL);
+        // const bool success = loadNonVolatileWaypointList();
+        // beeper(success ? BEEPER_ACTION_SUCCESS : BEEPER_ACTION_FAIL);
     }
 #endif
 
@@ -293,7 +293,7 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
 
     // Calibrating Acc
     if (rcSticks == THR_HI + YAW_LO + PIT_LO + ROL_CE) {
-        accSetCalibrationCycles(CALIBRATING_ACC_CYCLES);
+        // accSetCalibrationCycles(CALIBRATING_ACC_CYCLES);
         return;
     }
 

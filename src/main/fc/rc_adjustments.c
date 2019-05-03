@@ -49,6 +49,9 @@
 
 #include "rx/rx.h"
 
+#undef USE_BLACKBOX
+
+
 PG_REGISTER_ARRAY(adjustmentRange_t, MAX_ADJUSTMENT_RANGE_COUNT, adjustmentRanges, PG_ADJUSTMENT_RANGE_CONFIG, 0);
 
 static uint8_t adjustmentStateMask = 0;
@@ -249,9 +252,9 @@ static void blackboxLogInflightAdjustmentEventFloat(adjustmentFunction_e adjustm
 static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t adjustmentFunction, int delta)
 {
     if (delta > 0) {
-        beeperConfirmationBeeps(2);
+        // beeperConfirmationBeeps(2);
     } else {
-        beeperConfirmationBeeps(1);
+        // beeperConfirmationBeeps(1);
     }
     int newValue;
     switch (adjustmentFunction) {
@@ -323,84 +326,84 @@ static void applyStepAdjustment(controlRateConfig_t *controlRateConfig, uint8_t 
             break;
         case ADJUSTMENT_PITCH_ROLL_P:
         case ADJUSTMENT_PITCH_P:
-            newValue = constrain((int)pidBank()->pid[PID_PITCH].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_PITCH].P = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_P, newValue);
-            if (adjustmentFunction == ADJUSTMENT_PITCH_P) {
-                break;
-            }
+//            newValue = constrain((int)pidBank()->pid[PID_PITCH].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_PITCH].P = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_P, newValue);
+//            if (adjustmentFunction == ADJUSTMENT_PITCH_P) {
+//                break;
+//            }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_P
             FALLTHROUGH;
 
         case ADJUSTMENT_ROLL_P:
-            newValue = constrain((int)pidBank()->pid[PID_ROLL].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_ROLL].P = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_P, newValue);
+//            newValue = constrain((int)pidBank()->pid[PID_ROLL].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_ROLL].P = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_P, newValue);
             break;
         case ADJUSTMENT_PITCH_ROLL_I:
         case ADJUSTMENT_PITCH_I:
-            newValue = constrain((int)pidBank()->pid[PID_PITCH].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_PITCH].I = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_I, newValue);
-            if (adjustmentFunction == ADJUSTMENT_PITCH_I) {
-                break;
-            }
+//            newValue = constrain((int)pidBank()->pid[PID_PITCH].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_PITCH].I = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_I, newValue);
+//            if (adjustmentFunction == ADJUSTMENT_PITCH_I) {
+//                break;
+//            }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_I
             FALLTHROUGH;
 
         case ADJUSTMENT_ROLL_I:
-            newValue = constrain((int)pidBank()->pid[PID_ROLL].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_ROLL].I = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_I, newValue);
+ //           newValue = constrain((int)pidBank()->pid[PID_ROLL].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+ //           pidBankMutable()->pid[PID_ROLL].I = newValue;
+ //           blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_I, newValue);
             break;
         case ADJUSTMENT_PITCH_ROLL_D:
         case ADJUSTMENT_PITCH_D:
-            newValue = constrain((int)pidBank()->pid[PID_PITCH].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_PITCH].D = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_D, newValue);
-            if (adjustmentFunction == ADJUSTMENT_PITCH_D) {
-                break;
-            }
+//            newValue = constrain((int)pidBank()->pid[PID_PITCH].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_PITCH].D = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_D, newValue);
+//            if (adjustmentFunction == ADJUSTMENT_PITCH_D) {
+//                break;
+//            }
             // follow though for combined ADJUSTMENT_PITCH_ROLL_D
             FALLTHROUGH;
 
         case ADJUSTMENT_ROLL_D:
-            newValue = constrain((int)pidBank()->pid[PID_ROLL].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_ROLL].D = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_D, newValue);
+//            newValue = constrain((int)pidBank()->pid[PID_ROLL].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_ROLL].D = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_D, newValue);
             break;
         case ADJUSTMENT_YAW_P:
-            newValue = constrain((int)pidBank()->pid[PID_YAW].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_YAW].P = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_P, newValue);
+//            newValue = constrain((int)pidBank()->pid[PID_YAW].P + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_YAW].P = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_P, newValue);
             break;
         case ADJUSTMENT_YAW_I:
-            newValue = constrain((int)pidBank()->pid[PID_YAW].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_YAW].I = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_I, newValue);
+//            newValue = constrain((int)pidBank()->pid[PID_YAW].I + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_YAW].I = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_I, newValue);
             break;
         case ADJUSTMENT_YAW_D:
-            newValue = constrain((int)pidBank()->pid[PID_YAW].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
-            pidBankMutable()->pid[PID_YAW].D = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_D, newValue);
+//            newValue = constrain((int)pidBank()->pid[PID_YAW].D + delta, 0, 200); // FIXME magic numbers repeated in serial_cli.c
+//            pidBankMutable()->pid[PID_YAW].D = newValue;
+//            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_YAW_D, newValue);
             break;
         case ADJUSTMENT_NAV_FW_CRUISE_THR:
             newValue = constrain((int16_t)navConfig()->fw.cruise_throttle + delta, 1000, 2000);
             navConfigMutable()->fw.cruise_throttle = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_NAV_FW_CRUISE_THR, newValue);
+            // blackboxLogInflightAdjustmentEvent(ADJUSTMENT_NAV_FW_CRUISE_THR, newValue);
             break;
         case ADJUSTMENT_NAV_FW_PITCH2THR:
             newValue = constrain((int8_t)navConfig()->fw.pitch_to_throttle + delta, 0, 100);
             navConfigMutable()->fw.pitch_to_throttle = newValue;
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_NAV_FW_PITCH2THR, newValue);
+            // blackboxLogInflightAdjustmentEvent(ADJUSTMENT_NAV_FW_PITCH2THR, newValue);
             break;
         case ADJUSTMENT_ROLL_BOARD_ALIGNMENT:
-            updateBoardAlignment(delta, 0);
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_BOARD_ALIGNMENT, boardAlignment()->rollDeciDegrees);
+            // updateBoardAlignment(delta, 0);
+            // blackboxLogInflightAdjustmentEvent(ADJUSTMENT_ROLL_BOARD_ALIGNMENT, boardAlignment()->rollDeciDegrees);
             break;
         case ADJUSTMENT_PITCH_BOARD_ALIGNMENT:
-            updateBoardAlignment(0, delta);
-            blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_BOARD_ALIGNMENT, boardAlignment()->pitchDeciDegrees);
+            // updateBoardAlignment(0, delta);
+            // blackboxLogInflightAdjustmentEvent(ADJUSTMENT_PITCH_BOARD_ALIGNMENT, boardAlignment()->pitchDeciDegrees);
             break;
         default:
             break;
@@ -423,7 +426,7 @@ static void applySelectAdjustment(uint8_t adjustmentFunction, uint8_t position)
     }
 
     if (applied) {
-        beeperConfirmationBeeps(position + 1);
+        // beeperConfirmationBeeps(position + 1);
     }
 }
 #endif
@@ -434,7 +437,7 @@ void processRcAdjustments(controlRateConfig_t *controlRateConfig)
 {
     const uint32_t now = millis();
 
-    const bool canUseRxData = rxIsReceivingSignal();
+    const bool canUseRxData = false; //rxIsReceivingSignal();
 
     for (int adjustmentIndex = 0; adjustmentIndex < MAX_SIMULTANEOUS_ADJUSTMENT_COUNT; adjustmentIndex++) {
         adjustmentState_t * const adjustmentState = &adjustmentStates[adjustmentIndex];
