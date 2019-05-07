@@ -605,7 +605,6 @@ COMMON_SRC = \
             fc/fc_msp_box.c \
             fc/rc_adjustments.c \
             fc/rc_controls.c \
-            fc/rc_curves.c \
             fc/rc_modes.c \
             fc/runtime_config.c \
             fc/settings.c \
@@ -659,7 +658,6 @@ endif
 
 STM32F10x_COMMON_SRC = \
             startup_stm32f10x_md_gcc.S \
-            drivers/accgyro/accgyro.c \
             drivers/adc_stm32f10x.c \
             drivers/bus_i2c_stm32f10x.c \
             drivers/dma.c \
@@ -673,7 +671,6 @@ STM32F10x_COMMON_SRC = \
 STM32F30x_COMMON_SRC = \
             startup_stm32f30x_md_gcc.S \
             target/system_stm32f30x.c \
-            drivers/accgyro/accgyro.c \
             drivers/adc_stm32f30x.c \
             drivers/bus_i2c_stm32f30x.c \
             drivers/dma.c \
@@ -684,8 +681,6 @@ STM32F30x_COMMON_SRC = \
 
 STM32F4xx_COMMON_SRC = \
             target/system_stm32f4xx.c \
-            drivers/accgyro/accgyro.c \
-            drivers/accgyro/accgyro_mpu.c \
             drivers/adc_stm32f4xx.c \
             drivers/adc_stm32f4xx.c \
             drivers/bus_i2c_stm32f10x.c \
@@ -699,8 +694,6 @@ STM32F4xx_COMMON_SRC = \
 
 STM32F7xx_COMMON_SRC = \
             target/system_stm32f7xx.c \
-            drivers/accgyro/accgyro.c \
-            drivers/accgyro/accgyro_mpu.c \
             drivers/adc_stm32f7xx.c \
             drivers/bus_i2c_hal.c \
             drivers/dma_stm32f7xx.c \

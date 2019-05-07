@@ -105,7 +105,7 @@ static const char * const flightControllerIdentifier = INAV_IDENTIFIER; // 4 UPP
 static const char * const boardIdentifier = TARGET_BOARD_IDENTIFIER;
 
 // from mixer.c
-extern int16_t motor_disarmed[MAX_SUPPORTED_MOTORS];
+//extern int16_t motor_disarmed[MAX_SUPPORTED_MOTORS];
 
 static const char pidnames[] =
     "ROLL;"
@@ -401,7 +401,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 #endif
             sbufWriteU16(dst, packSensorStatus());
             sbufWriteU16(dst, averageSystemLoadPercent);
-            sbufWriteU8(dst, getConfigProfile());
+            sbufWriteU8(dst, 0);
             sbufWriteU32(dst, armingFlags);
             sbufWriteData(dst, &mspBoxModeFlags, sizeof(mspBoxModeFlags));
         }
@@ -501,9 +501,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_ARMING_CONFIG:
-        sbufWriteU8(dst, armingConfig()->auto_disarm_delay);
-        sbufWriteU8(dst, armingConfig()->disarm_kill_switch);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_LOOP_TIME:
         return MSP_RESULT_ERROR;
@@ -1044,7 +1042,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
                     frame[i] = sbufReadU16(src);
                 }
 // NOTE: It can be usefull for settings a data                
-                rxMspFrameReceive(frame, channelCount);
+                // rxMspFrameReceive(frame, channelCount);
             }
         }
         break;

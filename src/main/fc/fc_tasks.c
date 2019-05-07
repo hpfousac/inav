@@ -289,27 +289,6 @@ void fcTasksInit(void)
 {
     schedulerInit();
 
-#ifdef USE_ASYNC_GYRO_PROCESSING
-    rescheduleTask(TASK_PID, getPidUpdateRate());
-    setTaskEnabled(TASK_PID, true);
-
-//    if (getAsyncMode() != ASYNC_MODE_NONE) {
-//        rescheduleTask(TASK_GYRO, getGyroUpdateRate());
-//        setTaskEnabled(TASK_GYRO, true);
-//    }
-
-    if (getAsyncMode() == ASYNC_MODE_ALL && sensors(SENSOR_ACC)) {
-        rescheduleTask(TASK_ACC, getAccUpdateRate());
-        setTaskEnabled(TASK_ACC, true);
-
-        rescheduleTask(TASK_ATTI, getAttitudeUpdateRate());
-        setTaskEnabled(TASK_ATTI, true);
-    }
-
-#else
-//    rescheduleTask(TASK_GYROPID, getGyroUpdateRate());
- //   setTaskEnabled(TASK_GYROPID, true);
-#endif
 
     setTaskEnabled(TASK_SERIAL, true);
 #ifdef BEEPER

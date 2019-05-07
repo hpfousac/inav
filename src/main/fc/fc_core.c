@@ -169,14 +169,6 @@ static void updateArmingStatus(void)
             }
         }
 
-	/* CHECK: pitch / roll sticks centered when NAV_LAUNCH_MODE enabled */
-	if (isNavLaunchEnabled()) {
-	  if (areSticksDeflectedMoreThanPosHoldDeadband()) {
-	    ENABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
-	  } else {
-	    DISABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
-	  }
-	}
 
         /* CHECK: Angle */
         if (!STATE(SMALL_ANGLE)) {
@@ -222,13 +214,6 @@ static void updateArmingStatus(void)
             DISABLE_ARMING_FLAG(ARMING_DISABLED_ACCELEROMETER_NOT_CALIBRATED);
         }
 
-        /* CHECK: */
-        if (!isHardwareHealthy()) {
-            ENABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
-        }        
-        else {
-            DISABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
-        }
 
         /* CHECK: Arming switch */
 //        if (!isUsingSticksForArming()) {
@@ -360,7 +345,6 @@ void mwArm(void)
         ENABLE_ARMING_FLAG(WAS_EVER_ARMED);
         headFreeModeHold = DECIDEGREES_TO_DEGREES(0);
 
-        resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
 
 #ifdef USE_BLACKBOX
         if (feature(FEATURE_BLACKBOX)) {
@@ -513,16 +497,6 @@ void processRx(timeUs_t currentTimeUs)
     }
 #endif
 
-    if (sensors(SENSOR_ACC)) {
-        if (IS_RC_MODE_ACTIVE(BOXHEADINGHOLD)) {
-            if (!FLIGHT_MODE(HEADING_MODE)) {
-                resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
-                ENABLE_FLIGHT_MODE(HEADING_MODE);
-            }
-        } else {
-            DISABLE_FLIGHT_MODE(HEADING_MODE);
-        }
-    }
 
 #if defined(USE_MAG)
     if (sensors(SENSOR_ACC) || sensors(SENSOR_MAG)) {
@@ -697,12 +671,12 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     if (!STATE(FIXED_WING)) {
         int16_t thrTiltCompStrength = 0;
 
-        if (navigationRequiresThrottleTiltCompensation()) {
-            thrTiltCompStrength = 100;
-        }
-        else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
-            thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
-        }
+        // if (navigationRequiresThrottleTiltCompensation()) {
+        //     thrTiltCompStrength = 100;
+        // }
+        // else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
+        //     thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
+        // }
 
         if (thrTiltCompStrength) {
             rcCommand[THROTTLE] = constrain(motorConfig()->minthrottle

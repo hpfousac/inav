@@ -173,104 +173,104 @@ static const configRecord_t *findEEPROM(const pgRegistry_t *reg, configRecordFla
 //   but each PG is loaded/initialized exactly once and in defined order.
 bool loadEEPROM(void)
 {
-    PG_FOREACH(reg) {
-        configRecordFlags_e cls_start, cls_end;
-        if (pgIsSystem(reg)) {
-            cls_start = CR_CLASSICATION_SYSTEM;
-            cls_end = CR_CLASSICATION_SYSTEM;
-        } else {
-            cls_start = CR_CLASSICATION_PROFILE1;
-            cls_end = CR_CLASSICATION_PROFILE_LAST;
-        }
-        for (configRecordFlags_e cls = cls_start; cls <= cls_end; cls++) {
-            int profileIndex = cls - cls_start;
-            const configRecord_t *rec = findEEPROM(reg, cls);
-            if (rec) {
-                // config from EEPROM is available, use it to initialize PG. pgLoad will handle version mismatch
-                pgLoad(reg, profileIndex, rec->pg, rec->size - offsetof(configRecord_t, pg), rec->version);
-            } else {
-                pgReset(reg, profileIndex);
-            }
-        }
-    }
+    // PG_FOREACH(reg) {
+    //     configRecordFlags_e cls_start, cls_end;
+    //     if (pgIsSystem(reg)) {
+    //         cls_start = CR_CLASSICATION_SYSTEM;
+    //         cls_end = CR_CLASSICATION_SYSTEM;
+    //     } else {
+    //         cls_start = CR_CLASSICATION_PROFILE1;
+    //         cls_end = CR_CLASSICATION_PROFILE_LAST;
+    //     }
+    //     for (configRecordFlags_e cls = cls_start; cls <= cls_end; cls++) {
+    //         int profileIndex = cls - cls_start;
+    //         const configRecord_t *rec = findEEPROM(reg, cls);
+    //         if (rec) {
+    //             // config from EEPROM is available, use it to initialize PG. pgLoad will handle version mismatch
+    //             // pgLoad(reg, profileIndex, rec->pg, rec->size - offsetof(configRecord_t, pg), rec->version);
+    //         } else {
+    //             // pgReset(reg, profileIndex);
+    //         }
+    //     }
+    // }
     return true;
 }
 
 static bool writeSettingsToEEPROM(void)
 {
-    config_streamer_t streamer;
-    config_streamer_init(&streamer);
+    // config_streamer_t streamer;
+    // config_streamer_init(&streamer);
 
-    config_streamer_start(&streamer, (uintptr_t)&__config_start, &__config_end - &__config_start);
+    // config_streamer_start(&streamer, (uintptr_t)&__config_start, &__config_end - &__config_start);
 
-    configHeader_t header = {
-        .format = EEPROM_CONF_VERSION,
-    };
+    // configHeader_t header = {
+    //     .format = EEPROM_CONF_VERSION,
+    // };
 
-    config_streamer_write(&streamer, (uint8_t *)&header, sizeof(header));
-    uint16_t crc = updateCRC(0, (uint8_t *)&header, sizeof(header));
-    PG_FOREACH(reg) {
-        const uint16_t regSize = pgSize(reg);
-        configRecord_t record = {
-            .size = sizeof(configRecord_t) + regSize,
-            .pgn = pgN(reg),
-            .version = pgVersion(reg),
-            .flags = 0
-        };
+    // config_streamer_write(&streamer, (uint8_t *)&header, sizeof(header));
+    // uint16_t crc = updateCRC(0, (uint8_t *)&header, sizeof(header));
+    // PG_FOREACH(reg) {
+    //     const uint16_t regSize = pgSize(reg);
+    //     configRecord_t record = {
+    //         .size = sizeof(configRecord_t) + regSize,
+    //         .pgn = pgN(reg),
+    //         .version = pgVersion(reg),
+    //         .flags = 0
+    //     };
 
-        if (pgIsSystem(reg)) {
-            // write the only instance
-            record.flags |= CR_CLASSICATION_SYSTEM;
-            config_streamer_write(&streamer, (uint8_t *)&record, sizeof(record));
-            crc = updateCRC(crc, (uint8_t *)&record, sizeof(record));
-            config_streamer_write(&streamer, reg->address, regSize);
-            crc = updateCRC(crc, reg->address, regSize);
-        } else {
-            // write one instance for each profile
-            for (uint8_t profileIndex = 0; profileIndex < MAX_PROFILE_COUNT; profileIndex++) {
-                record.flags = 0;
+    //     if (pgIsSystem(reg)) {
+    //         // write the only instance
+    //         record.flags |= CR_CLASSICATION_SYSTEM;
+    //         config_streamer_write(&streamer, (uint8_t *)&record, sizeof(record));
+    //         crc = updateCRC(crc, (uint8_t *)&record, sizeof(record));
+    //         config_streamer_write(&streamer, reg->address, regSize);
+    //         crc = updateCRC(crc, reg->address, regSize);
+    //     } else {
+    //         // write one instance for each profile
+    //         for (uint8_t profileIndex = 0; profileIndex < MAX_PROFILE_COUNT; profileIndex++) {
+    //             record.flags = 0;
 
-                record.flags |= ((profileIndex + 1) & CR_CLASSIFICATION_MASK);
-                config_streamer_write(&streamer, (uint8_t *)&record, sizeof(record));
-                crc = updateCRC(crc, (uint8_t *)&record, sizeof(record));
-                const uint8_t *address = reg->address + (regSize * profileIndex);
-                config_streamer_write(&streamer, address, regSize);
-                crc = updateCRC(crc, address, regSize);
-            }
-        }
-    }
+    //             record.flags |= ((profileIndex + 1) & CR_CLASSIFICATION_MASK);
+    //             config_streamer_write(&streamer, (uint8_t *)&record, sizeof(record));
+    //             crc = updateCRC(crc, (uint8_t *)&record, sizeof(record));
+    //             const uint8_t *address = reg->address + (regSize * profileIndex);
+    //             config_streamer_write(&streamer, address, regSize);
+    //             crc = updateCRC(crc, address, regSize);
+    //         }
+    //     }
+    // }
 
-    configFooter_t footer = {
-        .terminator = 0,
-    };
+    // configFooter_t footer = {
+    //     .terminator = 0,
+    // };
 
-    config_streamer_write(&streamer, (uint8_t *)&footer, sizeof(footer));
-    crc = updateCRC(crc, (uint8_t *)&footer, sizeof(footer));
+    // config_streamer_write(&streamer, (uint8_t *)&footer, sizeof(footer));
+    // crc = updateCRC(crc, (uint8_t *)&footer, sizeof(footer));
 
-    // append checksum now
-    config_streamer_write(&streamer, (uint8_t *)&crc, sizeof(crc));
+    // // append checksum now
+    // config_streamer_write(&streamer, (uint8_t *)&crc, sizeof(crc));
 
-    config_streamer_flush(&streamer);
+    // config_streamer_flush(&streamer);
 
-    bool success = config_streamer_finish(&streamer) == 0;
+    // bool success = config_streamer_finish(&streamer) == 0;
 
-    return success;
+    // return success;
 }
 
 void writeConfigToEEPROM(void)
 {
     bool success = false;
-    // write it
-    for (int attempt = 0; attempt < 3 && !success; attempt++) {
-        if (writeSettingsToEEPROM()) {
-            success = true;
-        }
-    }
+    // // write it
+    // for (int attempt = 0; attempt < 3 && !success; attempt++) {
+    //     if (writeSettingsToEEPROM()) {
+    //         success = true;
+    //     }
+    // }
 
-    if (success && isEEPROMContentValid()) {
-        return;
-    }
+    // if (success && isEEPROMContentValid()) {
+    //     return;
+    // }
 
-    // Flash write failed - just die now
-    failureMode(FAILURE_FLASH_WRITE_FAILED);
+    // // Flash write failed - just die now
+    // failureMode(FAILURE_FLASH_WRITE_FAILED);
 }

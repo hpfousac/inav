@@ -92,16 +92,16 @@ void hard_fault_handler_c(unsigned long *hardfault_args)
 
 void HardFault_Handler(void)
 {
-    LED2_ON;
+//    LED2_ON;
 
     // fall out of the sky
-    const uint8_t requiredStateForMotors = SYSTEM_STATE_CONFIG_LOADED | SYSTEM_STATE_MOTORS_READY;
-    if ((systemState & requiredStateForMotors) == requiredStateForMotors) {
-        stopMotors();
-    }
+    // const uint8_t requiredStateForMotors = SYSTEM_STATE_CONFIG_LOADED | SYSTEM_STATE_MOTORS_READY;
+    // if ((systemState & requiredStateForMotors) == requiredStateForMotors) {
+    //     stopMotors();
+    // }
 
-    LED1_OFF;
-    LED0_OFF;
+    // LED1_OFF;
+    // LED0_OFF;
 
     while (1) {
 #ifdef LED2
