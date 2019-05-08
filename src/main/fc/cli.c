@@ -974,37 +974,15 @@ static void cliAdjustmentRange(char *cmdline)
     }
 }
 
-static void printRxRange(uint8_t dumpMask, const rxChannelRangeConfig_t *channelRangeConfigs, const rxChannelRangeConfig_t *defaultChannelRangeConfigs)
-{
-    const char *format = "rxrange %u %u %u";
-    for (uint32_t i = 0; i < NON_AUX_CHANNEL_COUNT; i++) {
-        bool equalsDefault = false;
-        if (defaultChannelRangeConfigs) {
-            equalsDefault = channelRangeConfigs[i].min == defaultChannelRangeConfigs[i].min
-                && channelRangeConfigs[i].max == defaultChannelRangeConfigs[i].max;
-            cliDefaultPrintLinef(dumpMask, equalsDefault, format,
-                i,
-                defaultChannelRangeConfigs[i].min,
-                defaultChannelRangeConfigs[i].max
-            );
-        }
-        cliDumpPrintLinef(dumpMask, equalsDefault, format,
-            i,
-            channelRangeConfigs[i].min,
-            channelRangeConfigs[i].max
-        );
-    }
-}
-
 static void cliRxRange(char *cmdline)
 {
     int i, validArgumentCount = 0;
     const char *ptr;
 
     if (isEmpty(cmdline)) {
-        printRxRange(DUMP_MASTER, rxChannelRangeConfigs(0), NULL);
+        // printRxRange(DUMP_MASTER, rxChannelRangeConfigs(0), NULL);
     } else if (sl_strcasecmp(cmdline, "reset") == 0) {
-        resetAllRxChannelRangeConfigurations();
+        // resetAllRxChannelRangeConfigurations();
     } else {
         ptr = cmdline;
         i = fastA2I(ptr);
@@ -1027,10 +1005,6 @@ static void cliRxRange(char *cmdline)
                 cliShowParseError();
             } else if (rangeMin < PWM_PULSE_MIN || rangeMin > PWM_PULSE_MAX || rangeMax < PWM_PULSE_MIN || rangeMax > PWM_PULSE_MAX) {
                 cliShowParseError();
-            } else {
-                rxChannelRangeConfig_t *channelRangeConfig = rxChannelRangeConfigsMutable(i);
-                channelRangeConfig->min = rangeMin;
-                channelRangeConfig->max = rangeMax;
             }
         } else {
             cliShowArgumentRangeError("channel", 0, NON_AUX_CHANNEL_COUNT - 1);
@@ -1698,14 +1672,6 @@ static void printMap(uint8_t dumpMask, const rxConfig_t *rxConfig, const rxConfi
         buf[i] = bufDefault[i] = 0;
     }
 
-    for (i = 0; i < MAX_MAPPABLE_RX_INPUTS; i++) {
-        buf[rxConfig->rcmap[i]] = rcChannelLetters[i];
-        if (defaultRxConfig) {
-            bufDefault[defaultRxConfig->rcmap[i]] = rcChannelLetters[i];
-            equalsDefault = equalsDefault && (rxConfig->rcmap[i] == defaultRxConfig->rcmap[i]);
-        }
-    }
-    buf[i] = '\0';
 
     const char *formatMap = "map %s";
     cliDefaultPrintLinef(dumpMask, equalsDefault, formatMap, bufDefault);
@@ -1723,12 +1689,6 @@ static void cliMap(char *cmdline)
         // uppercase it
         for (uint32_t i = 0; i < 4; i++)
             cmdline[i] = sl_toupper((unsigned char)cmdline[i]);
-        for (uint32_t i = 0; i < 4; i++) {
-            if (strchr(rcChannelLetters, cmdline[i]) && !strchr(cmdline + i + 1, cmdline[i]))
-                continue;
-            cliShowParseError();
-            return;
-        }
 //        parseRcChannels(cmdline);
     } else if (len != 0)
         cliShowParseError();
@@ -2330,7 +2290,6 @@ static void printConfig(const char *cmdline, bool doDiff)
         printAdjustmentRange(dumpMask, adjustmentRanges_CopyArray, adjustmentRanges(0));
 
         cliPrintHashLine("rxrange");
-        printRxRange(dumpMask, rxChannelRangeConfigs_CopyArray, rxChannelRangeConfigs(0));
 
         cliPrintHashLine("master");
         dumpAllValues(MASTER_VALUE, dumpMask);

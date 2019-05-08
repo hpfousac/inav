@@ -137,6 +137,9 @@ NAV_NON_VOLATILE_WAYPOINT_STORAGE
 USE_PITOT
 USE_PMW_SERVO_DRIVER
 USE_QUAD_MIXER_ONLY
+USE_TELEMETRY
+
+RX_CHANNELS_TAER
 
 
 ## Config arrays/blocks ##
@@ -147,3 +150,5 @@ gyroConfig
 navConfig
 rcControlsConfig
 telemetryConfig
+
+PG_FOREACH - vypada jako ze ma v pozadi nejaky seznam memory bloku

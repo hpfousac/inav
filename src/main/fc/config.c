@@ -77,6 +77,8 @@
 
 #include "navigation/navigation.h"
 
+#undef USE_ASYNC_GYRO_PROCESSING
+
 #ifndef DEFAULT_FEATURES
 #define DEFAULT_FEATURES 0
 #endif
@@ -361,9 +363,9 @@ void validateAndFixConfig(void)
     }
 
     // If provided predefined mixer setup is disabled, fallback to default one
-    if (!isMixerEnabled(mixerConfig()->mixerMode)) {
-        mixerConfigMutable()->mixerMode = DEFAULT_MIXER;
-    }
+    // if (!isMixerEnabled(mixerConfig()->mixerMode)) {
+    //     mixerConfigMutable()->mixerMode = DEFAULT_MIXER;
+    // }
 
 #if defined(USE_NAV)
     // Ensure sane values of navConfig settings
@@ -409,11 +411,6 @@ void applyAndSaveBoardAlignmentDelta(int16_t roll, int16_t pitch)
 void createDefaultConfig(void)
 {
     // Radio
-#ifdef RX_CHANNELS_TAER
-    parseRcChannels("TAER1234");
-#else
-    parseRcChannels("AETR1234");
-#endif
 
 #ifdef USE_BLACKBOX
 #ifdef ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT

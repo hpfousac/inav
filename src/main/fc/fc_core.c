@@ -360,7 +360,7 @@ void mwArm(void)
         ENABLE_ARMING_FLAG(WAS_EVER_ARMED);
         headFreeModeHold = DECIDEGREES_TO_DEGREES(0);
 
-        resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
+        // resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(0));
 
 #ifdef USE_BLACKBOX
         if (feature(FEATURE_BLACKBOX)) {
@@ -697,12 +697,12 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     if (!STATE(FIXED_WING)) {
         int16_t thrTiltCompStrength = 0;
 
-        if (navigationRequiresThrottleTiltCompensation()) {
-            thrTiltCompStrength = 100;
-        }
-        else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
-            thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
-        }
+        // if (navigationRequiresThrottleTiltCompensation()) {
+        //     thrTiltCompStrength = 100;
+        // }
+        // else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
+        //     thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
+        // }
 
         if (thrTiltCompStrength) {
             rcCommand[THROTTLE] = constrain(motorConfig()->minthrottle
