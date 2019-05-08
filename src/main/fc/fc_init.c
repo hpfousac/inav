@@ -183,10 +183,10 @@ void init(void)
     HAL_Init();
 #endif
 
-    systemState = SYSTEM_STATE_INITIALISING;
-    initBootlog();
+    // systemState = SYSTEM_STATE_INITIALISING;
+    // initBootlog();
 
-    printfSupportInit();
+    // printfSupportInit();
 
     // Initialize system and CPU clocks to their initial values
     systemInit();
@@ -196,10 +196,6 @@ void init(void)
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
     detectHardwareRevision();
-#endif
-
-#ifdef BRUSHED_ESC_AUTODETECT
-    detectBrushedESC();
 #endif
 
     initEEPROM();
