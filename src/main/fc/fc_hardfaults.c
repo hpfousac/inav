@@ -97,7 +97,7 @@ void HardFault_Handler(void)
     // fall out of the sky
     const uint8_t requiredStateForMotors = SYSTEM_STATE_CONFIG_LOADED | SYSTEM_STATE_MOTORS_READY;
     if ((systemState & requiredStateForMotors) == requiredStateForMotors) {
-        stopMotors();
+        // stopMotors();
     }
 
     LED1_OFF;

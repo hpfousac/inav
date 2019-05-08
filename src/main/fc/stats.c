@@ -37,7 +37,7 @@ static uint32_t arm_mWhDrawn;
 void statsOnArm(void)
 {
     arm_millis      = millis();
-    arm_distance_cm = getTotalTravelDistance();
+    arm_distance_cm = 0;
 #ifdef USE_ADC
     arm_mWhDrawn    = getMWhDrawn();
 #endif
@@ -49,7 +49,7 @@ void statsOnDisarm(void)
         uint32_t dt = (millis() - arm_millis) / 1000;
         if (dt >= MIN_FLIGHT_TIME_TO_RECORD_STATS_S) {
             statsConfigMutable()->stats_total_time += dt;   //[s]
-            statsConfigMutable()->stats_total_dist += (getTotalTravelDistance() - arm_distance_cm) / 100;   //[m]
+            statsConfigMutable()->stats_total_dist += 0;   //[m]
 #ifdef USE_ADC
             if (feature(FEATURE_VBAT) && feature(FEATURE_CURRENT_METER))
                 statsConfigMutable()->stats_total_energy += getMWhDrawn() - arm_mWhDrawn;

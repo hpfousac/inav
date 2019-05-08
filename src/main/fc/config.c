@@ -463,7 +463,7 @@ static void activateConfig(void)
 
 void readEEPROM(void)
 {
-    suspendRxSignal();
+    // suspendRxSignal();
 
     // Sanity check, read flash
     if (!loadEEPROM()) {
@@ -480,11 +480,11 @@ void readEEPROM(void)
 
 void writeEEPROM(void)
 {
-    suspendRxSignal();
+    // suspendRxSignal();
 
     writeConfigToEEPROM();
 
-    resumeRxSignal();
+    // resumeRxSignal();
 }
 
 void resetEEPROM(void)

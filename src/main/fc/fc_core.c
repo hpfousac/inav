@@ -169,14 +169,14 @@ static void updateArmingStatus(void)
             }
         }
 
-	/* CHECK: pitch / roll sticks centered when NAV_LAUNCH_MODE enabled */
-	if (isNavLaunchEnabled()) {
-	  if (areSticksDeflectedMoreThanPosHoldDeadband()) {
-	    ENABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
-	  } else {
-	    DISABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
-	  }
-	}
+	// /* CHECK: pitch / roll sticks centered when NAV_LAUNCH_MODE enabled */
+	// if (isNavLaunchEnabled()) {
+	//   if (areSticksDeflectedMoreThanPosHoldDeadband()) {
+	//     ENABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
+	//   } else {
+	//     DISABLE_ARMING_FLAG(ARMING_DISABLED_ROLLPITCH_NOT_CENTERED);
+	//   }
+	// }
 
         /* CHECK: Angle */
         if (!STATE(SMALL_ANGLE)) {
@@ -223,12 +223,12 @@ static void updateArmingStatus(void)
         }
 
         /* CHECK: */
-        if (!isHardwareHealthy()) {
-            ENABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
-        }        
-        else {
-            DISABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
-        }
+        // if (!isHardwareHealthy()) {
+        //     ENABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
+        // }        
+        // else {
+        //     DISABLE_ARMING_FLAG(ARMING_DISABLED_HARDWARE_FAILURE);
+        // }
 
         /* CHECK: Arming switch */
 //        if (!isUsingSticksForArming()) {
