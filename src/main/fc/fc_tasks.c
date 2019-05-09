@@ -292,7 +292,7 @@ void fcTasksInit(void)
 
     setTaskEnabled(TASK_SERIAL, true);
 #ifdef BEEPER
-    setTaskEnabled(TASK_BEEPER, true);
+    // setTaskEnabled(TASK_BEEPER, true);
 #endif
 #ifdef USE_LIGHTS
     setTaskEnabled(TASK_LIGHTS, true);
@@ -422,12 +422,12 @@ cfTask_t cfTasks[TASK_COUNT] = {
     },
 
 #ifdef BEEPER
-    [TASK_BEEPER] = {
-        .taskName = "BEEPER",
-        .taskFunc = beeperUpdate,
-        .desiredPeriod = TASK_PERIOD_HZ(100),     // 100 Hz
-        .staticPriority = TASK_PRIORITY_MEDIUM,
-    },
+    // [TASK_BEEPER] = {
+    //     .taskName = "BEEPER",
+    //     .taskFunc = beeperUpdate,
+    //     .desiredPeriod = TASK_PERIOD_HZ(100),     // 100 Hz
+    //     .staticPriority = TASK_PRIORITY_MEDIUM,
+    // },
 #endif
 
 #ifdef USE_LIGHTS

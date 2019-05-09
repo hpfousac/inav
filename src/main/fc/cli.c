@@ -117,6 +117,9 @@ extern uint8_t __config_end;
 #include "telemetry/telemetry.h"
 #include "build/debug.h"
 
+
+#undef USE_FLASHFS
+
 #if FLASH_SIZE > 128
 #define PLAY_SOUND
 #endif

@@ -333,9 +333,9 @@ void init(void)
 #endif
     pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
     pwm_params.idlePulse = motorConfig()->mincommand;
-    if (feature(FEATURE_3D)) {
-        pwm_params.idlePulse = flight3DConfig()->neutral3d;
-    }
+    // if (feature(FEATURE_3D)) {
+    //     pwm_params.idlePulse = flight3DConfig()->neutral3d;
+    // }
 
     if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
         pwm_params.useFastPwm = false;
@@ -625,7 +625,7 @@ void init(void)
     m25p16_init(0);
 #endif
 
-    flashfsInit();
+    // flashfsInit();
 #endif
 
 #ifdef USE_SDCARD

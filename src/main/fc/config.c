@@ -140,7 +140,7 @@ PG_RESET_TEMPLATE(adcChannelConfig_t, adcChannelConfig,
 void validateNavConfig(void)
 {
     // Make sure minAlt is not more than maxAlt, maxAlt cannot be set lower than 500.
-    navConfigMutable()->general.land_slowdown_minalt = MIN(navConfig()->general.land_slowdown_minalt, navConfig()->general.land_slowdown_maxalt - 100);
+    // navConfigMutable()->general.land_slowdown_minalt = MIN(navConfig()->general.land_slowdown_minalt, navConfig()->general.land_slowdown_maxalt - 100);
 }
 #endif
 
@@ -369,30 +369,30 @@ void validateAndFixConfig(void)
 
 #if defined(USE_NAV)
     // Ensure sane values of navConfig settings
-    validateNavConfig();
+    // validateNavConfig();
 #endif
 
     // Limitations of different protocols
 #ifdef BRUSHED_MOTORS
-    motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 500, 32000);
+    // motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 500, 32000);
 #else
-    switch (motorConfig()->motorPwmProtocol) {
-    case PWM_TYPE_STANDARD: // Limited to 490 Hz
-        motorConfigMutable()->motorPwmRate = MIN(motorConfig()->motorPwmRate, 490);
-        break;
-    case PWM_TYPE_ONESHOT125:   // Limited to 3900 Hz
-        motorConfigMutable()->motorPwmRate = MIN(motorConfig()->motorPwmRate, 3900);
-        break;
-    case PWM_TYPE_ONESHOT42:    // 2-8 kHz
-        motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 2000, 8000);
-        break;
-    case PWM_TYPE_MULTISHOT:    // 2-16 kHz
-        motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 2000, 16000);
-        break;
-    case PWM_TYPE_BRUSHED:      // 500Hz - 32kHz
-        motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 500, 32000);
-        break;
-    }
+    // switch (motorConfig()->motorPwmProtocol) {
+    // case PWM_TYPE_STANDARD: // Limited to 490 Hz
+    //     motorConfigMutable()->motorPwmRate = MIN(motorConfig()->motorPwmRate, 490);
+    //     break;
+    // case PWM_TYPE_ONESHOT125:   // Limited to 3900 Hz
+    //     motorConfigMutable()->motorPwmRate = MIN(motorConfig()->motorPwmRate, 3900);
+    //     break;
+    // case PWM_TYPE_ONESHOT42:    // 2-8 kHz
+    //     motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 2000, 8000);
+    //     break;
+    // case PWM_TYPE_MULTISHOT:    // 2-16 kHz
+    //     motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 2000, 16000);
+    //     break;
+    // case PWM_TYPE_BRUSHED:      // 500Hz - 32kHz
+    //     motorConfigMutable()->motorPwmRate = constrain(motorConfig()->motorPwmRate, 500, 32000);
+    //     break;
+    // }
 #endif
 
 #if !defined(USE_MPU_DATA_READY_SIGNAL)
@@ -492,10 +492,10 @@ void resetEEPROM(void)
 
 void ensureEEPROMContainsValidData(void)
 {
-    if (isEEPROMContentValid()) {
-        return;
-    }
-    resetEEPROM();
+    // if (isEEPROMContentValid()) {
+    //     return;
+    // }
+    // resetEEPROM();
 }
 
 void saveConfigAndNotify(void)

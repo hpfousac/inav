@@ -213,9 +213,9 @@ serialPortConfig_t *findNextSerialPortConfig(serialPortFunction_e function)
     while (findSerialPortConfigState.lastIndex < SERIAL_PORT_COUNT) {
         serialPortConfig_t *candidate = &serialConfigMutable()->portConfigs[findSerialPortConfigState.lastIndex++];
 
-        if (candidate->functionMask & function) {
-            return candidate;
-        }
+        // if (candidate->functionMask & function) {
+        //     return candidate;
+        // }
     }
     return NULL;
 }

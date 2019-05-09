@@ -127,11 +127,13 @@ bit array containig rew stages.
 
 ## Compile-time Symbols ##
 
-Some of them are defined somewhere else from *TARGET* and **Makefile**.
+Some of them are defined somewhere else from *TARGET*, **Makefile** and **target.mk**.
+
 
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
+USE_FLASHFS
 USE_GPS
 USE_HARDWARE_REVISION_DETECTION
 USE_NAV
@@ -144,6 +146,8 @@ USE_TELEMETRY
 BRUSHED_ESC_AUTODETECT
 RX_CHANNELS_TAER
 SOFTSERIAL_LOOPBACK
+
+ONBOARDFLASH
 
 ## Config arrays/blocks ##
 

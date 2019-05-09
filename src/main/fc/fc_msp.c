@@ -95,6 +95,7 @@
 
 #undef USE_NAV
 #undef VTX_COMMON
+#undef USE_FLASHFS
 #undef USE_GPS
 #undef NAV_NON_VOLATILE_WAYPOINT_STORAGE
 #undef USE_BLACKBOX
@@ -1156,13 +1157,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         return MSP_RESULT_ERROR;
 
     case MSP_SET_3D:
-        if (dataSize >= 6) {
-            flight3DConfigMutable()->deadband3d_low = sbufReadU16(src);
-            flight3DConfigMutable()->deadband3d_high = sbufReadU16(src);
-            flight3DConfigMutable()->neutral3d = sbufReadU16(src);
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_RC_DEADBAND:
         if (dataSize >= 5) {
@@ -1186,27 +1181,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
     case MSP_SET_FILTER_CONFIG :
          return MSP_RESULT_ERROR;
     case MSP_SET_PID_ADVANCED:
-        if (dataSize >= 17) {
-            pidProfileMutable()->rollPitchItermIgnoreRate = sbufReadU16(src);
-            pidProfileMutable()->yawItermIgnoreRate = sbufReadU16(src);
-            pidProfileMutable()->yaw_p_limit = sbufReadU16(src);
-
-            sbufReadU8(src); //BF: pidProfileMutable()->deltaMethod
-            sbufReadU8(src); //BF: pidProfileMutable()->vbatPidCompensation
-            sbufReadU8(src); //BF: pidProfileMutable()->setpointRelaxRatio
-            pidProfileMutable()->dterm_setpoint_weight = constrainf(sbufReadU8(src) / 100.0f, 0.0f, 2.0f);
-            pidProfileMutable()->pidSumLimit = sbufReadU16(src);
-            sbufReadU8(src); //BF: pidProfileMutable()->itermThrottleGain
-
-            /*
-             * To keep compatibility on MSP frame length level with Betaflight, axis axisAccelerationLimitYaw
-             * limit will be sent and received in [dps / 10]
-             */
-            pidProfileMutable()->axisAccelerationLimitRollPitch = sbufReadU16(src) * 10;
-            pidProfileMutable()->axisAccelerationLimitYaw = sbufReadU16(src) * 10;
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+         return MSP_RESULT_ERROR;
 
     case MSP_SET_INAV_PID:
         return MSP_RESULT_ERROR;
