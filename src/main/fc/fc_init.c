@@ -162,19 +162,19 @@ uint8_t systemState = SYSTEM_STATE_INITIALISING;
 
 void flashLedsAndBeep(void)
 {
-    LED1_ON;
-    LED0_OFF;
-    for (uint8_t i = 0; i < 10; i++) {
-        LED1_TOGGLE;
-        LED0_TOGGLE;
-        delay(25);
-        if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
-            BEEP_ON;
-        delay(25);
-        BEEP_OFF;
-    }
-    LED0_OFF;
-    LED1_OFF;
+    // LED1_ON;
+    // LED0_OFF;
+    // for (uint8_t i = 0; i < 10; i++) {
+    //     LED1_TOGGLE;
+    //     LED0_TOGGLE;
+    //     delay(25);
+    //     if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
+    //         BEEP_ON;
+    //     delay(25);
+    //     BEEP_OFF;
+    // }
+    // LED0_OFF;
+    // LED1_OFF;
 }
 
 void init(void)
@@ -372,26 +372,26 @@ void init(void)
     systemState |= SYSTEM_STATE_MOTORS_READY;
 
 #ifdef BEEPER
-    beeperDevConfig_t beeperDevConfig = {
-        .ioTag = IO_TAG(BEEPER),
+    // beeperDevConfig_t beeperDevConfig = {
+    //     .ioTag = IO_TAG(BEEPER),
 #ifdef BEEPER_INVERTED
-        .isOD = false,
-        .isInverted = true
+        // .isOD = false,
+        // .isInverted = true
 #else
-        .isOD = true,
-        .isInverted = false
+        // .isOD = true,
+        // .isInverted = false
 #endif
-    };
+    // };
 
 #if defined(NAZE) && defined(USE_HARDWARE_REVISION_DETECTION)
     if (hardwareRevision >= NAZE32_REV5) {
         // naze rev4 and below used opendrain to PNP for buzzer. Rev5 and above use PP to NPN.
-        beeperDevConfig.isOD = false;
-        beeperDevConfig.isInverted = true;
+        // beeperDevConfig.isOD = false;
+        // beeperDevConfig.isInverted = true;
     }
 #endif
 
-    beeperInit(&beeperDevConfig);
+    // beeperInit(&beeperDevConfig);
 #endif
 #ifdef USE_LIGHTS
     lightsInit();
@@ -484,22 +484,22 @@ void init(void)
 #endif
 
 #ifdef USE_ADC
-    drv_adc_config_t adc_params;
-    memset(&adc_params, 0, sizeof(adc_params));
+    // drv_adc_config_t adc_params;
+    // memset(&adc_params, 0, sizeof(adc_params));
 
-    // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
+    // // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
 
-    if (feature(FEATURE_RSSI_ADC)) {
-        adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
-    }
+    // if (feature(FEATURE_RSSI_ADC)) {
+    //     adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
+    // }
 
 #if defined(USE_PITOT) && defined(USE_ADC) && defined(USE_PITOT_ADC)
-    if (pitotmeterConfig()->pitot_hardware == PITOT_ADC || pitotmeterConfig()->pitot_hardware == PITOT_AUTODETECT) {
-        adc_params.adcFunctionChannel[ADC_AIRSPEED] = adcChannelConfig()->adcFunctionChannel[ADC_AIRSPEED];
-    }
+    // if (pitotmeterConfig()->pitot_hardware == PITOT_ADC || pitotmeterConfig()->pitot_hardware == PITOT_AUTODETECT) {
+    //     adc_params.adcFunctionChannel[ADC_AIRSPEED] = adcChannelConfig()->adcFunctionChannel[ADC_AIRSPEED];
+    // }
 #endif
 
-    adcInit(&adc_params);
+    // adcInit(&adc_params);
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)

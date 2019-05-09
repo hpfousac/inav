@@ -243,11 +243,11 @@ void validateAndFixConfig(void)
     if (rxConfig()->receiverType == RX_TYPE_PWM) {
 #if defined(STM32F10X)
         // rssi adc needs the same ports
-        featureClear(FEATURE_RSSI_ADC);
+        // featureClear(FEATURE_RSSI_ADC);
         // current meter needs the same ports
-        if (batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
-            featureClear(FEATURE_CURRENT_METER);
-        }
+        // if (batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
+        //     featureClear(FEATURE_CURRENT_METER);
+        // }
 #if defined(CC3D)
         // There is a timer clash between PWM RX pins and motor output pins - this forces us to have same timer tick rate for these timers
         // which is only possible when using brushless motors w/o oneshot (timer tick rate is PWM_TIMER_MHZ)
@@ -318,15 +318,15 @@ void validateAndFixConfig(void)
 #endif
 
 #if defined(NAZE) && defined(USE_RANGEFINDER_HCSR04)
-    if ((rxConfig()->receiverType == RX_TYPE_PWM) && (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && featureConfigured(FEATURE_CURRENT_METER) && batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
-        featureClear(FEATURE_CURRENT_METER);
-    }
+    // if ((rxConfig()->receiverType == RX_TYPE_PWM) && (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && featureConfigured(FEATURE_CURRENT_METER) && batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
+    //     featureClear(FEATURE_CURRENT_METER);
+    // }
 #endif
 
 #if defined(OLIMEXINO) && defined(USE_RANGEFINDER_HCSR04)
-    if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_CURRENT_METER) && batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
-        featureClear(FEATURE_CURRENT_METER);
-    }
+    // if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_CURRENT_METER) && batteryConfig()->currentMeterType == CURRENT_SENSOR_ADC) {
+    //     featureClear(FEATURE_CURRENT_METER);
+    // }
 #endif
 
 #if defined(CC3D) && defined(USE_DASHBOARD) && defined(USE_UART3)

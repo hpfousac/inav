@@ -129,6 +129,7 @@ bit array containig rew stages.
 
 Some of them are defined somewhere else from *TARGET* and **Makefile**.
 
+USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
 USE_GPS
@@ -161,4 +162,4 @@ typedef struct timerHardware_s
 
  move conditionally added fields to the end of list. Obey this can result in strange behaviour after 
  sucessfull compilation and linking based on wrong combination of parameters/attributes.
- 
+

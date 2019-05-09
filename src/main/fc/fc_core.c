@@ -134,7 +134,7 @@ int16_t getAxisRcCommand(int16_t rawData, int16_t rate, int16_t deadband)
 static void updateArmingStatus(void)
 {
     if (ARMING_FLAG(ARMED)) {
-        LED0_ON;
+        // LED0_ON;
     } else {
         /* CHECK: Run-time calibration */
         static bool calibratingFinishedBeep = false;
@@ -486,9 +486,9 @@ void processRx(timeUs_t currentTimeUs)
     }
 
     if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE)) {
-        LED1_ON;
+        // LED1_ON;
     } else {
-        LED1_OFF;
+        // LED1_OFF;
     }
 
 #ifdef USE_SERVOS

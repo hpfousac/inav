@@ -2093,23 +2093,23 @@ static void cliStatus(char *cmdline)
         }
 
         cliPrint(", used = ");
-        if (adcGetFunctionChannelAllocation(i) == ADC_CHN_NONE) {
-            cliPrintLine("none");
-        }
-        else {
-            cliPrintLinef("ADC %d", adcGetFunctionChannelAllocation(i));
-        }
+        // if (adcGetFunctionChannelAllocation(i) == ADC_CHN_NONE) {
+        //     cliPrintLine("none");
+        // }
+        // else {
+        //     cliPrintLinef("ADC %d", adcGetFunctionChannelAllocation(i));
+        // }
     }
 #endif
 
     cliPrintf("System load: %d", averageSystemLoadPercent);
 #ifdef USE_ASYNC_GYRO_PROCESSING
-    const timeDelta_t pidTaskDeltaTime = getTaskDeltaTime(TASK_PID);
+    // const timeDelta_t pidTaskDeltaTime = getTaskDeltaTime(TASK_PID);
 #else
-    const timeDelta_t pidTaskDeltaTime = getTaskDeltaTime(TASK_GYROPID);
+    // const timeDelta_t pidTaskDeltaTime = getTaskDeltaTime(TASK_GYROPID);
 #endif
-    const int pidRate = pidTaskDeltaTime == 0 ? 0 : (int)(1000000.0f / ((float)pidTaskDeltaTime));
-    const int rxRate = getTaskDeltaTime(TASK_RX) == 0 ? 0 : (int)(1000000.0f / ((float)getTaskDeltaTime(TASK_RX)));
+    const int pidRate = 0;
+    const int rxRate = 0;
     const int systemRate = getTaskDeltaTime(TASK_SYSTEM) == 0 ? 0 : (int)(1000000.0f / ((float)getTaskDeltaTime(TASK_SYSTEM)));
     cliPrintLinef(", cycle time: %d, PID rate: %d, RX rate: %d, System rate: %d",  (uint16_t)cycleTime, pidRate, rxRate, systemRate);
 #if !defined(CLI_MINIMAL_VERBOSITY)

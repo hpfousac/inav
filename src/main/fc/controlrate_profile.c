@@ -76,7 +76,7 @@ void setControlRateProfile(uint8_t profileIndex)
 
 void activateControlRateConfig(void)
 {
-    generateThrottleCurve(currentControlRateProfile);
+    // generateThrottleCurve(currentControlRateProfile);
 }
 
 void changeControlRateProfile(uint8_t profileIndex)

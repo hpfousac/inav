@@ -119,4 +119,4 @@
 // sn dec06.16 added MAX_PWM_OUTPUT_PORTS: number of available PWM outputs
 // porting inav to PIKO BLX by using betaflight target files from before inav changes to timer.h/timer_def.h
 // review of target.c shows definitions for PWB1-PWM9. PWM9 is for PPM input
-#define MAX_PWM_OUTPUT_PORTS    6
+#define MAX_PWM_OUTPUT_PORTS    10
