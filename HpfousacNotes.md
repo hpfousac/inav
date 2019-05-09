@@ -154,3 +154,11 @@ rcControlsConfig
 telemetryConfig
 
 PG_FOREACH - vypada jako ze ma v pozadi nejaky seznam memory bloku
+
+
+# Recomended changesc #
+typedef struct timerHardware_s
+
+ move conditionally added fields to the end of list. Obey this can result in strange behaviour after 
+ sucessfull compilation and linking based on wrong combination of parameters/attributes.
+ 

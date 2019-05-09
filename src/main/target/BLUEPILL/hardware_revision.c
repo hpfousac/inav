@@ -84,7 +84,7 @@ uint8_t detectSpiDevice(void)
     // try autodetect MPU
     delay(50);
     ENABLE_SPI_CS;
-    spiTransferByte(NAZE_SPI_INSTANCE, MPU_RA_WHO_AM_I | MPU6500_BIT_RESET);
+//    spiTransferByte(NAZE_SPI_INSTANCE, MPU_RA_WHO_AM_I | MPU6500_BIT_RESET);
     in[0] = spiTransferByte(NAZE_SPI_INSTANCE, 0xff);
     DISABLE_SPI_CS;
 
