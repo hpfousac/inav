@@ -561,12 +561,12 @@ cfTask_t cfTasks[TASK_COUNT] = {
 #endif
 
 #ifdef USE_CMS
-    [TASK_CMS] = {
-        .taskName = "CMS",
-        .taskFunc = cmsHandler,
-        .desiredPeriod = TASK_PERIOD_HZ(50),
-        .staticPriority = TASK_PRIORITY_LOW,
-    },
+//    [TASK_CMS] = {
+//        .taskName = "CMS",
+//        .taskFunc = cmsHandler,
+//        .desiredPeriod = TASK_PERIOD_HZ(50),
+//        .staticPriority = TASK_PRIORITY_LOW,
+//    },
 #endif
 
 #ifdef USE_OPTICAL_FLOW

@@ -136,6 +136,7 @@ Some of them are defined somewhere else from *TARGET*, **Makefile** and **target
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
+USE_CMS - neni u F1
 USE_DEBUG_TRACE
 USE_EXTI
 USE_FLASHFS

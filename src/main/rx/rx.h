@@ -15,7 +15,8 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef __rx_h__
+#define __rx_h__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -184,3 +185,5 @@ void suspendRxSignal(void);
 void resumeRxSignal(void);
 
 uint16_t rxGetRefreshRate(void);
+
+#endif // __rx_h__

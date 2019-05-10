@@ -128,7 +128,7 @@ int16_t getAxisRcCommand(int16_t rawData, int16_t rate, int16_t deadband)
     stickDeflection = constrain(rawData - 1000, -500, 500);
     stickDeflection = applyDeadband(stickDeflection, deadband);
 
-    return rcLookup(stickDeflection, rate);
+    return stickDeflection;
 }
 
 static void updateArmingStatus(void)
@@ -297,7 +297,7 @@ void annexCode(void)
         //Compute THROTTLE command
         throttleValue = constrain(rcData[THROTTLE], 1000, PWM_RANGE_MAX);
         throttleValue = (uint32_t)(throttleValue - 1000) * PWM_RANGE_MIN / (PWM_RANGE_MAX - 1000);       // [MINCHECK;2000] -> [0;1000]
-        rcCommand[THROTTLE] = rcLookupThrottle(throttleValue);
+        rcCommand[THROTTLE] = throttleValue;
 
         // Signal updated rcCommand values to Failsafe system
 //        failsafeUpdateRcCommandValues();
@@ -691,10 +691,10 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
 
     // Update PID coefficients
-    updatePIDCoefficients();
+    // updatePIDCoefficients();
 
     // Calculate stabilisation
-    pidController();
+    // pidController();
 
 #ifdef HIL
     if (hilActive) {
@@ -703,7 +703,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     }
 #endif
 
-    mixTable();
+//    mixTable();
 
 #ifdef USE_SERVOS
     if (isMixerUsingServos()) {
