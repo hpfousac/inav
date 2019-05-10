@@ -405,13 +405,6 @@ void initLtmTelemetry(void)
 static void configureLtmScheduler(void)
 {
 
-    /* setup scheduler, default to 'normal' */
-    if (telemetryConfig()->ltmUpdateRate == LTM_RATE_MEDIUM)
-        ltm_schedule = ltm_medium_schedule;
-    else if (telemetryConfig()->ltmUpdateRate == LTM_RATE_SLOW)
-        ltm_schedule = ltm_slow_schedule;
-    else
-        ltm_schedule = ltm_normal_schedule;
 
 }
 

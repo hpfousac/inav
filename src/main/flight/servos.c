@@ -176,10 +176,10 @@ int16_t determineServoMiddleOrForwardFromChannel(servoIndex_e servoIndex)
 {
     const uint8_t channelToForwardFrom = servoParams(servoIndex)->forwardFromChannel;
 
-    // TODO: Zatim nechat
-    if (channelToForwardFrom != CHANNEL_FORWARDING_DISABLED && channelToForwardFrom < rxRuntimeConfig.channelCount) {
-        return rcData[channelToForwardFrom];
-    }
+    // TODO: uz ne
+//    if (channelToForwardFrom != CHANNEL_FORWARDING_DISABLED && channelToForwardFrom < rxRuntimeConfig.channelCount) {
+//        return rcData[channelToForwardFrom];
+//    }
 
     return servoParams(servoIndex)->middle;
 }
@@ -203,7 +203,7 @@ void servoComputeScalingFactors(uint8_t servoIndex) {
 
 void servosInit(void)
 {
-    const mixerMode_e currentMixerMode = mixerConfig()->mixerMode;
+    const mixerMode_e currentMixerMode = 0;
     const mixer_t * motorMixer = NULL; // findMixer(currentMixerMode);
 
     minServoIndex = servoMixers[currentMixerMode].minServoIndex;
@@ -251,7 +251,7 @@ void servosInit(void)
 
 bool loadCustomServoMixer(void)
 {
-    const mixerMode_e currentMixerMode = mixerConfig()->mixerMode;
+    const mixerMode_e currentMixerMode = 0;
     if (!(currentMixerMode == MIXER_CUSTOM_AIRPLANE || currentMixerMode == MIXER_CUSTOM_TRI || currentMixerMode == MIXER_CUSTOM)) {
         return false;
     }
@@ -339,7 +339,7 @@ void writeServos(void)
     /*
      * in case of tricopters, there might me a need to zero servo output when unarmed
      */
-    const mixerMode_e currentMixerMode = mixerConfig()->mixerMode;
+    const mixerMode_e currentMixerMode = 0;
     if ((currentMixerMode == MIXER_TRI || currentMixerMode == MIXER_CUSTOM_TRI) && !ARMING_FLAG(ARMED) && !servoConfig()->tri_unarmed_servo) {
         zeroServoValue = true;
     }

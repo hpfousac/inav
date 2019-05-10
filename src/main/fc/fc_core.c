@@ -587,19 +587,6 @@ void processRx(timeUs_t currentTimeUs)
 //    autotuneUpdateState();
 #endif
 
-#ifdef USE_TELEMETRY
-    if (feature(FEATURE_TELEMETRY)) {
-        if ((!telemetryConfig()->telemetry_switch && ARMING_FLAG(ARMED)) ||
-                (telemetryConfig()->telemetry_switch && IS_RC_MODE_ACTIVE(BOXTELEMETRY))) {
-
-            releaseSharedTelemetryPorts();
-        } else {
-            // the telemetry state must be checked immediately so that shared serial ports are released.
-            telemetryCheckState();
-            mspSerialAllocatePorts();
-        }
-    }
-#endif
 
 }
 
@@ -677,14 +664,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // motors do not spin up while we are trying to arm or disarm.
     // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
     if (isUsingSticksForArming() && rcData[THROTTLE] <= 1000
-#ifndef USE_QUAD_MIXER_ONLY
-#ifdef USE_SERVOS
-            && !((mixerConfig()->mixerMode == MIXER_TRI || mixerConfig()->mixerMode == MIXER_CUSTOM_TRI) && servoConfig()->tri_unarmed_servo)
-#endif
-            && mixerConfig()->mixerMode != MIXER_AIRPLANE
-            && mixerConfig()->mixerMode != MIXER_FLYING_WING
-            && mixerConfig()->mixerMode != MIXER_CUSTOM_AIRPLANE
-#endif
     ) {
         rcCommand[YAW] = 0;
     }
@@ -756,13 +735,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
         blackboxUpdate(micros());
     }
 #endif
-}
-
-bool taskUpdateRxCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
-{
-    UNUSED(currentDeltaTime);
-
-    return rxUpdateCheck(currentTimeUs, currentDeltaTime);
 }
 
 void taskUpdateRxMain(timeUs_t currentTimeUs)

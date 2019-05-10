@@ -223,11 +223,6 @@ void initActiveBoxIds(void)
 
     activeBoxIds[activeBoxIdCount++] = BOXOSD;
 
-#ifdef USE_TELEMETRY
-    if (feature(FEATURE_TELEMETRY) && telemetryConfig()->telemetry_switch)
-        activeBoxIds[activeBoxIdCount++] = BOXTELEMETRY;
-#endif
-
 #ifdef USE_BLACKBOX
     if (feature(FEATURE_BLACKBOX)){
         activeBoxIds[activeBoxIdCount++] = BOXBLACKBOX;

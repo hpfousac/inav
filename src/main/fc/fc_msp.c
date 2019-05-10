@@ -453,10 +453,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_RC:
-        for (int i = 0; i < rxRuntimeConfig.channelCount; i++) {
-            sbufWriteU16(dst, rcData[i]);
-        }
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_ATTITUDE:
         return MSP_RESULT_ERROR;

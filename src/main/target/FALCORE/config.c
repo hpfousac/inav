@@ -43,7 +43,6 @@
 void targetConfiguration(void)
 {
     systemConfigMutable()->asyncMode = ASYNC_MODE_NONE;
-    mixerConfigMutable()->mixerMode = MIXER_QUADX;
     
     featureSet(FEATURE_VBAT);
     featureSet(FEATURE_GPS);
@@ -95,7 +94,6 @@ void targetConfiguration(void)
     boardAlignmentMutable()->pitchDeciDegrees = 165;
     boardAlignmentMutable()->yawDeciDegrees = 0;
     
-    mixerConfigMutable()->yaw_jump_prevention_limit = 200;
     
     imuConfigMutable()->small_angle = 30;
     

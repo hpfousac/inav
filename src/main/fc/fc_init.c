@@ -303,23 +303,9 @@ void init(void)
     pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
 #endif
 
-    pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
-#ifndef BRUSHED_MOTORS
-    pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
-                            (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
-                            (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
-#endif
-    pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
-    pwm_params.idlePulse = motorConfig()->mincommand;
     // if (feature(FEATURE_3D)) {
     //     pwm_params.idlePulse = flight3DConfig()->neutral3d;
     // }
-
-    if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
-        pwm_params.useFastPwm = false;
-        featureClear(FEATURE_3D);
-        pwm_params.idlePulse = 0; // brushed motors
-    }
 
     pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 

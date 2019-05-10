@@ -453,13 +453,13 @@ cfTask_t cfTasks[TASK_COUNT] = {
 //        .staticPriority = TASK_PRIORITY_LOW,
 //    },
 
-    [TASK_RX] = {
-        .taskName = "RX",
-        .checkFunc = taskUpdateRxCheck,
-        .taskFunc = taskUpdateRxMain,
-        .desiredPeriod = TASK_PERIOD_HZ(50),      // If event-based scheduling doesn't work, fallback to periodic scheduling
-        .staticPriority = TASK_PRIORITY_HIGH,
-    },
+//    [TASK_RX] = {
+//        .taskName = "RX",
+//        .checkFunc = taskUpdateRxCheck,
+//        .taskFunc = taskUpdateRxMain,
+//        .desiredPeriod = TASK_PERIOD_HZ(50),      // If event-based scheduling doesn't work, fallback to periodic scheduling
+//        .staticPriority = TASK_PRIORITY_HIGH,
+//    },
 
 #ifdef USE_GPS
 //    [TASK_GPS] = {

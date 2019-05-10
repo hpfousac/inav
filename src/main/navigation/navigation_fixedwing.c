@@ -462,11 +462,6 @@ void applyFixedWingPitchRollThrottleController(navigationFSMStateFlags_t navStat
         rcCommand[ROLL] = pidAngleToRcCommand(rollCorrection, pidProfile()->max_angle_inclination[FD_ROLL]);
     }
 
-    if ((navStateFlags & NAV_CTL_ALT) || (navStateFlags & NAV_CTL_POS)) {
-        uint16_t correctedThrottleValue = constrain(navConfig()->fw.cruise_throttle + throttleCorrection, navConfig()->fw.min_throttle, navConfig()->fw.max_throttle);
-        rcCommand[THROTTLE] = constrain(correctedThrottleValue, motorConfig()->minthrottle, motorConfig()->maxthrottle);
-    }
-
 #ifdef NAV_FIXED_WING_LANDING
     /*
      * Then altitude is below landing slowdown min. altitude, enable final approach procedure
@@ -478,7 +473,7 @@ void applyFixedWingPitchRollThrottleController(navigationFSMStateFlags_t navStat
             /*
              * Set motor to min. throttle and stop it when MOTOR_STOP feature is enabled
              */
-            rcCommand[THROTTLE] = motorConfig()->minthrottle;
+            rcCommand[THROTTLE] = 1000;
             ENABLE_STATE(NAV_MOTOR_STOP_OR_IDLE);
 
             /*

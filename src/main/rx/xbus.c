@@ -255,31 +255,5 @@ static void xBusDataReceive(uint16_t c, void *rxCallbackData)
 }
 
 // Indicate time to read a frame from the data...
-static uint8_t xBusFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxRuntimeConfig);
-
-    if (!xBusFrameReceived) {
-        return RX_FRAME_PENDING;
-    }
-
-    xBusFrameReceived = false;
-
-    return RX_FRAME_COMPLETE;
-}
-
-static uint16_t xBusReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
-{
-    uint16_t data;
-
-    // Deliver the data wanted
-    if (chan >= rxRuntimeConfig->channelCount) {
-        return 0;
-    }
-
-    data = xBusChannelData[chan];
-
-    return data;
-}
 
 #endif // USE_SERIALRX_XBUS
