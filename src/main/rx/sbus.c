@@ -158,46 +158,4 @@ static uint8_t sbusFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
     return sbusChannelsDecode(rxRuntimeConfig, &sbusFrameData->frame.frame.channels);
 }
 
-bool sbusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    static uint16_t sbusChannelData[SBUS_MAX_CHANNEL];
-    static sbusFrameData_t sbusFrameData;
-
-    rxRuntimeConfig->channelData = sbusChannelData;
-    rxRuntimeConfig->frameData = &sbusFrameData;
-    sbusChannelsInit(rxConfig, rxRuntimeConfig);
-
-    rxRuntimeConfig->channelCount = SBUS_MAX_CHANNEL;
-    rxRuntimeConfig->rxRefreshRate = 11000;
-
-    rxRuntimeConfig->rcFrameStatusFn = sbusFrameStatus;
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
-
-#ifdef USE_TELEMETRY
-    bool portShared = telemetryCheckRxPortShared(portConfig);
-#else
-    bool portShared = false;
-#endif
-
-    serialPort_t *sBusPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        sbusDataReceive,
-        &sbusFrameData,
-        SBUS_BAUDRATE,
-        portShared ? MODE_RXTX : MODE_RX,
-        SBUS_PORT_OPTIONS | (rxConfig->serialrx_inverted ? 0 : SERIAL_INVERTED) | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
-        );
-
-#ifdef USE_TELEMETRY
-    if (portShared) {
-        telemetrySharedPort = sBusPort;
-    }
-#endif
-
-    return sBusPort != NULL;
-}
 #endif

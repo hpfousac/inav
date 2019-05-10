@@ -162,42 +162,4 @@ static uint16_t sumdReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t 
     return sumdChannels[chan] / 8;
 }
 
-bool sumdInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-
-    rxRuntimeConfig->channelCount = SUMD_MAX_CHANNEL;
-    rxRuntimeConfig->rxRefreshRate = 11000;
-
-    rxRuntimeConfig->rcReadRawFn = sumdReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = sumdFrameStatus;
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
-
-#ifdef USE_TELEMETRY
-    bool portShared = telemetryCheckRxPortShared(portConfig);
-#else
-    bool portShared = false;
-#endif
-
-    serialPort_t *sumdPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        sumdDataReceive,
-        NULL,
-        SUMD_BAUDRATE,
-        portShared ? MODE_RXTX : MODE_RX,
-        SERIAL_NOT_INVERTED | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
-        );
-
-#ifdef USE_TELEMETRY
-    if (portShared) {
-        telemetrySharedPort = sumdPort;
-    }
-#endif
-
-    return sumdPort != NULL;
-}
 #endif // USE_SERIALRX_SUMD

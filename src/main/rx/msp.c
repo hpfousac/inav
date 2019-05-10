@@ -64,14 +64,4 @@ static uint8_t rxMspFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
     return RX_FRAME_COMPLETE;
 }
 
-void rxMspInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-
-    rxRuntimeConfig->channelCount = MAX_SUPPORTED_RC_CHANNEL_COUNT;
-    rxRuntimeConfig->rxRefreshRate = 20000;
-    rxRuntimeConfig->rxSignalTimeout = DELAY_5_HZ;
-    rxRuntimeConfig->rcReadRawFn = rxMspReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = rxMspFrameStatus;
-}
 #endif

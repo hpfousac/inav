@@ -293,10 +293,5 @@ static void symaNrf24Setup(rx_spi_protocol_e protocol)
     NRF24L01_SetRxMode(); // enter receive mode to start listening for packets
 }
 
-void symaNrf24Init(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    rxRuntimeConfig->channelCount = RC_CHANNEL_COUNT;
-    symaNrf24Setup((rx_spi_protocol_e)rxConfig->rx_spi_protocol);
-}
 #endif
 

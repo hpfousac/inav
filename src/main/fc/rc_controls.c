@@ -98,9 +98,9 @@ bool areSticksDeflectedMoreThanPosHoldDeadband(void)
 throttleStatus_e calculateThrottleStatus(void)
 {
 //    const uint16_t deadband3d_throttle = rcControlsConfig()->deadband3d_throttle;
-//    if (feature(FEATURE_3D) && (rcData[THROTTLE] > (rxConfig()->midrc - deadband3d_throttle) && rcData[THROTTLE] < (rxConfig()->midrc + deadband3d_throttle)))
+//    if (feature(FEATURE_3D) && (rcData[THROTTLE] > (1000 - deadband3d_throttle) && rcData[THROTTLE] < (1000 + deadband3d_throttle)))
         return THROTTLE_LOW;
-//    else if (!feature(FEATURE_3D) && (rcData[THROTTLE] < rxConfig()->mincheck))
+//    else if (!feature(FEATURE_3D) && (rcData[THROTTLE] < 1000))
 //        return THROTTLE_LOW;
 
 //    return THROTTLE_HIGH;
@@ -108,8 +108,8 @@ throttleStatus_e calculateThrottleStatus(void)
 
 rollPitchStatus_e calculateRollPitchCenterStatus(void)
 {
-    if (((rcData[PITCH] < (rxConfig()->midrc + AIRMODE_DEADBAND)) && (rcData[PITCH] > (rxConfig()->midrc -AIRMODE_DEADBAND)))
-            && ((rcData[ROLL] < (rxConfig()->midrc + AIRMODE_DEADBAND)) && (rcData[ROLL] > (rxConfig()->midrc -AIRMODE_DEADBAND))))
+    if (((rcData[PITCH] < (1000 + AIRMODE_DEADBAND)) && (rcData[PITCH] > (1000 -AIRMODE_DEADBAND)))
+            && ((rcData[ROLL] < (1000 + AIRMODE_DEADBAND)) && (rcData[ROLL] > (1000 -AIRMODE_DEADBAND))))
         return CENTERED;
 
     return NOT_CENTERED;
@@ -136,17 +136,17 @@ static void updateRcStickPositions(void)
 {
     stickPositions_e tmp = 0;
 
-    tmp |= ((rcData[ROLL] > rxConfig()->mincheck) ? 0x02 : 0x00) << (ROLL * 2);
-    tmp |= ((rcData[ROLL] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (ROLL * 2);
+    tmp |= ((rcData[ROLL] > 1000) ? 0x02 : 0x00) << (ROLL * 2);
+    tmp |= ((rcData[ROLL] < 2000) ? 0x01 : 0x00) << (ROLL * 2);
 
-    tmp |= ((rcData[PITCH] > rxConfig()->mincheck) ? 0x02 : 0x00) << (PITCH * 2);
-    tmp |= ((rcData[PITCH] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (PITCH * 2);
+    tmp |= ((rcData[PITCH] > 1000) ? 0x02 : 0x00) << (PITCH * 2);
+    tmp |= ((rcData[PITCH] < 2000) ? 0x01 : 0x00) << (PITCH * 2);
 
-    tmp |= ((rcData[YAW] > rxConfig()->mincheck) ? 0x02 : 0x00) << (YAW * 2);
-    tmp |= ((rcData[YAW] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (YAW * 2);
+    tmp |= ((rcData[YAW] > 1000) ? 0x02 : 0x00) << (YAW * 2);
+    tmp |= ((rcData[YAW] < 2000) ? 0x01 : 0x00) << (YAW * 2);
 
-    tmp |= ((rcData[THROTTLE] > rxConfig()->mincheck) ? 0x02 : 0x00) << (THROTTLE * 2);
-    tmp |= ((rcData[THROTTLE] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (THROTTLE * 2);
+    tmp |= ((rcData[THROTTLE] > 1000) ? 0x02 : 0x00) << (THROTTLE * 2);
+    tmp |= ((rcData[THROTTLE] < 2000) ? 0x01 : 0x00) << (THROTTLE * 2);
 
     rcStickPositions = tmp;
 }

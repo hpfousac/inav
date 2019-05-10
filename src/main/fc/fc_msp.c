@@ -105,6 +105,11 @@ extern timeDelta_t cycleTime; // FIXME dependency on mw.c
 static const char * const flightControllerIdentifier = INAV_IDENTIFIER; // 4 UPPER CASE alpha numeric characters that identify the flight controller.
 static const char * const boardIdentifier = TARGET_BOARD_IDENTIFIER;
 
+// placed here because here will be set by MSP call
+// and then probably by cli call
+int16_t rcData[MAX_SUPPORTED_RC_CHANNEL_COUNT];     // interval [1000;2000]
+
+
 // from mixer.c
 //extern int16_t motor_disarmed[MAX_SUPPORTED_MOTORS];
 
@@ -686,22 +691,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_RX_CONFIG:
-        sbufWriteU8(dst, rxConfig()->serialrx_provider);
-        sbufWriteU16(dst, rxConfig()->maxcheck);
-        sbufWriteU16(dst, rxConfig()->midrc);
-        sbufWriteU16(dst, rxConfig()->mincheck);
-        sbufWriteU8(dst, rxConfig()->spektrum_sat_bind);
-        sbufWriteU16(dst, rxConfig()->rx_min_usec);
-        sbufWriteU16(dst, rxConfig()->rx_max_usec);
-        sbufWriteU8(dst, 0); // for compatibility with betaflight (rcInterpolation)
-        sbufWriteU8(dst, 0); // for compatibility with betaflight (rcInterpolationInterval)
-        sbufWriteU16(dst, 0); // for compatibility with betaflight (airModeActivateThreshold)
-        sbufWriteU8(dst, rxConfig()->rx_spi_protocol);
-        sbufWriteU32(dst, rxConfig()->rx_spi_id);
-        sbufWriteU8(dst, rxConfig()->rx_spi_rf_channel_count);
-        sbufWriteU8(dst, 0); // for compatibility with betaflight (fpvCamAngleDegrees)
-        sbufWriteU8(dst, rxConfig()->receiverType);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_FAILSAFE_CONFIG:
         return MSP_RESULT_ERROR;
@@ -710,8 +700,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         return MSP_RESULT_ERROR;
 
     case MSP_RX_MAP:
-        sbufWriteData(dst, rxConfig()->rcmap, MAX_MAPPABLE_RX_INPUTS);
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_BF_CONFIG:
         return MSP_RESULT_ERROR;
@@ -1371,25 +1360,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
 #endif
 
     case MSP_SET_RX_CONFIG:
-        if (dataSize >= 24) {
-            rxConfigMutable()->serialrx_provider = sbufReadU8(src);
-            rxConfigMutable()->maxcheck = sbufReadU16(src);
-            rxConfigMutable()->midrc = sbufReadU16(src);
-            rxConfigMutable()->mincheck = sbufReadU16(src);
-            rxConfigMutable()->spektrum_sat_bind = sbufReadU8(src);
-            rxConfigMutable()->rx_min_usec = sbufReadU16(src);
-            rxConfigMutable()->rx_max_usec = sbufReadU16(src);
-            sbufReadU8(src); // for compatibility with betaflight (rcInterpolation)
-            sbufReadU8(src); // for compatibility with betaflight (rcInterpolationInterval)
-            sbufReadU16(src); // for compatibility with betaflight (airModeActivateThreshold)
-            rxConfigMutable()->rx_spi_protocol = sbufReadU8(src);
-            rxConfigMutable()->rx_spi_id = sbufReadU32(src);
-            rxConfigMutable()->rx_spi_rf_channel_count = sbufReadU8(src);
-            sbufReadU8(src); // for compatibility with betaflight (fpvCamAngleDegrees)
-            rxConfigMutable()->receiverType = sbufReadU8(src);              // Won't be modified if buffer is not large enough
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_FAILSAFE_CONFIG:
         return MSP_RESULT_ERROR;
@@ -1398,13 +1369,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
         return MSP_RESULT_ERROR;
 
     case MSP_SET_RX_MAP:
-        if (dataSize >= MAX_MAPPABLE_RX_INPUTS) {
-            for (int i = 0; i < MAX_MAPPABLE_RX_INPUTS; i++) {
-                rxConfigMutable()->rcmap[i] = sbufReadU8(src);
-            }
-        } else
-            return MSP_RESULT_ERROR;
-        break;
+        return MSP_RESULT_ERROR;
 
     case MSP_SET_BF_CONFIG:
         return MSP_RESULT_ERROR;

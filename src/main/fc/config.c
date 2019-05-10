@@ -228,19 +228,19 @@ void validateAndFixConfig(void)
     featureClear(FEATURE_UNUSED_1 | FEATURE_UNUSED_2 | FEATURE_UNUSED_3 | FEATURE_UNUSED_4 | FEATURE_UNUSED_5 | FEATURE_UNUSED_6 | FEATURE_UNUSED_7 | FEATURE_UNUSED_8 | FEATURE_UNUSED_9 );
 
 #if defined(DISABLE_RX_PWM_FEATURE) || !defined(USE_RX_PWM)
-    if (rxConfig()->receiverType == RX_TYPE_PWM) {
-        rxConfigMutable()->receiverType = RX_TYPE_NONE;
-    }
+    // if (rxConfig()->receiverType == RX_TYPE_PWM) {
+    //     rxConfigMutable()->receiverType = RX_TYPE_NONE;
+    // }
 #endif
 
 #if !defined(USE_RX_PPM)
-    if (rxConfig()->receiverType == RX_TYPE_PPM) {
-        rxConfigMutable()->receiverType = RX_TYPE_NONE;
-    }
+    // if (rxConfig()->receiverType == RX_TYPE_PPM) {
+    //     rxConfigMutable()->receiverType = RX_TYPE_NONE;
+    // }
 #endif
 
 
-    if (rxConfig()->receiverType == RX_TYPE_PWM) {
+    // if (rxConfig()->receiverType == RX_TYPE_PWM) {
 #if defined(STM32F10X)
         // rssi adc needs the same ports
         // featureClear(FEATURE_RSSI_ADC);
@@ -262,8 +262,8 @@ void validateAndFixConfig(void)
 #endif
 
         // software serial needs free PWM ports
-        featureClear(FEATURE_SOFTSERIAL);
-    }
+    //     featureClear(FEATURE_SOFTSERIAL);
+    // }
 
 #ifdef USE_ASYNC_GYRO_PROCESSING
     /*

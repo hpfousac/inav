@@ -64,15 +64,6 @@ void targetConfiguration(void)
         motorConfigMutable()->motorPwmRate = BRUSHED_MOTORS_PWM_RATE;
         motorConfigMutable()->minthrottle = 1000;
     }
-    if (hardwareRevision == AFF4_REV_1) {
-        rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM2048;
-        rxConfigMutable()->spektrum_sat_bind = 5;
-        rxConfigMutable()->spektrum_sat_bind_autoreset = 1;
-    } else {
-        rxConfigMutable()->serialrx_provider = SERIALRX_SBUS;
-        serialConfigMutable()->portConfigs[3].functionMask = FUNCTION_TELEMETRY_FRSKY;
-        featureConfigMutable()->enabledFeatures |= (FEATURE_TX_PROF_SEL | FEATURE_CURRENT_METER | FEATURE_VBAT | FEATURE_TELEMETRY);
-    }
 
     pidProfileMutable()->bank_mc.pid[ROLL].P = 53;
     pidProfileMutable()->bank_mc.pid[ROLL].I = 45;

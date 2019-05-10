@@ -206,45 +206,5 @@ static uint16_t ibusReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t 
 }
 
 
-bool ibusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-    ibusSyncByte = 0;
-
-    rxRuntimeConfig->channelCount = IBUS_MAX_CHANNEL;
-    rxRuntimeConfig->rxRefreshRate = 20000; // TODO - Verify speed
-
-    rxRuntimeConfig->rcReadRawFn = ibusReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = ibusFrameStatus;
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
-
-#ifdef USE_TELEMETRY
-    bool portShared = isSerialPortShared(portConfig, FUNCTION_RX_SERIAL, FUNCTION_TELEMETRY_IBUS);
-#else
-    bool portShared = false;
-#endif
-
-    rxBytesToIgnore = 0;
-    serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        ibusDataReceive,
-        NULL,
-        IBUS_BAUDRATE,
-        portShared ? MODE_RXTX : MODE_RX,
-        SERIAL_NOT_INVERTED | (rxConfig->halfDuplex || portShared ? SERIAL_BIDIR : 0)
-        );
-
-#if defined(USE_TELEMETRY) && defined(USE_TELEMETRY_IBUS)
-    if (portShared) {
-        initSharedIbusTelemetry(ibusPort);
-    }
-#endif
-
-    return ibusPort != NULL;
-}
 
 #endif // USE_SERIALRX_IBUS

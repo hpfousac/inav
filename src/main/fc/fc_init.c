@@ -231,19 +231,6 @@ void init(void)
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
-#ifdef USE_SPEKTRUM_BIND
-    if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
-        switch (rxConfig()->serialrx_provider) {
-            case SERIALRX_SPEKTRUM1024:
-            case SERIALRX_SPEKTRUM2048:
-                // Spektrum satellite binding if enabled on startup.
-                // Must be called before that 100ms sleep so that we don't lose satellite's binding window after startup.
-                // The rest of Spektrum initialization will happen later - via spektrumInit()
-                spektrumBind(rxConfigMutable());
-                break;
-        }
-    }
-#endif
 
 #ifdef USE_VCP
     // Early initialize USB hardware
@@ -252,15 +239,6 @@ void init(void)
 
     timerInit();  // timer must be initialized before any channel is allocated
 
-#if defined(AVOID_UART2_FOR_PWM_PPM)
-    serialInit(feature(FEATURE_SOFTSERIAL),
-            (rxConfig()->receiverType == RX_TYPE_PWM) || (rxConfig()->receiverType == RX_TYPE_PPM) ? SERIAL_PORT_USART2 : SERIAL_PORT_NONE);
-#elif defined(AVOID_UART3_FOR_PWM_PPM)
-    serialInit(feature(FEATURE_SOFTSERIAL),
-            (rxConfig()->receiverType == RX_TYPE_PWM) || (rxConfig()->receiverType == RX_TYPE_PPM) ? SERIAL_PORT_USART3 : SERIAL_PORT_NONE);
-#else
-    serialInit(feature(FEATURE_SOFTSERIAL), SERIAL_PORT_NONE);
-#endif
 
     // Initialize MSP serial ports here so DEBUG_TRACE can share a port with MSP.
     // XXX: Don't call mspFcInit() yet, since it initializes the boxes and needs
@@ -310,13 +288,13 @@ void init(void)
 #endif
     pwm_params.useVbat = feature(FEATURE_VBAT);
     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
-    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
+//    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
 //    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
 //        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
-    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
-    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
+//    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
+//    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
 
 #ifdef USE_SERVOS
 //    pwm_params.useServoOutputs = isMixerUsingServos();

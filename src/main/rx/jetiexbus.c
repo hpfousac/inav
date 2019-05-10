@@ -583,34 +583,4 @@ void sendJetiExBusTelemetry(uint8_t packetID)
 }
 #endif // TELEMETRY
 
-bool jetiExBusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-
-    rxRuntimeConfig->channelCount = JETIEXBUS_CHANNEL_COUNT;
-    rxRuntimeConfig->rxRefreshRate = 5500;
-
-    rxRuntimeConfig->rcReadRawFn = jetiExBusReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = jetiExBusFrameStatus;
-
-    jetiExBusFrameReset();
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-
-    if (!portConfig) {
-        return false;
-    }
-
-    jetiExBusPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        jetiExBusDataReceive,
-        NULL,
-        JETIEXBUS_BAUDRATE,
-        MODE_RXTX,
-        JETIEXBUS_OPTIONS | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
-        );
-
-    serialSetMode(jetiExBusPort, MODE_RX);
-    return jetiExBusPort != NULL;
-}
 #endif // USE_SERIALRX_JETIEXBUS

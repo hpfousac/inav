@@ -113,14 +113,4 @@ static uint8_t rxUIBFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
     }
 }
 
-void rxUIBInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-
-    rxRuntimeConfig->channelCount = UIB_RX_MAX_CHANNEL_COUNT;
-    rxRuntimeConfig->rxRefreshRate = 20000;
-    rxRuntimeConfig->rxSignalTimeout = DELAY_5_HZ;
-    rxRuntimeConfig->rcReadRawFn = rxUIBReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = rxUIBFrameStatus;
-}
 #endif

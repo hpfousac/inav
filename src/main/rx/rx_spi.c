@@ -139,19 +139,4 @@ static uint8_t rxSpiFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
 /*
  * Set and initialize the RX protocol
  */
-bool rxSpiInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    bool ret = false;
-
-    rxSpiDeviceInit();
-    if (rxSpiSetProtocol(rxConfig->rx_spi_protocol)) {
-        protocolInit(rxConfig, rxRuntimeConfig);
-        ret = true;
-    }
-    rxRuntimeConfig->rxRefreshRate = 10000;
-    rxSpiNewPacketAvailable = false;
-    rxRuntimeConfig->rcReadRawFn = rxSpiReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = rxSpiFrameStatus;
-    return ret;
-}
 #endif

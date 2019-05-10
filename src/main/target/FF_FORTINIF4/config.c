@@ -35,6 +35,6 @@ void targetConfiguration(void)
         featureSet(FEATURE_OSD);
     }
 
-    rxConfigMutable()->halfDuplex = false;
+
 }
 #endif

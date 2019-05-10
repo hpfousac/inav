@@ -125,7 +125,7 @@ int16_t getAxisRcCommand(int16_t rawData, int16_t rate, int16_t deadband)
 {
     int16_t stickDeflection;
 
-    stickDeflection = constrain(rawData - rxConfig()->midrc, -500, 500);
+    stickDeflection = constrain(rawData - 1000, -500, 500);
     stickDeflection = applyDeadband(stickDeflection, deadband);
 
     return rcLookup(stickDeflection, rate);
@@ -295,8 +295,8 @@ void annexCode(void)
         }
 
         //Compute THROTTLE command
-        throttleValue = constrain(rcData[THROTTLE], rxConfig()->mincheck, PWM_RANGE_MAX);
-        throttleValue = (uint32_t)(throttleValue - rxConfig()->mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - rxConfig()->mincheck);       // [MINCHECK;2000] -> [0;1000]
+        throttleValue = constrain(rcData[THROTTLE], 1000, PWM_RANGE_MAX);
+        throttleValue = (uint32_t)(throttleValue - 1000) * PWM_RANGE_MIN / (PWM_RANGE_MAX - 1000);       // [MINCHECK;2000] -> [0;1000]
         rcCommand[THROTTLE] = rcLookupThrottle(throttleValue);
 
         // Signal updated rcCommand values to Failsafe system
@@ -659,10 +659,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
 
     annexCode();
 
-    if (rxConfig()->rcSmoothing) {
-        filterRc(isRXDataNew);
-    }
-
 #if defined(USE_NAV)
     if (isRXDataNew) {
         updateWaypointsAndNavigationMode();
@@ -680,7 +676,7 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // sticks, do not process yaw input from the rx.  We do this so the
     // motors do not spin up while we are trying to arm or disarm.
     // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
-    if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig()->mincheck
+    if (isUsingSticksForArming() && rcData[THROTTLE] <= 1000
 #ifndef USE_QUAD_MIXER_ONLY
 #ifdef USE_SERVOS
             && !((mixerConfig()->mixerMode == MIXER_TRI || mixerConfig()->mixerMode == MIXER_CUSTOM_TRI) && servoConfig()->tri_unarmed_servo)

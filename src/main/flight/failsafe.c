@@ -275,7 +275,7 @@ void failsafeApplyControlInput(void)
                         break;
 
                     case THROTTLE:
-                        rcCommand[idx] = feature(FEATURE_3D) ? rxConfig()->midrc : motorConfig()->minthrottle;
+                        rcCommand[idx] = feature(FEATURE_3D) ? 1500 : 1000;
                         break;
                 }
                 break;
@@ -330,9 +330,9 @@ static bool failsafeCheckStickMotion(void)
     if (failsafeConfig()->failsafe_stick_motion_threshold > 0) {
         uint32_t totalRcDelta = 0;
 
-        totalRcDelta += ABS(rcData[ROLL] - rxConfig()->midrc);
-        totalRcDelta += ABS(rcData[PITCH] - rxConfig()->midrc);
-        totalRcDelta += ABS(rcData[YAW] - rxConfig()->midrc);
+        totalRcDelta += ABS(rcData[ROLL] - 1500);
+        totalRcDelta += ABS(rcData[PITCH] - 1500);
+        totalRcDelta += ABS(rcData[YAW] - 1500);
 
         return totalRcDelta >= failsafeConfig()->failsafe_stick_motion_threshold;
     }

@@ -26,6 +26,6 @@
 void targetConfiguration(void)
 {
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(TELEMETRY_UART)].functionMask = FUNCTION_TELEMETRY_SMARTPORT;
-    rxConfigMutable()->rssi_channel = 8;
+//    rxConfigMutable()->rssi_channel = 8;
 }
 #endif

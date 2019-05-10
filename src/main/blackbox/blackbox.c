@@ -517,9 +517,6 @@ static bool testBlackboxConditionUncached(FlightLogFieldCondition condition)
         return false;
 #endif
 
-    case FLIGHT_LOG_FIELD_CONDITION_RSSI:
-        return rxConfig()->rssi_channel > 0 || feature(FEATURE_RSSI_ADC);
-
     case FLIGHT_LOG_FIELD_CONDITION_NOT_LOGGING_EVERY_FRAME:
         return blackboxConfig()->rate_num < blackboxConfig()->rate_denom;
 
@@ -1433,7 +1430,6 @@ static bool blackboxWriteSysinfo(void)
         BLACKBOX_PRINT_HEADER_LINE("acc_hardware", "%d",                    accelerometerConfig()->acc_hardware);
         BLACKBOX_PRINT_HEADER_LINE("baro_hardware", "%d",                   barometerConfig()->baro_hardware);
         BLACKBOX_PRINT_HEADER_LINE("mag_hardware", "%d",                    compassConfig()->mag_hardware);
-        BLACKBOX_PRINT_HEADER_LINE("serialrx_provider", "%d",               rxConfig()->serialrx_provider);
         BLACKBOX_PRINT_HEADER_LINE("motor_pwm_protocol", "%d",              motorConfig()->motorPwmProtocol);
         BLACKBOX_PRINT_HEADER_LINE("motor_pwm_rate", "%d",                  motorConfig()->motorPwmRate);
         BLACKBOX_PRINT_HEADER_LINE("debug_mode", "%d",                      systemConfig()->debug_mode);

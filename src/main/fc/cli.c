@@ -1664,23 +1664,6 @@ static void cliFeature(char *cmdline)
 }
 
 
-static void printMap(uint8_t dumpMask, const rxConfig_t *rxConfig, const rxConfig_t *defaultRxConfig)
-{
-    bool equalsDefault = true;
-    char buf[16];
-    char bufDefault[16];
-    uint32_t i;
-
-    for (i = 0; i < MAX_MAPPABLE_RX_INPUTS; i++) {
-        buf[i] = bufDefault[i] = 0;
-    }
-
-
-    const char *formatMap = "map %s";
-    cliDefaultPrintLinef(dumpMask, equalsDefault, formatMap, bufDefault);
-    cliDumpPrintLinef(dumpMask, equalsDefault, formatMap, buf);
-}
-
 static void cliMap(char *cmdline)
 {
     uint32_t len;
@@ -1744,25 +1727,6 @@ static void cliDfu(char *cmdline)
     cliRebootEx(true);
 }
 
-#ifdef USE_RX_ELERES
-static void cliEleresBind(char *cmdline)
-{
-    UNUSED(cmdline);
-
-    if (!(rxConfig()->receiverType == RX_TYPE_SPI && rxConfig()->rx_spi_protocol == RFM22_ELERES)) {
-        cliPrintLine("Eleres not active. Please enable feature ELERES and restart IMU");
-        return;
-    }
-
-    cliPrintLine("Waiting for correct bind signature....");
-    bufWriterFlush(cliWriter);
-    if (eleresBind()) {
-        cliPrintLine("Bind timeout!");
-    } else {
-        cliPrintLine("Bind OK!\r\nPlease restart your transmitter.");
-    }
-}
-#endif // USE_RX_ELERES
 
 static void cliExit(char *cmdline)
 {
@@ -2266,8 +2230,8 @@ static void printConfig(const char *cmdline, bool doDiff)
         cliPrintHashLine("feature");
         printFeature(dumpMask, &featureConfig_Copy, featureConfig());
 
-        cliPrintHashLine("map");
-        printMap(dumpMask, &rxConfig_Copy, rxConfig());
+//        cliPrintHashLine("map");
+//        printMap(dumpMask, &rxConfig_Copy, rxConfig());
 
         cliPrintHashLine("name");
         printName(dumpMask, &systemConfig_Copy);

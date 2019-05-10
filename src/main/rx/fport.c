@@ -355,40 +355,6 @@ static bool fportProcessFrame(const rxRuntimeConfig_t *rxRuntimeConfig)
     return true;
 }
 
-bool fportRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    static uint16_t sbusChannelData[SBUS_MAX_CHANNEL];
-    rxRuntimeConfig->channelData = sbusChannelData;
-    sbusChannelsInit(rxConfig, rxRuntimeConfig);
-
-    rxRuntimeConfig->channelCount = SBUS_MAX_CHANNEL;
-    rxRuntimeConfig->rxRefreshRate = 11000;
-
-    rxRuntimeConfig->rcFrameStatusFn = fportFrameStatus;
-    rxRuntimeConfig->rcProcessFrameFn = fportProcessFrame;
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
-
-    fportPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        fportDataReceive,
-        NULL,
-        FPORT_BAUDRATE,
-        MODE_RXTX,
-        FPORT_PORT_OPTIONS | (rxConfig->serialrx_inverted ? SERIAL_INVERTED : 0) | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
-    );
-
-    if (fportPort) {
-#if defined(USE_TELEMETRY_SMARTPORT)
-        telemetryEnabled = initSmartPortTelemetryExternal(smartPortWriteFrameFport);
-#endif
-    }
-
-    return fportPort != NULL;
-}
 #endif
 
 #endif

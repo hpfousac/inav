@@ -466,9 +466,9 @@ void processRcAdjustments(controlRateConfig_t *controlRateConfig)
 
         if (adjustmentState->config->mode == ADJUSTMENT_MODE_STEP) {
             int delta;
-            if (rcData[channelIndex] > rxConfig()->midrc + 200) {
+            if (rcData[channelIndex] > 1200) {
                 delta = adjustmentState->config->data.stepConfig.step;
-            } else if (rcData[channelIndex] < rxConfig()->midrc - 200) {
+            } else if (rcData[channelIndex] < 800) {
                 delta = 0 - adjustmentState->config->data.stepConfig.step;
             } else {
                 // returning the switch to the middle immediately resets the ready state

@@ -680,28 +680,6 @@ static void bindChannels(const uint8_t* RF_HEAD, uint8_t* hop_lst)
     }
 }
 
-void eleresInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    UNUSED(rxConfig);
-    rxConfigMutable()->rx_spi_protocol = RFM22_ELERES;
-    rxRuntimeConfig->channelCount = RC_CHANS;
-
-    rfmSpiWrite(0x07, 0x80);
-    delay(100);
-
-    eleresSignaturePtr = (uint8_t*)&eleresConfigMutable()->eleresSignature;
-
-    rfm22bInitParameter();
-    bindChannels(eleresSignaturePtr,holList);
-    channelHoppingTime = 33;
-    toRxMode();
-    channelHopping(1);
-    rfMode = RECEIVE;
-    localizerTime = millis() + (1000L * eleresConfig()->eleresLocDelay);
-
-    return true;
-}
-
 uint8_t eleresBind(void)
 {
     static uint8_t eleres_signature_old[4];

@@ -254,35 +254,6 @@ void crsfRxSendTelemetryData(void)
     }
 }
 
-bool crsfRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
-{
-    for (int ii = 0; ii < CRSF_MAX_CHANNEL; ++ii) {
-        crsfChannelData[ii] = (16 * rxConfig->midrc) / 10 - 1408;
-    }
-
-    rxRuntimeConfig->channelCount = CRSF_MAX_CHANNEL;
-    rxRuntimeConfig->rxRefreshRate = 11000; //!!TODO this needs checking
-
-    rxRuntimeConfig->rcReadRawFn = crsfReadRawRC;
-    rxRuntimeConfig->rcFrameStatusFn = crsfFrameStatus;
-
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
-
-    serialPort = openSerialPort(portConfig->identifier,
-        FUNCTION_RX_SERIAL,
-        crsfDataReceive,
-        NULL,
-        CRSF_BAUDRATE,
-        CRSF_PORT_MODE,
-        CRSF_PORT_OPTIONS | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
-        );
-
-    return serialPort != NULL;
-}
-
 bool crsfRxIsActive(void)
 {
     return serialPort != NULL;

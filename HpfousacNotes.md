@@ -31,8 +31,11 @@
 
   * controlled by command line
 
-  * make separate settings for neutral(s) and reverses
+  * make separate settings for neutral(s) and reverses. there is only one neutral.
 
+~~~~
+  rxConfig()->midrc
+~~~~
 
   found message *MSP_SERVO_CONFIGURATIONS* and *MSP_SET_SERVO_CONFIGURATION*
   
@@ -133,6 +136,8 @@ Some of them are defined somewhere else from *TARGET*, **Makefile** and **target
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
+USE_DEBUG_TRACE
+USE_EXTI
 USE_FLASHFS
 USE_GPS
 USE_HARDWARE_REVISION_DETECTION
@@ -141,7 +146,15 @@ NAV_NON_VOLATILE_WAYPOINT_STORAGE
 USE_PITOT
 USE_PMW_SERVO_DRIVER
 USE_QUAD_MIXER_ONLY
+USE_RANGEFINDER_HCSR04
+USE_RX_ELERES
+USE_SERVOS
+USE_SPEKTRUM_BIND
 USE_TELEMETRY
+USE_VCP
+
+AVOID_UART2_FOR_PWM_PPM
+AVOID_UART3_FOR_PWM_PPM
 
 BRUSHED_ESC_AUTODETECT
 RX_CHANNELS_TAER
