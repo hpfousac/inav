@@ -17,7 +17,7 @@
 
 # The target to build, see VALID_TARGETS below
 #TARGET    ?= BLUEPILL
-TARGET    ?=  SPRACINGF3
+TARGET    ?=  BLUEPILL
 
 # Compile-time options
 OPTIONS   ?= 
