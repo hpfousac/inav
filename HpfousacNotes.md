@@ -71,6 +71,9 @@ bit array containig rew stages.
  Defined type: **ioRec_t** array with size **DEFIO_IO_USED_COUNT** defined in 
  *src/main/drivers/io.c*. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
  particular *target.c* file.
+ The array is named **ioRecs**. It is not configured it is initialized in *void IOInitGlobal(void);*.
+
+ *How program work with this array should be investigated.*
 
 ### Configuration and Parameters ###
 
@@ -80,7 +83,7 @@ bit array containig rew stages.
 
 ### Tasks ###
 
- In **fc_tasks** there is table containing tasks including its enable, disabe during boot.
+ In **fc_tasks** there is table containing tasks including its enable, disable during boot.
 
  Check for **cfTask_t**
 
@@ -132,13 +135,25 @@ bit array containig rew stages.
 
 Some of them are defined somewhere else from *TARGET*, **Makefile** and **target.mk**.
 
+AVOID_UART2_FOR_PWM_PPM
+AVOID_UART3_FOR_PWM_PPM
+
+BRUSHED_ESC_AUTODETECT
+
+ONBOARDFLASH
+
+RX_CHANNELS_TAER
+
+SOFTSERIAL_LOOPBACK
 
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
 USE_CMS - neni u F1
 USE_DEBUG_TRACE
-USE_EXTI
+
+ * **USE_EXTI** - enables externa INT for MAG, MPU, or some others, and it can be used or not used on specific HW
+
 USE_FLASHFS
 USE_GPS
 USE_HARDWARE_REVISION_DETECTION
@@ -148,20 +163,31 @@ USE_PITOT
 USE_PMW_SERVO_DRIVER
 USE_QUAD_MIXER_ONLY
 USE_RANGEFINDER_HCSR04
+USE_RCDEVICE
+USE_RX_CX10
 USE_RX_ELERES
+USE_RX_H8_3D
+USE_RX_INAV
+USE_RX_SOFTSPI
 USE_SERVOS
+USE_SOFTSPI
 USE_SPEKTRUM_BIND
 USE_TELEMETRY
+
+USE_UART1
+USE_UART2
+USE_UART3
+USE_UART4
+USE_UART5
+USE_UART6
+USE_UART7
+USE_UART8
+
+ * **USE_SOFTSERIAL1** - ?
+
+ * **USE_SOFTSERIAL2** - ?
+
 USE_VCP
-
-AVOID_UART2_FOR_PWM_PPM
-AVOID_UART3_FOR_PWM_PPM
-
-BRUSHED_ESC_AUTODETECT
-RX_CHANNELS_TAER
-SOFTSERIAL_LOOPBACK
-
-ONBOARDFLASH
 
 ## Config arrays/blocks ##
 
@@ -174,10 +200,17 @@ telemetryConfig
 
 PG_FOREACH - vypada jako ze ma v pozadi nejaky seznam memory bloku
 
+PG_REGISTER_WITH_RESET_FN - dalsi zajimave makro
 
-# Recomended changesc #
+# Recomended changes #
 typedef struct timerHardware_s
 
  move conditionally added fields to the end of list. Obey this can result in strange behaviour after 
  sucessfull compilation and linking based on wrong combination of parameters/attributes.
+
+# Subsystems #
+
+## Serial Port(s) ##
+
+ branch: **inav-1.9.1-serialOnly**
 

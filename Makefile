@@ -571,7 +571,6 @@ COMMON_SRC = \
             common/time.c \
             common/typeconversion.c \
             common/string_light.c \
-            config/config_eeprom.c \
             config/config_streamer.c \
             config/feature.c \
             config/parameter_group.c \
@@ -586,9 +585,6 @@ COMMON_SRC = \
             drivers/io_pca9685.c \
             drivers/logging.c \
             drivers/resource.c \
-            drivers/pwm_esc_detect.c \
-            drivers/pwm_mapping.c \
-            drivers/pwm_output.c \
             drivers/rcc.c \
             drivers/serial.c \
             drivers/serial_uart.c \

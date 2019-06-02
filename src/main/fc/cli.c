@@ -48,7 +48,7 @@ extern uint8_t __config_end;
 #include "common/time.h"
 #include "common/typeconversion.h"
 
-#include "config/config_eeprom.h"
+// #include "config/config_eeprom.h"
 #include "config/feature.h"
 #include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
@@ -1819,7 +1819,7 @@ static void cliProfile(char *cmdline)
     } else {
         const int i = fastA2I(cmdline) - 1;
         if (i >= 0 && i < MAX_PROFILE_COUNT) {
-            setConfigProfileAndWriteEEPROM(i);
+            // setConfigProfileAndWriteEEPROM(i);
             cliProfile("");
         }
     }
@@ -1844,7 +1844,7 @@ static void cliSave(char *cmdline)
 
     cliPrint("Saving");
     //copyCurrentProfileToProfileSlot(getConfigProfile();
-    writeEEPROM();
+    // writeEEPROM();
     cliReboot();
 }
 
@@ -1853,7 +1853,7 @@ static void cliDefaults(char *cmdline)
     UNUSED(cmdline);
 
     cliPrint("Resetting to defaults");
-    resetEEPROM();
+    // resetEEPROM();
 
     if (!checkCommand(cmdline, "noreboot"))
         cliReboot();
@@ -2043,7 +2043,7 @@ static void cliStatus(char *cmdline)
 #endif
     cliPrintLinef("Stack size: %d, Stack address: 0x%x, Heap available: %d", stackTotalSize(), stackHighMem(), memGetAvailableBytes());
 
-    cliPrintLinef("I2C Errors: %d, config size: %d, max available config: %d", i2cErrorCounter, getEEPROMConfigSize(), &__config_end - &__config_start);
+    // cliPrintLinef("I2C Errors: %d, config size: %d, max available config: %d", i2cErrorCounter, getEEPROMConfigSize(), &__config_end - &__config_start);
 
 #ifdef USE_ADC
     static char * adcFunctions[] = { "BATTERY", "RSSI", "CURRENT", "AIRSPEED" };
