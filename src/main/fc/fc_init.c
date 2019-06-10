@@ -541,4 +541,17 @@ void init(void)
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_READY;
+
+#ifdef USE_UART1
+    // serialBeginWrite(msp->port);
+    // serialWriteBuf(msp->port, "READY\r\n", 7);
+    // serialEndWrite(msp->port);
+#endif // USE_UART1
+
+#ifdef USE_UART2
+#endif // USE_UART2
+    
+#ifdef USE_UART3
+#endif // USE_UART3
+    
 }
