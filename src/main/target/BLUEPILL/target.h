@@ -24,7 +24,7 @@
 
 // #define BEEPER                  PA12
 
-#define INVERTER_PIN_UART2      PB2 // PB2 (BOOT1) abused as inverter select GPIO
+// #define INVERTER_PIN_UART2      PB2 // PB2 (BOOT1) abused as inverter select GPIO
 
 //#define USE_EXTI
 //#define MPU_INT_EXTI            PC13
@@ -46,9 +46,20 @@
 // #define NAZE_SPI_CS_PIN         PB12
 // #define NAZE_CS_GPIO_CLK_PERIPHERAL RCC_APB2Periph_GPIOB
 
+
+// https://wiki.stm32duino.com/images/a/ae/Bluepillpinout.gif
+
 #define USE_UART1
 #define USE_UART2
-#define USE_SOFTSERIAL1
+#define USE_UART3
+
+// Note: next 2 lines looks as a hack
+#define UART3_TX_PIN    PB10
+#define UART3_RX_PIN    PB11
+
+
+#define SERIAL_PORT_COUNT   3
+
 
 #ifdef AIRHERO32
     // MWC PARIS Sirius AirHero32
@@ -113,19 +124,17 @@
 // #define RANGEFINDER_HCSR04_TRIGGER_PIN_PWM   PB8
 // #define RANGEFINDER_HCSR04_ECHO_PIN_PWM      PB9
 
-#define SOFTSERIAL_1_RX_PIN     PA7
-#define SOFTSERIAL_1_TX_PIN     PA6
+// #define SOFTSERIAL_1_RX_PIN     PA7
+// #define SOFTSERIAL_1_TX_PIN     PA6
 
-#define SOFTSERIAL_2_RX_PIN     PB0
-#define SOFTSERIAL_2_TX_PIN     PB1
+// #define SOFTSERIAL_2_RX_PIN     PB0
+// #define SOFTSERIAL_2_TX_PIN     PB1
 
-#define SOFTSERIAL_3_RX_PIN     PB11
-#define SOFTSERIAL_3_TX_PIN     PB10
+// #define SOFTSERIAL_3_RX_PIN     PB11
+// #define SOFTSERIAL_3_TX_PIN     PB10
 
-#define SERIAL_PORT_COUNT   3
-
-#define USE_I2C
-#define I2C_DEVICE (I2CDEV_2)
+// #define USE_I2C
+// #define I2C_DEVICE (I2CDEV_2)
 
 // #define SOFT_I2C // enable to test software i2c
 // #define SOFT_I2C_PB1011 // If SOFT_I2C is enabled above, need to define pinout as well (I2C1 = PB67, I2C2 = PB1011)

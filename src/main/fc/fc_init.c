@@ -211,7 +211,7 @@ void init(void)
     initialisePreBootHardware();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE); // src/main/drivers/system_stm32f*.c
+    // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE); // src/main/drivers/system_stm32f*.c
     systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
@@ -229,7 +229,7 @@ void init(void)
     EXTIInit();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
 
 #ifdef USE_VCP
