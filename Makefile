@@ -608,7 +608,6 @@ COMMON_SRC = \
             fc/stats.c \
             flight/hil.c \
             flight/servos.c \
-            io/pwmdriver_i2c.c \
             io/serial.c \
             io/serial_4way.c \
             io/serial_4way_avrootloader.c \

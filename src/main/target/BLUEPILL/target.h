@@ -20,9 +20,9 @@
 #define TARGET_BOARD_IDENTIFIER "BLUP" // Blue Pill
 
 #define LED0                    PC13 // note conflict with MAG_INT_EXTI
-#define LED1                    PB4
+// #define LED1                    PB4
 
-#define BEEPER                  PA12
+// #define BEEPER                  PA12
 
 #define INVERTER_PIN_UART2      PB2 // PB2 (BOOT1) abused as inverter select GPIO
 
@@ -38,13 +38,13 @@
 // PB13 26 SPI2_SCK
 // PB12 25 SPI2_NSS
 
-#define USE_SPI
-#define USE_SPI_DEVICE_2
+// #define USE_SPI
+// #define USE_SPI_DEVICE_2
 
-#define NAZE_SPI_INSTANCE       SPI2
-#define NAZE_SPI_CS_GPIO        GPIOB
-#define NAZE_SPI_CS_PIN         PB12
-#define NAZE_CS_GPIO_CLK_PERIPHERAL RCC_APB2Periph_GPIOB
+// #define NAZE_SPI_INSTANCE       SPI2
+// #define NAZE_SPI_CS_GPIO        GPIOB
+// #define NAZE_SPI_CS_PIN         PB12
+// #define NAZE_CS_GPIO_CLK_PERIPHERAL RCC_APB2Periph_GPIOB
 
 #define USE_UART1
 #define USE_UART2
@@ -70,13 +70,13 @@
 #else
     // Afroflight NAZE
 //    #define USE_HARDWARE_REVISION_DETECTION
-    #define USE_SOFTSERIAL2
+    // #define USE_SOFTSERIAL2
 
     #define M25P16_CS_GPIO          NAZE_SPI_CS_GPIO
     #define M25P16_CS_PIN           NAZE_SPI_CS_PIN
     #define M25P16_SPI_INSTANCE     NAZE_SPI_INSTANCE
 
-    #define SERIAL_PORT_COUNT       4       // UART1, UART2, SS1, SS2
+    // #define SERIAL_PORT_COUNT       4       // UART1, UART2, SS1, SS2
 
     #define USE_FLASHFS
     #define USE_FLASH_M25P16
@@ -121,6 +121,8 @@
 
 #define SOFTSERIAL_3_RX_PIN     PB11
 #define SOFTSERIAL_3_TX_PIN     PB10
+
+#define SERIAL_PORT_COUNT   3
 
 #define USE_I2C
 #define I2C_DEVICE (I2CDEV_2)
