@@ -17,20 +17,20 @@
 
 #pragma once
 
-#define TARGET_BOARD_IDENTIFIER "AFNA" // AFroNAze - NAZE might be considered misleading on Naze clones like the flip32.
+#define TARGET_BOARD_IDENTIFIER "BPILL" // AFroNAze - NAZE might be considered misleading on Naze clones like the flip32.
 
 #define LED0                    PB3
 #define LED1                    PB4
 
-#define BEEPER                  PA12
+// #define BEEPER                  PA12
 
-#define INVERTER_PIN_UART2      PB2 // PB2 (BOOT1) abused as inverter select GPIO
+// #define INVERTER_PIN_UART2      PB2 // PB2 (BOOT1) abused as inverter select GPIO
 
-#define USE_EXTI
-#define MPU_INT_EXTI            PC13
-#define USE_MPU_DATA_READY_SIGNAL
-#define MAG_INT_EXTI            PC14
-#define USE_MAG_DATA_READY_SIGNAL
+// #define USE_EXTI
+// #define MPU_INT_EXTI            PC13
+// #define USE_MPU_DATA_READY_SIGNAL
+// #define MAG_INT_EXTI            PC14
+// #define USE_MAG_DATA_READY_SIGNAL
 
 // SPI2
 // PB15 28 SPI2_MOSI
@@ -38,13 +38,13 @@
 // PB13 26 SPI2_SCK
 // PB12 25 SPI2_NSS
 
-#define USE_SPI
-#define USE_SPI_DEVICE_2
+// #define USE_SPI
+// #define USE_SPI_DEVICE_2
 
-#define NAZE_SPI_INSTANCE       SPI2
-#define NAZE_SPI_CS_GPIO        GPIOB
-#define NAZE_SPI_CS_PIN         PB12
-#define NAZE_CS_GPIO_CLK_PERIPHERAL RCC_APB2Periph_GPIOB
+// #define NAZE_SPI_INSTANCE       SPI2
+// #define NAZE_SPI_CS_GPIO        GPIOB
+// #define NAZE_SPI_CS_PIN         PB12
+// #define NAZE_CS_GPIO_CLK_PERIPHERAL RCC_APB2Periph_GPIOB
 
 #define USE_UART1
 #define USE_UART2
@@ -72,14 +72,14 @@
     #define USE_HARDWARE_REVISION_DETECTION
     #define USE_SOFTSERIAL2
 
-    #define M25P16_CS_GPIO          NAZE_SPI_CS_GPIO
-    #define M25P16_CS_PIN           NAZE_SPI_CS_PIN
-    #define M25P16_SPI_INSTANCE     NAZE_SPI_INSTANCE
+    // #define M25P16_CS_GPIO          NAZE_SPI_CS_GPIO
+    // #define M25P16_CS_PIN           NAZE_SPI_CS_PIN
+    // #define M25P16_SPI_INSTANCE     NAZE_SPI_INSTANCE
 
     #define SERIAL_PORT_COUNT       4       // UART1, UART2, SS1, SS2
 
-    #define USE_FLASHFS
-    #define USE_FLASH_M25P16
+    // #define USE_FLASHFS
+    // #define USE_FLASH_M25P16
 #endif
 
 //#define GYRO
