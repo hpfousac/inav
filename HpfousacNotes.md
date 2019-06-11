@@ -140,6 +140,8 @@ AVOID_UART3_FOR_PWM_PPM
 
 BRUSHED_ESC_AUTODETECT
 
+CLI_MINIMAL_VERBOSITY
+
 ONBOARDFLASH
 
 RX_CHANNELS_TAER
@@ -250,4 +252,3 @@ void targetConfiguration(void) ...
     targetConfiguration();
 #endif
 ~~~
-

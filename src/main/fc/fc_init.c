@@ -543,9 +543,9 @@ void init(void)
     systemState |= SYSTEM_STATE_READY;
 
 #ifdef USE_UART1
-    // serialBeginWrite(msp->port);
-    // serialWriteBuf(msp->port, "READY\r\n", 7);
-    // serialEndWrite(msp->port);
+    serialBeginWrite(msp->port);
+    serialWriteBuf(msp->port, "READY\r\n", 7);
+    serialEndWrite(msp->port);
 #endif // USE_UART1
 
 #ifdef USE_UART2
