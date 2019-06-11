@@ -146,9 +146,12 @@ RX_CHANNELS_TAER
 
 SOFTSERIAL_LOOPBACK
 
+SKIP_TASK_STATISTICS
+
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
+USE_CLI
 USE_CMS - neni u F1
 USE_DEBUG_TRACE
 
@@ -215,4 +218,36 @@ typedef struct timerHardware_s
 ## Serial Port(s) ##
 
  branch: **inav-1.9.1-serialOnly**
+
+### Initialization ###
+
+ * **uartPort_t *serialUARTx(uint32_t baudRate, portMode_t mode, portOptions_t options);** Low level init
+
+ * **serialPort_t *uartOpen(USART_TypeDef *USARTx,  ...);** higher level the **USART_TypeDef** is coming from **CMISIS**
+
+ * **serialPort_t *openSerialPort();**
+
+### operations ###
+
+ * **serialBeginWrite(serialPort_t *instance)**
+
+  **find which task is responsible for reading CLI/MSP serial** check for **TASK_SERIAL**
+  **taskHandleSerial ()**, **cliProcess();** there is wariable **cliPort** check **cliEnter()**
+  see: **mspSerialAllocatePorts ();** which is calling **openSerialPort();** using appropriate parameters.
+
+
+## board modification of default settings ##
+
+~~~
+// alternative defaults settings for -censored- targets
+void targetConfiguration(void) ...
+~~~
+
+ check code snippet from *src/main/fc/config.c*
+
+~~~
+#if defined(TARGET_CONFIG)
+    targetConfiguration();
+#endif
+~~~
 
