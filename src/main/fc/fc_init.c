@@ -147,6 +147,19 @@ extern void initialisePreBootHardware(void);
 #undef USE_NAV
 #undef USE_GPS
 
+#ifdef USE_UART1
+serialPort_t *uart1 = NULL;
+#endif // USE_UART1
+
+#ifdef USE_UART2
+serialPort_t *uart2 = NULL;
+#endif // USE_UART2
+    
+#ifdef USE_UART3
+serialPort_t *uart3 = NULL;
+#endif // USE_UART3
+
+
 extern uint8_t motorControlEnable;
 
 typedef enum {
@@ -543,9 +556,11 @@ void init(void)
     systemState |= SYSTEM_STATE_READY;
 
 #ifdef USE_UART1
-    serialBeginWrite(msp->port);
-    serialWriteBuf(msp->port, "READY\r\n", 7);
-    serialEndWrite(msp->port);
+    uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
+    
+    serialBeginWrite(uart1);
+    serialWriteBuf(uart1, "READY\r\n", 7);
+    serialEndWrite(uart1);
 #endif // USE_UART1
 
 #ifdef USE_UART2

@@ -238,6 +238,8 @@ typedef struct timerHardware_s
   see: **mspSerialAllocatePorts ();** which is calling **openSerialPort();** using appropriate parameters.
 
 
+ **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
+
 ## board modification of default settings ##
 
 ~~~
