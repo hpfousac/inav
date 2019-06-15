@@ -24,15 +24,21 @@
 
 const timerHardware_t timerHardware[USABLE_TIMER_CHANNEL_COUNT] = {
     { TIM2, IO_TAG(PA0),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_ANY},         // PWM1 - RC1
-    { TIM2, IO_TAG(PA1),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_ANY },                      // PWM2 - RC2
-    { TIM2, IO_TAG(PA2),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_ANY },                      // PWM3 - RC3
-    { TIM2, IO_TAG(PA3),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_ANY },                      // PWM4 - RC4
+    { TIM2, IO_TAG(PA1),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_ANY },        // PWM2 - RC2
+
+#ifndef USE_USART2    
+    { TIM2, IO_TAG(PA2),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_ANY },        // PWM3 - RC3 (TX2)
+    { TIM2, IO_TAG(PA3),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_ANY },        // PWM4 - RC4 (RX2)
+#endif // USE_UART2
+
     { TIM3, IO_TAG(PA6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM5 - RC5
     { TIM3, IO_TAG(PA7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM6 - RC6
     { TIM3, IO_TAG(PB0),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM7 - RC7
     { TIM3, IO_TAG(PB1),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_FW_SERVO  },   // PWM8 - RC8
 
     { TIM1, IO_TAG(PA8),  TIM_Channel_1, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM9 - OUT1
+// PA9  - TX1
+// PA10 - RX1
     { TIM1, IO_TAG(PA11), TIM_Channel_4, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM10 - OUT2
     { TIM4, IO_TAG(PB6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM11 - OUT3
     { TIM4, IO_TAG(PB7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM12 - OUT4
