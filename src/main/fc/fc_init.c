@@ -162,19 +162,19 @@ uint8_t systemState = SYSTEM_STATE_INITIALISING;
 
 void flashLedsAndBeep(void)
 {
-    // LED1_ON;
-    // LED0_OFF;
-    // for (uint8_t i = 0; i < 10; i++) {
-    //     LED1_TOGGLE;
-    //     LED0_TOGGLE;
-    //     delay(25);
-    //     if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
-    //         BEEP_ON;
-    //     delay(25);
-    //     BEEP_OFF;
-    // }
-    // LED0_OFF;
-    // LED1_OFF;
+    LED1_ON;
+    LED0_OFF;
+    for (uint8_t i = 0; i < 10; i++) {
+        LED1_TOGGLE;
+        LED0_TOGGLE;
+        delay(25);
+        if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
+            BEEP_ON;
+        delay(25);
+        BEEP_OFF;
+    }
+    LED0_OFF;
+    LED1_OFF;
 }
 
 void init(void)
@@ -198,9 +198,9 @@ void init(void)
     detectHardwareRevision();
 #endif
 
-    initEEPROM();
-    ensureEEPROMContainsValidData();
-    readEEPROM();
+    // initEEPROM();
+    // ensureEEPROMContainsValidData();
+    // readEEPROM();
 
     // Re-initialize system clock to their final values (if necessary)
     systemClockSetup(systemConfig()->cpuUnderclock);
@@ -231,6 +231,19 @@ void init(void)
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
+#ifdef USE_SPEKTRUM_BIND
+    if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
+        switch (rxConfig()->serialrx_provider) {
+            case SERIALRX_SPEKTRUM1024:
+            case SERIALRX_SPEKTRUM2048:
+                // Spektrum satellite binding if enabled on startup.
+                // Must be called before that 100ms sleep so that we don't lose satellite's binding window after startup.
+                // The rest of Spektrum initialization will happen later - via spektrumInit()
+                spektrumBind(rxConfigMutable());
+                break;
+        }
+    }
+#endif
 
 #ifdef USE_VCP
     // Early initialize USB hardware
@@ -239,6 +252,15 @@ void init(void)
 
     timerInit();  // timer must be initialized before any channel is allocated
 
+#if defined(AVOID_UART2_FOR_PWM_PPM)
+    serialInit(feature(FEATURE_SOFTSERIAL),
+            (rxConfig()->receiverType == RX_TYPE_PWM) || (rxConfig()->receiverType == RX_TYPE_PPM) ? SERIAL_PORT_USART2 : SERIAL_PORT_NONE);
+#elif defined(AVOID_UART3_FOR_PWM_PPM)
+    serialInit(feature(FEATURE_SOFTSERIAL),
+            (rxConfig()->receiverType == RX_TYPE_PWM) || (rxConfig()->receiverType == RX_TYPE_PPM) ? SERIAL_PORT_USART3 : SERIAL_PORT_NONE);
+#else
+    serialInit(feature(FEATURE_SOFTSERIAL), SERIAL_PORT_NONE);
+#endif
 
     // Initialize MSP serial ports here so DEBUG_TRACE can share a port with MSP.
     // XXX: Don't call mspFcInit() yet, since it initializes the boxes and needs
@@ -288,13 +310,13 @@ void init(void)
 #endif
     pwm_params.useVbat = feature(FEATURE_VBAT);
     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
-//    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
+    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
 //    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
 //        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
-//    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
-//    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
+    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
+    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
 
 #ifdef USE_SERVOS
 //    pwm_params.useServoOutputs = isMixerUsingServos();
@@ -303,9 +325,23 @@ void init(void)
     pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
 #endif
 
-    // if (feature(FEATURE_3D)) {
-    //     pwm_params.idlePulse = flight3DConfig()->neutral3d;
-    // }
+    pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
+#ifndef BRUSHED_MOTORS
+    pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
+                            (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
+                            (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
+#endif
+    pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
+    pwm_params.idlePulse = motorConfig()->mincommand;
+    if (feature(FEATURE_3D)) {
+        pwm_params.idlePulse = flight3DConfig()->neutral3d;
+    }
+
+    if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
+        pwm_params.useFastPwm = false;
+        featureClear(FEATURE_3D);
+        pwm_params.idlePulse = 0; // brushed motors
+    }
 
     pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
@@ -336,26 +372,26 @@ void init(void)
     systemState |= SYSTEM_STATE_MOTORS_READY;
 
 #ifdef BEEPER
-    // beeperDevConfig_t beeperDevConfig = {
-    //     .ioTag = IO_TAG(BEEPER),
+    beeperDevConfig_t beeperDevConfig = {
+        .ioTag = IO_TAG(BEEPER),
 #ifdef BEEPER_INVERTED
-        // .isOD = false,
-        // .isInverted = true
+        .isOD = false,
+        .isInverted = true
 #else
-        // .isOD = true,
-        // .isInverted = false
+        .isOD = true,
+        .isInverted = false
 #endif
-    // };
+    };
 
 #if defined(NAZE) && defined(USE_HARDWARE_REVISION_DETECTION)
     if (hardwareRevision >= NAZE32_REV5) {
         // naze rev4 and below used opendrain to PNP for buzzer. Rev5 and above use PP to NPN.
-        // beeperDevConfig.isOD = false;
-        // beeperDevConfig.isInverted = true;
+        beeperDevConfig.isOD = false;
+        beeperDevConfig.isInverted = true;
     }
 #endif
 
-    // beeperInit(&beeperDevConfig);
+    beeperInit(&beeperDevConfig);
 #endif
 #ifdef USE_LIGHTS
     lightsInit();
@@ -448,22 +484,22 @@ void init(void)
 #endif
 
 #ifdef USE_ADC
-    // drv_adc_config_t adc_params;
-    // memset(&adc_params, 0, sizeof(adc_params));
+    drv_adc_config_t adc_params;
+    memset(&adc_params, 0, sizeof(adc_params));
 
-    // // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
+    // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
 
-    // if (feature(FEATURE_RSSI_ADC)) {
-    //     adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
-    // }
+    if (feature(FEATURE_RSSI_ADC)) {
+        adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
+    }
 
 #if defined(USE_PITOT) && defined(USE_ADC) && defined(USE_PITOT_ADC)
-    // if (pitotmeterConfig()->pitot_hardware == PITOT_ADC || pitotmeterConfig()->pitot_hardware == PITOT_AUTODETECT) {
-    //     adc_params.adcFunctionChannel[ADC_AIRSPEED] = adcChannelConfig()->adcFunctionChannel[ADC_AIRSPEED];
-    // }
+    if (pitotmeterConfig()->pitot_hardware == PITOT_ADC || pitotmeterConfig()->pitot_hardware == PITOT_AUTODETECT) {
+        adc_params.adcFunctionChannel[ADC_AIRSPEED] = adcChannelConfig()->adcFunctionChannel[ADC_AIRSPEED];
+    }
 #endif
 
-    // adcInit(&adc_params);
+    adcInit(&adc_params);
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)
@@ -589,7 +625,7 @@ void init(void)
     m25p16_init(0);
 #endif
 
-    // flashfsInit();
+    flashfsInit();
 #endif
 
 #ifdef USE_SDCARD
