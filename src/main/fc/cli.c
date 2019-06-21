@@ -2072,16 +2072,16 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("color", "configure colors", NULL, cliColor),
     CLI_COMMAND_DEF("mode_color", "configure mode and special colors", NULL, cliModeColor),
 #endif
-    CLI_COMMAND_DEF("defaults", "reset to defaults and reboot", NULL, cliDefaults),
-    CLI_COMMAND_DEF("dfu", "DFU mode on reboot", NULL, cliDfu),
-    CLI_COMMAND_DEF("diff", "list configuration changes from default",
-        "[master|profile|rates|all] {showdefaults}", cliDiff),
-    CLI_COMMAND_DEF("dump", "dump configuration",
-        "[master|profile|rates|all] {showdefaults}", cliDump),
+//    CLI_COMMAND_DEF("defaults", "reset to defaults and reboot", NULL, cliDefaults),
+//    CLI_COMMAND_DEF("dfu", "DFU mode on reboot", NULL, cliDfu),
+//    CLI_COMMAND_DEF("diff", "list configuration changes from default",
+//        "[master|profile|rates|all] {showdefaults}", cliDiff),
+//    CLI_COMMAND_DEF("dump", "dump configuration",
+//        "[master|profile|rates|all] {showdefaults}", cliDump),
 #ifdef USE_RX_ELERES
     CLI_COMMAND_DEF("eleres_bind", NULL, NULL, cliEleresBind),
 #endif // USE_RX_ELERES
-    CLI_COMMAND_DEF("exit", NULL, NULL, cliExit),
+//    CLI_COMMAND_DEF("exit", NULL, NULL, cliExit),
     CLI_COMMAND_DEF("feature", "configure features",
         "list\r\n"
         "\t<+|->[name]", cliFeature),
@@ -2093,11 +2093,11 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("flash_write", NULL, "<address> <message>", cliFlashWrite),
 #endif
 #endif
-    CLI_COMMAND_DEF("get", "get variable value", "[name]", cliGet),
+//    CLI_COMMAND_DEF("get", "get variable value", "[name]", cliGet),
 #ifdef USE_GPS
     CLI_COMMAND_DEF("gpspassthrough", "passthrough gps to serial", NULL, cliGpsPassthrough),
 #endif
-    CLI_COMMAND_DEF("help", NULL, NULL, cliHelp),
+    // CLI_COMMAND_DEF("help", NULL, NULL, cliHelp),
 #ifdef USE_LED_STRIP
     CLI_COMMAND_DEF("led", "configure leds", NULL, cliLed),
 #endif
@@ -2119,7 +2119,7 @@ const clicmd_t cmdTable[] = {
 #ifdef USE_SERIAL_PASSTHROUGH
     CLI_COMMAND_DEF("serialpassthrough", "passthrough serial data to port", "<id> [baud] [mode] : passthrough to serial", cliSerialPassthrough),
 #endif
-    CLI_COMMAND_DEF("set", "change setting", "[<name>=<value>]", cliSet),
+    // CLI_COMMAND_DEF("set", "change setting", "[<name>=<value>]", cliSet),
 #ifdef USE_SDCARD
     CLI_COMMAND_DEF("sd_info", "sdcard info", NULL, cliSdInfo),
 #endif

@@ -150,6 +150,8 @@ SOFTSERIAL_LOOPBACK
 
 SKIP_TASK_STATISTICS
 
+ * **STACK_CHECK** - checks stack usage, probably for development purposes.
+
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
 USE_BLACKBOX
