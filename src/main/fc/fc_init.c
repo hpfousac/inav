@@ -147,6 +147,19 @@ extern void initialisePreBootHardware(void);
 #undef USE_NAV
 #undef USE_GPS
 
+#ifdef USE_UART1
+serialPort_t *uart1 = NULL;
+#endif // USE_UART1
+
+#ifdef USE_UART2
+serialPort_t *uart2 = NULL;
+#endif // USE_UART2
+    
+#ifdef USE_UART3
+serialPort_t *uart3 = NULL;
+#endif // USE_UART3
+
+
 extern uint8_t motorControlEnable;
 
 typedef enum {
@@ -189,7 +202,7 @@ void init(void)
     // printfSupportInit();
 
     // Initialize system and CPU clocks to their initial values
-    systemInit();
+    systemInit(); // library standard function (specific for each chip family) BLUEPILL: src/main/drivers/system_stm32f*.c
 
     // initialize IO (needed for all IO operations)
     IOInitGlobal();
@@ -205,13 +218,13 @@ void init(void)
     // Re-initialize system clock to their final values (if necessary)
     systemClockSetup(systemConfig()->cpuUnderclock);
     
-    i2cSetSpeed(systemConfig()->i2c_speed);
+    // i2cSetSpeed(systemConfig()->i2c_speed);
 
 #ifdef USE_HARDWARE_PREBOOT_SETUP
     initialisePreBootHardware();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE); // src/main/drivers/system_stm32f*.c
     systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
@@ -229,7 +242,7 @@ void init(void)
     EXTIInit();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
 #ifdef USE_SPEKTRUM_BIND
     if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
@@ -273,31 +286,13 @@ void init(void)
     debugTraceInit();
 #endif
 
-#ifdef USE_SERVOS
-    servosInit();
-//    mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
-#endif
 
-    drv_pwm_config_t pwm_params;
-    memset(&pwm_params, 0, sizeof(pwm_params));
-
-#ifdef USE_RANGEFINDER_HCSR04
-    // HC-SR04 has a dedicated connection to FC and require two pins
-    if (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) {
-        const rangefinderHardwarePins_t *rangefinderHardwarePins = rangefinderGetHardwarePins();
-        if (rangefinderHardwarePins) {
-            pwm_params.useTriggerRangefinder = true;
-            pwm_params.rangefinderIOConfig.triggerTag = rangefinderHardwarePins->triggerTag;
-            pwm_params.rangefinderIOConfig.echoTag = rangefinderHardwarePins->echoTag;
-        }
-    }
-#endif
 
     // when using airplane/wing mixer, servo/motor outputs are remapped
 //    pwm_params.flyingPlatformType = getFlyingPlatformType();
 
 #if defined(USE_UART2) && defined(STM32F10X)
-    pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
+    // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
 #endif
 #ifdef STM32F303xC
     pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
@@ -308,21 +303,22 @@ void init(void)
 #if defined(USE_UART6) && defined(STM32F40_41xxx)
     pwm_params.useUART6 = doesConfigurationUsePort(SERIAL_PORT_USART6);
 #endif
-    pwm_params.useVbat = feature(FEATURE_VBAT);
-    pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
-    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
-    pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
-//    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
-//        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
-    pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
-    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
-    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
+//     pwm_params.useVbat = feature(FEATURE_VBAT);
+//     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
+// //    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
+//     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
+// //    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
+// //        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
+//     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
+// //    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
+// //    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
+
 
 #ifdef USE_SERVOS
 //    pwm_params.useServoOutputs = isMixerUsingServos();
-    pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
-    pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
-    pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
+    // pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
+    // pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
+    // pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
 #endif
 
     pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
@@ -343,7 +339,7 @@ void init(void)
         pwm_params.idlePulse = 0; // brushed motors
     }
 
-    pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
+    // pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
 #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
 //    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
@@ -354,19 +350,19 @@ void init(void)
     If external PWM driver is enabled, for example PCA9685, disable internal
     servo handling mechanism, since external device will do that
     */
-    if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-        pwm_params.useServoOutputs = false;
-        pwm_params.useChannelForwarding = false;
-    }
+    // if (feature(FEATURE_PWM_SERVO_DRIVER)) {
+    //     pwm_params.useServoOutputs = false;
+    //     pwm_params.useChannelForwarding = false;
+    // }
 #endif
 
     // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
-    pwmInit(&pwm_params);
+    // pwmInit(&pwm_params);
 
 //    mixerUsePWMIOConfiguration();
 
-    if (!pwm_params.useFastPwm)
-        motorControlEnable = true;
+    // if (!pwm_params.useFastPwm)
+    //     motorControlEnable = true;
 
     addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_MOTORS_READY;
@@ -503,30 +499,30 @@ void init(void)
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)
-    delay(500);
+    // delay(500);
 
-    /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
-    if (!isMPUSoftReset()) {
-        addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
+    // /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
+    // if (!isMPUSoftReset()) {
+    //     addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
 
-        LED1_ON;
-        LED0_OFF;
+    //     LED1_ON;
+    //     LED0_OFF;
 
-        for (int i = 0; i < 5; i++) {
-            LED1_TOGGLE;
-            LED0_TOGGLE;
-            delay(100);
-        }
+    //     for (int i = 0; i < 5; i++) {
+    //         LED1_TOGGLE;
+    //         LED0_TOGGLE;
+    //         delay(100);
+    //     }
 
-        LED0_OFF;
-        LED1_OFF;
-    }
+    //     LED0_OFF;
+    //     LED1_OFF;
+    // }
 #endif
 
 //    initBoardAlignment();
 
 #ifdef USE_CMS
-    cmsInit();
+    // cmsInit();
 #endif
 
 #ifdef USE_DASHBOARD
@@ -536,9 +532,9 @@ void init(void)
 #endif
 
 #ifdef USE_GPS
-    if (feature(FEATURE_GPS)) {
-        gpsPreInit();
-    }
+    // if (feature(FEATURE_GPS)) {
+    //     gpsPreInit();
+    // }
 #endif
 
     addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
@@ -558,54 +554,10 @@ void init(void)
 
 //    rxInit();
 
-#if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
-    displayPort_t *osdDisplayPort = NULL;
-#endif
-
-#ifdef USE_OSD
-    if (feature(FEATURE_OSD)) {
-#if defined(USE_MAX7456)
-        // If there is a max7456 chip for the OSD then use it
-        static vcdProfile_t vcdProfile;
-        vcdProfile.video_system = osdConfig()->video_system;
-        osdDisplayPort = max7456DisplayPortInit(&vcdProfile);
-#elif defined(USE_OSD_OVER_MSP_DISPLAYPORT) // OSD over MSP; not supported (yet)
-        osdDisplayPort = displayPortMspInit();
-#endif
-        // osdInit  will register with CMS by itself.
-        osdInit(osdDisplayPort);
-    }
-#endif
-
 #if defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)
     // If OSD is not active, then register MSP_DISPLAYPORT as a CMS device.
     if (!osdDisplayPort) {
         cmsDisplayPortRegister(displayPortMspInit());
-    }
-#endif
-
-#ifdef USE_UAV_INTERCONNECT
-    uavInterconnectBusInit();
-#endif
-
-#ifdef USE_GPS
-    if (feature(FEATURE_GPS)) {
-        gpsInit();
-        addBootlogEvent2(BOOT_EVENT_GPS_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-    }
-#endif
-
-
-#ifdef USE_NAV
-    navigationInit();
-#endif
-
-#ifdef USE_LED_STRIP
-    ledStripInit();
-
-    if (feature(FEATURE_LED_STRIP)) {
-        ledStripEnable();
-        addBootlogEvent2(BOOT_EVENT_LEDSTRIP_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
 
@@ -697,10 +649,6 @@ void init(void)
     }
 #endif
 
-#ifdef USE_RCDEVICE
-    rcdeviceInit();
-#endif // USE_RCDEVICE
-
     // Latch active features AGAIN since some may be modified by init().
     latchActiveFeatures();
     motorControlEnable = true;
@@ -708,4 +656,19 @@ void init(void)
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_READY;
+
+#ifdef USE_UART1
+    uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
+    
+    serialBeginWrite(uart1);
+    serialWriteBuf(uart1, "READY\r\n", 7);
+    serialEndWrite(uart1);
+#endif // USE_UART1
+
+#ifdef USE_UART2
+#endif // USE_UART2
+    
+#ifdef USE_UART3
+#endif // USE_UART3
+    
 }

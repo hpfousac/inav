@@ -149,6 +149,11 @@ RX_CHANNELS_TAER
 SOFTSERIAL_LOOPBACK
 
 SKIP_TASK_STATISTICS
+<<<<<<< HEAD
+=======
+
+ * **STACK_CHECK** - checks stack usage, probably for development purposes.
+>>>>>>> inav-1.9.1-serialOnly
 
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING

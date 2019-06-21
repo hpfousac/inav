@@ -463,9 +463,9 @@ void readEEPROM(void)
     // suspendRxSignal();
 
     // Sanity check, read flash
-    if (!loadEEPROM()) {
+    // if (!loadEEPROM()) {
         failureMode(FAILURE_INVALID_EEPROM_CONTENTS);
-    }
+    // }
 
     setConfigProfile(getConfigProfile());
 
@@ -479,7 +479,7 @@ void writeEEPROM(void)
 {
     // suspendRxSignal();
 
-    writeConfigToEEPROM();
+    // writeConfigToEEPROM();
 
     // resumeRxSignal();
 }
@@ -500,8 +500,8 @@ void ensureEEPROMContainsValidData(void)
 
 void saveConfigAndNotify(void)
 {
-    writeEEPROM();
-    readEEPROM();
+    // writeEEPROM();
+    // readEEPROM();
 //    beeperConfirmationBeeps(1);
 }
 

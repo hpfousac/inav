@@ -48,7 +48,7 @@ extern uint8_t __config_end;
 #include "common/time.h"
 #include "common/typeconversion.h"
 
-#include "config/config_eeprom.h"
+// #include "config/config_eeprom.h"
 #include "config/feature.h"
 #include "config/parameter_group.h"
 #include "config/parameter_group_ids.h"
@@ -82,7 +82,7 @@ extern uint8_t __config_end;
 #include "flight/imu.h"
 #include "flight/mixer.h"
 #include "flight/pid.h"
-#include "flight/servos.h"
+//#include "flight/servos.h"
 
 #include "io/asyncfatfs/asyncfatfs.h"
 #include "io/beeper.h"
@@ -127,7 +127,7 @@ extern uint8_t __config_end;
 extern timeDelta_t cycleTime; // FIXME dependency on mw.c
 extern uint8_t detectedSensors[SENSOR_INDEX_COUNT];
 
-static serialPort_t *cliPort;
+extern serialPort_t *uart1;
 
 static bufWriter_t *cliWriter;
 static uint8_t cliWriteBuffer[sizeof(*cliWriter) + 128];
@@ -876,7 +876,7 @@ static void cliSerialPassthrough(char *cmdline)
 
     printf("Forwarding data to %d, power cycle to exit.\r\n", id);
 
-    serialPassthrough(cliPort, passThroughPort, NULL, NULL);
+    serialPassthrough(uart1, passThroughPort, NULL, NULL);
 }
 #endif
 
@@ -1153,270 +1153,6 @@ static void cliModeColor(char *cmdline)
 }
 #endif
 
-#ifdef USE_SERVOS
-static void printServo(uint8_t dumpMask, const servoParam_t *servoParam, const servoParam_t *defaultServoParam)
-{
-    // print out servo settings
-    const char *format = "servo %u %d %d %d %d %d ";
-    for (uint32_t i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
-        const servoParam_t *servoConf = &servoParam[i];
-        bool equalsDefault = false;
-        if (defaultServoParam) {
-            const servoParam_t *servoConfDefault = &defaultServoParam[i];
-            equalsDefault = servoConf->min == servoConfDefault->min
-                && servoConf->max == servoConfDefault->max
-                && servoConf->middle == servoConfDefault->middle
-                && servoConf->rate == servoConfDefault->rate
-                && servoConf->forwardFromChannel == servoConfDefault->forwardFromChannel;
-            cliDefaultPrintLinef(dumpMask, equalsDefault, format,
-                i,
-                servoConfDefault->min,
-                servoConfDefault->max,
-                servoConfDefault->middle,
-                servoConfDefault->rate,
-                servoConfDefault->forwardFromChannel
-            );
-        }
-        cliDumpPrintLinef(dumpMask, equalsDefault, format,
-            i,
-            servoConf->min,
-            servoConf->max,
-            servoConf->middle,
-            servoConf->rate,
-            servoConf->forwardFromChannel
-        );
-    }
-
-    // print servo directions
-    if (defaultServoParam) {
-        for (uint32_t i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
-            const servoParam_t *servoConf = &servoParam[i];
-            const servoParam_t *servoConfDefault = &defaultServoParam[i];
-            bool equalsDefault = servoConf->reversedSources == servoConfDefault->reversedSources;
-            for (uint32_t channel = 0; channel < INPUT_SOURCE_COUNT; channel++) {
-                equalsDefault = ~(servoConf->reversedSources ^ servoConfDefault->reversedSources) & (1 << channel);
-                const char *format = "smix reverse %d %d r";
-                if (servoConfDefault->reversedSources & (1 << channel)) {
-                    cliDefaultPrintLinef(dumpMask, equalsDefault, format, i , channel);
-                }
-                if (servoConf->reversedSources & (1 << channel)) {
-                    cliDumpPrintLinef(dumpMask, equalsDefault, format, i , channel);
-                }
-            }
-        }
-    }
-}
-
-static void cliServo(char *cmdline)
-{
-    enum { SERVO_ARGUMENT_COUNT = 6 };
-    int16_t arguments[SERVO_ARGUMENT_COUNT];
-
-    servoParam_t *servo;
-
-    int i;
-    const char *ptr;
-
-    if (isEmpty(cmdline)) {
-        printServo(DUMP_MASTER, servoParams(0), NULL);
-    } else {
-        int validArgumentCount = 0;
-
-        ptr = cmdline;
-
-        // Command line is integers (possibly negative) separated by spaces, no other characters allowed.
-
-        // If command line doesn't fit the format, don't modify the config
-        while (*ptr) {
-            if (*ptr == '-' || (*ptr >= '0' && *ptr <= '9')) {
-                if (validArgumentCount >= SERVO_ARGUMENT_COUNT) {
-                    cliShowParseError();
-                    return;
-                }
-
-                arguments[validArgumentCount++] = fastA2I(ptr);
-
-                do {
-                    ptr++;
-                } while (*ptr >= '0' && *ptr <= '9');
-            } else if (*ptr == ' ') {
-                ptr++;
-            } else {
-                cliShowParseError();
-                return;
-            }
-        }
-
-        enum {INDEX = 0, MIN, MAX, MIDDLE, RATE, FORWARD};
-
-        i = arguments[INDEX];
-
-        // Check we got the right number of args and the servo index is correct (don't validate the other values)
-        if (validArgumentCount != SERVO_ARGUMENT_COUNT || i < 0 || i >= MAX_SUPPORTED_SERVOS) {
-            cliShowParseError();
-            return;
-        }
-
-        servo = servoParamsMutable(i);
-
-        if (
-            arguments[MIN] < PWM_PULSE_MIN || arguments[MIN] > PWM_PULSE_MAX ||
-            arguments[MAX] < PWM_PULSE_MIN || arguments[MAX] > PWM_PULSE_MAX ||
-            arguments[MIDDLE] < arguments[MIN] || arguments[MIDDLE] > arguments[MAX] ||
-            arguments[MIN] > arguments[MAX] || arguments[MAX] < arguments[MIN] ||
-            arguments[RATE] < -125 || arguments[RATE] > 125 ||
-            arguments[FORWARD] >= MAX_SUPPORTED_RC_CHANNEL_COUNT
-        ) {
-            cliShowParseError();
-            return;
-        }
-
-        servo->min = arguments[MIN];
-        servo->max = arguments[MAX];
-        servo->middle = arguments[MIDDLE];
-        servo->rate = arguments[RATE];
-        servo->forwardFromChannel = arguments[FORWARD];
-    }
-}
-
-static void printServoMix(uint8_t dumpMask, const servoMixer_t *customServoMixers, const servoMixer_t *defaultCustomServoMixers)
-{
-    const char *format = "smix %d %d %d %d %d";
-    for (uint32_t i = 0; i < MAX_SERVO_RULES; i++) {
-        const servoMixer_t customServoMixer = customServoMixers[i];
-        if (customServoMixer.rate == 0) {
-            break;
-        }
-
-        bool equalsDefault = false;
-        if (defaultCustomServoMixers) {
-            servoMixer_t customServoMixerDefault = defaultCustomServoMixers[i];
-            equalsDefault = customServoMixer.targetChannel == customServoMixerDefault.targetChannel
-                && customServoMixer.inputSource == customServoMixerDefault.inputSource
-                && customServoMixer.rate == customServoMixerDefault.rate
-                && customServoMixer.speed == customServoMixerDefault.speed;
-
-            cliDefaultPrintLinef(dumpMask, equalsDefault, format,
-                i,
-                customServoMixerDefault.targetChannel,
-                customServoMixerDefault.inputSource,
-                customServoMixerDefault.rate,
-                customServoMixerDefault.speed
-            );
-        }
-        cliDumpPrintLinef(dumpMask, equalsDefault, format,
-            i,
-            customServoMixer.targetChannel,
-            customServoMixer.inputSource,
-            customServoMixer.rate,
-            customServoMixer.speed
-        );
-    }
-}
-
-static void cliServoMix(char *cmdline)
-{
-    char * saveptr;
-    int args[8], check = 0;
-    uint8_t len = strlen(cmdline);
-
-    if (len == 0) {
-        printServoMix(DUMP_MASTER, customServoMixers(0), NULL);
-    } else if (sl_strncasecmp(cmdline, "reset", 5) == 0) {
-        // erase custom mixer
-        pgResetCopy(customServoMixersMutable(0), PG_SERVO_MIXER);
-        for (uint32_t i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
-            servoParamsMutable(i)->reversedSources = 0;
-        }
-    } else if (sl_strncasecmp(cmdline, "load", 4) == 0) {
-        const char *ptr = nextArg(cmdline);
-        if (ptr) {
-            len = strlen(ptr);
-            for (uint32_t i = 0; ; i++) {
-                if (mixerNames[i] == NULL) {
-                    cliPrintLine("Invalid name");
-                    break;
-                }
-                if (sl_strncasecmp(ptr, mixerNames[i], len) == 0) {
-                    servoMixerLoadMix(i);
-                    cliPrintLinef("Loaded %s", mixerNames[i]);
-                    cliServoMix("");
-                    break;
-                }
-            }
-        }
-    } else if (sl_strncasecmp(cmdline, "reverse", 7) == 0) {
-        enum {SERVO = 0, INPUT, REVERSE, ARGS_COUNT};
-        char *ptr = strchr(cmdline, ' ');
-
-        len = strlen(ptr);
-        if (len == 0) {
-            cliPrintf("s");
-            for (uint32_t inputSource = 0; inputSource < INPUT_SOURCE_COUNT; inputSource++)
-                cliPrintf("\ti%d", inputSource);
-            cliPrintLinefeed();
-
-            for (uint32_t servoIndex = 0; servoIndex < MAX_SUPPORTED_SERVOS; servoIndex++) {
-                cliPrintf("%d", servoIndex);
-                for (uint32_t inputSource = 0; inputSource < INPUT_SOURCE_COUNT; inputSource++)
-                    cliPrintf("\t%s  ", (servoParams(servoIndex)->reversedSources & (1 << inputSource)) ? "r" : "n");
-                cliPrintLinefeed();
-            }
-            return;
-        }
-
-        ptr = strtok_r(ptr, " ", &saveptr);
-        while (ptr != NULL && check < ARGS_COUNT - 1) {
-            args[check++] = fastA2I(ptr);
-            ptr = strtok_r(NULL, " ", &saveptr);
-        }
-
-        if (ptr == NULL || check != ARGS_COUNT - 1) {
-            cliShowParseError();
-            return;
-        }
-
-        if (args[SERVO] >= 0 && args[SERVO] < MAX_SUPPORTED_SERVOS
-                && args[INPUT] >= 0 && args[INPUT] < INPUT_SOURCE_COUNT
-                && (*ptr == 'r' || *ptr == 'n')) {
-            if (*ptr == 'r')
-                servoParamsMutable(args[SERVO])->reversedSources |= 1 << args[INPUT];
-            else
-                servoParamsMutable(args[SERVO])->reversedSources &= ~(1 << args[INPUT]);
-        } else
-            cliShowParseError();
-
-        cliServoMix("reverse");
-    } else {
-        enum {RULE = 0, TARGET, INPUT, RATE, SPEED, ARGS_COUNT};
-        char *ptr = strtok_r(cmdline, " ", &saveptr);
-        while (ptr != NULL && check < ARGS_COUNT) {
-            args[check++] = fastA2I(ptr);
-            ptr = strtok_r(NULL, " ", &saveptr);
-        }
-
-        if (ptr != NULL || check != ARGS_COUNT) {
-            cliShowParseError();
-            return;
-        }
-
-        int32_t i = args[RULE];
-        if (i >= 0 && i < MAX_SERVO_RULES &&
-            args[TARGET] >= 0 && args[TARGET] < MAX_SUPPORTED_SERVOS &&
-            args[INPUT] >= 0 && args[INPUT] < INPUT_SOURCE_COUNT &&
-            args[RATE] >= -125 && args[RATE] <= 125 &&
-            args[SPEED] >= 0 && args[SPEED] <= MAX_SERVO_SPEED) {
-            customServoMixersMutable(i)->targetChannel = args[TARGET];
-            customServoMixersMutable(i)->inputSource = args[INPUT];
-            customServoMixersMutable(i)->rate = args[RATE];
-            customServoMixersMutable(i)->speed = args[SPEED];
-            cliServoMix("");
-        } else {
-            cliShowParseError();
-        }
-    }
-}
-#endif // USE_SERVOS
 
 #ifdef USE_SDCARD
 
@@ -1700,7 +1436,7 @@ static void cliRebootEx(bool bootLoader)
 {
     cliPrint("\r\nRebooting");
     bufWriterFlush(cliWriter);
-    waitForSerialPortToFinishTransmitting(cliPort);
+    waitForSerialPortToFinishTransmitting(uart1);
 
 //    stopMotors();
 //    stopPwmAllMotors();
@@ -1752,7 +1488,7 @@ static void cliGpsPassthrough(char *cmdline)
 {
     UNUSED(cmdline);
 
-//    gpsEnablePassthrough(cliPort);
+//    gpsEnablePassthrough(uart1);
 }
 #endif
 
@@ -1819,7 +1555,7 @@ static void cliProfile(char *cmdline)
     } else {
         const int i = fastA2I(cmdline) - 1;
         if (i >= 0 && i < MAX_PROFILE_COUNT) {
-            setConfigProfileAndWriteEEPROM(i);
+            // setConfigProfileAndWriteEEPROM(i);
             cliProfile("");
         }
     }
@@ -1844,7 +1580,7 @@ static void cliSave(char *cmdline)
 
     cliPrint("Saving");
     //copyCurrentProfileToProfileSlot(getConfigProfile();
-    writeEEPROM();
+    // writeEEPROM();
     cliReboot();
 }
 
@@ -1853,7 +1589,7 @@ static void cliDefaults(char *cmdline)
     UNUSED(cmdline);
 
     cliPrint("Resetting to defaults");
-    resetEEPROM();
+    // resetEEPROM();
 
     if (!checkCommand(cmdline, "noreboot"))
         cliReboot();
@@ -2043,7 +1779,7 @@ static void cliStatus(char *cmdline)
 #endif
     cliPrintLinef("Stack size: %d, Stack address: 0x%x, Heap available: %d", stackTotalSize(), stackHighMem(), memGetAvailableBytes());
 
-    cliPrintLinef("I2C Errors: %d, config size: %d, max available config: %d", i2cErrorCounter, getEEPROMConfigSize(), &__config_end - &__config_start);
+    // cliPrintLinef("I2C Errors: %d, config size: %d, max available config: %d", i2cErrorCounter, getEEPROMConfigSize(), &__config_end - &__config_start);
 
 #ifdef USE_ADC
     static char * adcFunctions[] = { "BATTERY", "RSSI", "CURRENT", "AIRSPEED" };
@@ -2336,16 +2072,16 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("color", "configure colors", NULL, cliColor),
     CLI_COMMAND_DEF("mode_color", "configure mode and special colors", NULL, cliModeColor),
 #endif
-    CLI_COMMAND_DEF("defaults", "reset to defaults and reboot", NULL, cliDefaults),
-    CLI_COMMAND_DEF("dfu", "DFU mode on reboot", NULL, cliDfu),
-    CLI_COMMAND_DEF("diff", "list configuration changes from default",
-        "[master|profile|rates|all] {showdefaults}", cliDiff),
-    CLI_COMMAND_DEF("dump", "dump configuration",
-        "[master|profile|rates|all] {showdefaults}", cliDump),
+//    CLI_COMMAND_DEF("defaults", "reset to defaults and reboot", NULL, cliDefaults),
+//    CLI_COMMAND_DEF("dfu", "DFU mode on reboot", NULL, cliDfu),
+//    CLI_COMMAND_DEF("diff", "list configuration changes from default",
+//        "[master|profile|rates|all] {showdefaults}", cliDiff),
+//    CLI_COMMAND_DEF("dump", "dump configuration",
+//        "[master|profile|rates|all] {showdefaults}", cliDump),
 #ifdef USE_RX_ELERES
     CLI_COMMAND_DEF("eleres_bind", NULL, NULL, cliEleresBind),
 #endif // USE_RX_ELERES
-    CLI_COMMAND_DEF("exit", NULL, NULL, cliExit),
+//    CLI_COMMAND_DEF("exit", NULL, NULL, cliExit),
     CLI_COMMAND_DEF("feature", "configure features",
         "list\r\n"
         "\t<+|->[name]", cliFeature),
@@ -2357,11 +2093,11 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("flash_write", NULL, "<address> <message>", cliFlashWrite),
 #endif
 #endif
-    CLI_COMMAND_DEF("get", "get variable value", "[name]", cliGet),
+//    CLI_COMMAND_DEF("get", "get variable value", "[name]", cliGet),
 #ifdef USE_GPS
     CLI_COMMAND_DEF("gpspassthrough", "passthrough gps to serial", NULL, cliGpsPassthrough),
 #endif
-    CLI_COMMAND_DEF("help", NULL, NULL, cliHelp),
+    // CLI_COMMAND_DEF("help", NULL, NULL, cliHelp),
 #ifdef USE_LED_STRIP
     CLI_COMMAND_DEF("led", "configure leds", NULL, cliLed),
 #endif
@@ -2383,17 +2119,7 @@ const clicmd_t cmdTable[] = {
 #ifdef USE_SERIAL_PASSTHROUGH
     CLI_COMMAND_DEF("serialpassthrough", "passthrough serial data to port", "<id> [baud] [mode] : passthrough to serial", cliSerialPassthrough),
 #endif
-#ifdef USE_SERVOS
-    CLI_COMMAND_DEF("servo", "configure servos", NULL, cliServo),
-#endif
-    CLI_COMMAND_DEF("set", "change setting", "[<name>=<value>]", cliSet),
-#ifdef USE_SERVOS
-    CLI_COMMAND_DEF("smix", "servo mixer",
-        "<rule> <servo> <source> <rate> <speed>\r\n"
-        "\treset\r\n"
-        "\tload <mixer>\r\n"
-        "\treverse <servo> <source> r|n", cliServoMix),
-#endif
+    // CLI_COMMAND_DEF("set", "change setting", "[<name>=<value>]", cliSet),
 #ifdef USE_SDCARD
     CLI_COMMAND_DEF("sd_info", "sdcard info", NULL, cliSdInfo),
 #endif
@@ -2422,6 +2148,7 @@ static void cliHelp(char *cmdline)
     }
 }
 
+
 void cliProcess(void)
 {
     if (!cliWriter) {
@@ -2431,8 +2158,9 @@ void cliProcess(void)
     // Be a little bit tricky.  Flush the last inputs buffer, if any.
     bufWriterFlush(cliWriter);
 
-    while (serialRxBytesWaiting(cliPort)) {
-        uint8_t c = serialRead(cliPort);
+    while (serialRxBytesWaiting(uart1)) {
+        uint8_t c = serialRead(uart1);
+        // cliPrintLinef(">> %c", c);
         if (c == '\t' || c == '?') {
             // do tab completion
             const clicmd_t *cmd, *pstart = NULL, *pend = NULL;
@@ -2534,8 +2262,8 @@ void cliProcess(void)
 void cliEnter(serialPort_t *serialPort)
 {
     cliMode = 1;
-    cliPort = serialPort;
-    setPrintfSerialPort(cliPort);
+//    uart1 = serialPort;
+    setPrintfSerialPort(uart1);
     cliWriter = bufWriterInit(cliWriteBuffer, sizeof(cliWriteBuffer), (bufWrite_t)serialWriteBufShim, serialPort);
 
 #ifndef CLI_MINIMAL_VERBOSITY

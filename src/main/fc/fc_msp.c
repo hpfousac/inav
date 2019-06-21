@@ -61,7 +61,7 @@
 #include "flight/hil.h"
 #include "flight/mixer.h"
 #include "flight/pid.h"
-#include "flight/servos.h"
+// #include "flight/servos.h"
 
 #include "config/config_eeprom.h"
 #include "config/feature.h"
@@ -416,34 +416,6 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
     case MSP_RAW_IMU:
         return MSP_RESULT_ERROR;
 
-#ifdef USE_SERVOS
-    case MSP_SERVO:
-        sbufWriteData(dst, &servo, MAX_SUPPORTED_SERVOS * 2);
-        break;
-
-    case MSP_RCOUT_NEUTRAL:
-        return MSP_RESULT_ERROR;
-//        break;
-
-    case MSP_RCOUT_REVERSES:
-        return MSP_RESULT_ERROR;
-//        break;
-
-    case MSP_SERVO_CONFIGURATIONS:
-        for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
-            sbufWriteU16(dst, servoParams(i)->min);
-            sbufWriteU16(dst, servoParams(i)->max);
-            sbufWriteU16(dst, servoParams(i)->middle);
-            sbufWriteU8(dst, servoParams(i)->rate);
-            sbufWriteU8(dst, 0);
-            sbufWriteU8(dst, 0);
-            sbufWriteU8(dst, servoParams(i)->forwardFromChannel);
-            sbufWriteU32(dst, servoParams(i)->reversedSources);
-        }
-        break;
-    case MSP_SERVO_MIX_RULES:
-        return MSP_RESULT_ERROR;
-#endif
 
     case MSP2_COMMON_MOTOR_MIXER:
         return MSP_RESULT_ERROR;
@@ -1112,32 +1084,6 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
     case MSP_SET_MOTOR:
         return MSP_RESULT_ERROR;
 
-#ifdef USE_SERVOS
-    case MSP_SET_SERVO_CONFIGURATION:
-        if (dataSize != (1 + 14)) {
-            return MSP_RESULT_ERROR;
-        }
-        tmp_u8 = sbufReadU8(src);
-        if (tmp_u8 >= MAX_SUPPORTED_SERVOS) {
-            return MSP_RESULT_ERROR;
-        } else {
-            servoParamsMutable(tmp_u8)->min = sbufReadU16(src);
-            servoParamsMutable(tmp_u8)->max = sbufReadU16(src);
-            servoParamsMutable(tmp_u8)->middle = sbufReadU16(src);
-            servoParamsMutable(tmp_u8)->rate = sbufReadU8(src);
-            sbufReadU8(src);
-            sbufReadU8(src);
-            servoParamsMutable(tmp_u8)->forwardFromChannel = sbufReadU8(src);
-            servoParamsMutable(tmp_u8)->reversedSources = sbufReadU32(src);
-            servoComputeScalingFactors(tmp_u8);
-        }
-        break;
-#endif
-
-#ifdef USE_SERVOS
-    case MSP_SET_SERVO_MIX_RULE:
-        return MSP_RESULT_ERROR;
-#endif
 
     case MSP2_COMMON_SET_MOTOR_MIXER:
         return MSP_RESULT_ERROR;
