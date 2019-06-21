@@ -53,13 +53,19 @@ static void processLoopback(void)
 #endif
 }
 
+extern serialPort_t *uart1;
+
 int main(void)
 {
     init();
     loopbackInit();
 
+
+    cliEnter(uart1);
+
     while (true) {
-        scheduler();
-        processLoopback();
+//        scheduler();
+//        processLoopback();
+        cliProcess ();
     }
 }

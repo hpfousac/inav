@@ -127,7 +127,7 @@ extern uint8_t __config_end;
 extern timeDelta_t cycleTime; // FIXME dependency on mw.c
 extern uint8_t detectedSensors[SENSOR_INDEX_COUNT];
 
-static serialPort_t *cliPort;
+extern serialPort_t *uart1;
 
 static bufWriter_t *cliWriter;
 static uint8_t cliWriteBuffer[sizeof(*cliWriter) + 128];
@@ -876,7 +876,7 @@ static void cliSerialPassthrough(char *cmdline)
 
     printf("Forwarding data to %d, power cycle to exit.\r\n", id);
 
-    serialPassthrough(cliPort, passThroughPort, NULL, NULL);
+    serialPassthrough(uart1, passThroughPort, NULL, NULL);
 }
 #endif
 
@@ -1436,7 +1436,7 @@ static void cliRebootEx(bool bootLoader)
 {
     cliPrint("\r\nRebooting");
     bufWriterFlush(cliWriter);
-    waitForSerialPortToFinishTransmitting(cliPort);
+    waitForSerialPortToFinishTransmitting(uart1);
 
 //    stopMotors();
 //    stopPwmAllMotors();
@@ -1488,7 +1488,7 @@ static void cliGpsPassthrough(char *cmdline)
 {
     UNUSED(cmdline);
 
-//    gpsEnablePassthrough(cliPort);
+//    gpsEnablePassthrough(uart1);
 }
 #endif
 
@@ -2148,6 +2148,7 @@ static void cliHelp(char *cmdline)
     }
 }
 
+
 void cliProcess(void)
 {
     if (!cliWriter) {
@@ -2157,8 +2158,9 @@ void cliProcess(void)
     // Be a little bit tricky.  Flush the last inputs buffer, if any.
     bufWriterFlush(cliWriter);
 
-    while (serialRxBytesWaiting(cliPort)) {
-        uint8_t c = serialRead(cliPort);
+    while (serialRxBytesWaiting(uart1)) {
+        uint8_t c = serialRead(uart1);
+        // cliPrintLinef(">> %c", c);
         if (c == '\t' || c == '?') {
             // do tab completion
             const clicmd_t *cmd, *pstart = NULL, *pend = NULL;
@@ -2260,8 +2262,8 @@ void cliProcess(void)
 void cliEnter(serialPort_t *serialPort)
 {
     cliMode = 1;
-    cliPort = serialPort;
-    setPrintfSerialPort(cliPort);
+//    uart1 = serialPort;
+    setPrintfSerialPort(uart1);
     cliWriter = bufWriterInit(cliWriteBuffer, sizeof(cliWriteBuffer), (bufWrite_t)serialWriteBufShim, serialPort);
 
 #ifndef CLI_MINIMAL_VERBOSITY
