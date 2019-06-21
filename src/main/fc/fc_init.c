@@ -175,19 +175,19 @@ uint8_t systemState = SYSTEM_STATE_INITIALISING;
 
 void flashLedsAndBeep(void)
 {
-    LED1_ON;
-    LED0_OFF;
-    for (uint8_t i = 0; i < 10; i++) {
-        LED1_TOGGLE;
-        LED0_TOGGLE;
-        delay(25);
-        if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
-            BEEP_ON;
-        delay(25);
-        BEEP_OFF;
-    }
-    LED0_OFF;
-    LED1_OFF;
+    // LED1_ON;
+    // LED0_OFF;
+    // for (uint8_t i = 0; i < 10; i++) {
+    //     LED1_TOGGLE;
+    //     LED0_TOGGLE;
+    //     delay(25);
+    //     if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
+    //         BEEP_ON;
+    //     delay(25);
+    //     BEEP_OFF;
+    // }
+    // LED0_OFF;
+    // LED1_OFF;
 }
 
 void init(void)
@@ -321,23 +321,23 @@ void init(void)
     // pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
 #endif
 
-    pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
+    // pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
 #ifndef BRUSHED_MOTORS
-    pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
-                            (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
-                            (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
+    // pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
+    //                         (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
+    //                         (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
 #endif
-    pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
-    pwm_params.idlePulse = motorConfig()->mincommand;
+    // pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
+    // pwm_params.idlePulse = motorConfig()->mincommand;
     if (feature(FEATURE_3D)) {
-        pwm_params.idlePulse = flight3DConfig()->neutral3d;
+        // pwm_params.idlePulse = flight3DConfig()->neutral3d;
     }
 
-    if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
-        pwm_params.useFastPwm = false;
-        featureClear(FEATURE_3D);
-        pwm_params.idlePulse = 0; // brushed motors
-    }
+    // if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
+    //     pwm_params.useFastPwm = false;
+    //     featureClear(FEATURE_3D);
+    //     pwm_params.idlePulse = 0; // brushed motors
+    // }
 
     // pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
@@ -495,7 +495,7 @@ void init(void)
     }
 #endif
 
-    adcInit(&adc_params);
+    // adcInit(&adc_params);
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)
