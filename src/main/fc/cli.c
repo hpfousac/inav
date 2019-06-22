@@ -60,6 +60,7 @@ extern uint8_t __config_end;
 #include "drivers/io.h"
 #include "drivers/io_impl.h"
 #include "drivers/logging.h"
+#include "drivers/pwm_mapping.h"
 #include "drivers/rx_pwm.h"
 #include "drivers/sdcard.h"
 #include "drivers/sensor.h"
@@ -2680,6 +2681,24 @@ static void cliDiff(char *cmdline)
     printConfig(cmdline, true);
 }
 
+static void cliShowPwm(char *cmdline)
+{
+    cliPrintLinef("# show pwm (pwmIOConfiguration=0x%08lX)", (unsigned long) &pwmIOConfiguration);
+    cliPrintLinef(" servoCount=%d", (int) pwmIOConfiguration.servoCount);
+    cliPrintLinef(" motorCount=%d", (int) pwmIOConfiguration.motorCount);
+    cliPrintLinef(" ioCount=%d", (int) pwmIOConfiguration.ioCount);
+    cliPrintLinef(" pwmInputCount=%d", (int) pwmIOConfiguration.pwmInputCount);
+    cliPrintLinef(" ppmInputCount=%d", (int) pwmIOConfiguration.ppmInputCount);
+    for (int timerIndex = 0; timerIndex < USABLE_TIMER_CHANNEL_COUNT; timerIndex++) {
+        pwmPortConfiguration_t *ioConf = pwmIOConfiguration.ioConfigurations + timerIndex;
+
+        cliPrintLinef("  ioConf[%d].index=%d", timerIndex, (int) ioConf->index);
+        cliPrintLinef("  ioConf[%d].flags=%d", timerIndex, (int) ioConf->flags);
+
+    }
+}
+
+
 typedef struct {
     const char *name;
 #ifndef SKIP_CLI_COMMAND_HELP
@@ -2796,6 +2815,7 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("tasks", "show task stats", NULL, cliTasks),
 #endif
     CLI_COMMAND_DEF("version", "show version", NULL, cliVersion),
+    CLI_COMMAND_DEF("pwm", "show pwm settings", NULL, cliShowPwm),
 };
 
 static void cliHelp(char *cmdline)
