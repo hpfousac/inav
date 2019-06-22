@@ -117,7 +117,7 @@
 //#define USE_SPEKTRUM_BIND
 #define BIND_PIN                PB11 // UART3
 
-#define USE_SERIAL_4WAY_BLHELI_INTERFACE
+//#define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
 // Number of available PWM outputs
 #define MAX_PWM_OUTPUT_PORTS    12

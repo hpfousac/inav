@@ -7,6 +7,8 @@
 
  * related compile time symbol: USE_RX_PPM
 
+ * HW timer config flag: TIM_USE_PPM
+
  <featureMask()>, 
 
  from cli: <featureClear(mask);>, <featureSet(mask);> -- tady jsem zatim skoncil --
@@ -14,6 +16,12 @@
  * featureConfig() ?
 
  * featureConfigMutable() ? (also found in 2.0.1)
+
+ * pwmOverflowCallback
+
+ * pwmEdgeCallback
+
+ * timerChConfigCallbacks
 
  On general what is difference between * & *Mutable.
 
