@@ -50,13 +50,14 @@
 // https://wiki.stm32duino.com/images/a/ae/Bluepillpinout.gif
 
 #define USE_UART1
-#define USE_UART2
-#define USE_UART3
+// #define USE_UART2
+// #define USE_UART3
 
 // Note: next 2 lines looks as a hack
-#define UART3_TX_PIN    PB10
-#define UART3_RX_PIN    PB11
-
+#ifdef USE_UART3
+# define UART3_TX_PIN    PB10
+# define UART3_RX_PIN    PB11
+#endif // USE_UART3
 
 #define SERIAL_PORT_COUNT   3
 
@@ -217,7 +218,12 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         ( BIT(13) | BIT(14) | BIT(15) )
 
-#define USABLE_TIMER_CHANNEL_COUNT 14
+#ifndef USE_USART2    
+# define USABLE_TIMER_CHANNEL_COUNT 14
+#else
+# define USABLE_TIMER_CHANNEL_COUNT 12
+#endif
+
 #define USED_TIMERS             ( TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(4) )
 
 // from rx.h

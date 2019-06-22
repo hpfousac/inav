@@ -75,6 +75,11 @@ bit array containig rew stages.
 
  *How program work with this array should be investigated.*
 
+####  IO_TAG, DEFIO_TAG and ioTag_t####
+
+ It look as a fuse for detection of unexistent IO on particular chip. *The relation with command resource
+ has to be investigated.*
+
 ### Configuration and Parameters ###
 
  The code is comming from Cleanflight project and definitions are in *parameter_group.h*.

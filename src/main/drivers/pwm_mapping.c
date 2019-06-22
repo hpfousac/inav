@@ -40,7 +40,7 @@ enum {
     MAP_TO_SERVO_OUTPUT,
 };
 
-static pwmIOConfiguration_t pwmIOConfiguration;
+pwmIOConfiguration_t pwmIOConfiguration;
 
 pwmIOConfiguration_t *pwmGetOutputConfiguration(void)
 {

@@ -137,5 +137,7 @@ extern const uint16_t multiPWM[];
 extern const uint16_t airPPM[];
 extern const uint16_t airPWM[];
 
+extern pwmIOConfiguration_t pwmIOConfiguration;
+
 pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init);
 pwmIOConfiguration_t *pwmGetOutputConfiguration(void);
