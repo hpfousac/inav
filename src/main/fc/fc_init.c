@@ -139,6 +139,11 @@
 extern void initialisePreBootHardware(void);
 #endif
 
+
+#ifdef USE_UART1
+serialPort_t *uart1 = NULL;
+#endif // USE_UART1
+
 extern uint8_t motorControlEnable;
 
 typedef enum {
@@ -721,6 +726,17 @@ void init(void)
     latchActiveFeatures();
     motorControlEnable = true;
     fcTasksInit();
+    
+#ifdef USE_UART1
+    uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
+    
+    serialBeginWrite(uart1);
+    serialWriteBuf(uart1, "READY\r\n", 7);
+    serialEndWrite(uart1);
+
+    cliEnter(uart1);
+#endif // USE_UART1
+
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_READY;
