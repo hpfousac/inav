@@ -53,8 +53,6 @@ static void processLoopback(void)
 #endif
 }
 
-extern serialPort_t *uart1;
-
 int main(void)
 {
     init();
