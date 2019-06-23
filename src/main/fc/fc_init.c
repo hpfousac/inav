@@ -139,27 +139,6 @@
 extern void initialisePreBootHardware(void);
 #endif
 
-#undef USE_BLACKBOX
-#undef USE_PITOT
-#undef USE_TELEMETRY
-#undef USE_CMS
-#undef USE_DASHBOARD
-#undef USE_NAV
-#undef USE_GPS
-
-#ifdef USE_UART1
-serialPort_t *uart1 = NULL;
-#endif // USE_UART1
-
-#ifdef USE_UART2
-serialPort_t *uart2 = NULL;
-#endif // USE_UART2
-    
-#ifdef USE_UART3
-serialPort_t *uart3 = NULL;
-#endif // USE_UART3
-
-
 extern uint8_t motorControlEnable;
 
 typedef enum {
@@ -175,19 +154,19 @@ uint8_t systemState = SYSTEM_STATE_INITIALISING;
 
 void flashLedsAndBeep(void)
 {
-    // LED1_ON;
-    // LED0_OFF;
-    // for (uint8_t i = 0; i < 10; i++) {
-    //     LED1_TOGGLE;
-    //     LED0_TOGGLE;
-    //     delay(25);
-    //     if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
-    //         BEEP_ON;
-    //     delay(25);
-    //     BEEP_OFF;
-    // }
-    // LED0_OFF;
-    // LED1_OFF;
+    LED1_ON;
+    LED0_OFF;
+    for (uint8_t i = 0; i < 10; i++) {
+        LED1_TOGGLE;
+        LED0_TOGGLE;
+        delay(25);
+        if (!(getPreferredBeeperOffMask() & (1 << (BEEPER_SYSTEM_INIT - 1))))
+            BEEP_ON;
+        delay(25);
+        BEEP_OFF;
+    }
+    LED0_OFF;
+    LED1_OFF;
 }
 
 void init(void)
@@ -196,13 +175,13 @@ void init(void)
     HAL_Init();
 #endif
 
-    // systemState = SYSTEM_STATE_INITIALISING;
-    // initBootlog();
+    systemState = SYSTEM_STATE_INITIALISING;
+    initBootlog();
 
-    // printfSupportInit();
+    printfSupportInit();
 
     // Initialize system and CPU clocks to their initial values
-    systemInit(); // library standard function (specific for each chip family) BLUEPILL: src/main/drivers/system_stm32f*.c
+    systemInit();
 
     // initialize IO (needed for all IO operations)
     IOInitGlobal();
@@ -211,20 +190,24 @@ void init(void)
     detectHardwareRevision();
 #endif
 
-    // initEEPROM();
-    // ensureEEPROMContainsValidData();
-    // readEEPROM();
+#ifdef BRUSHED_ESC_AUTODETECT
+    detectBrushedESC();
+#endif
+
+    initEEPROM();
+    ensureEEPROMContainsValidData();
+    readEEPROM();
 
     // Re-initialize system clock to their final values (if necessary)
     systemClockSetup(systemConfig()->cpuUnderclock);
     
-    // i2cSetSpeed(systemConfig()->i2c_speed);
+    i2cSetSpeed(systemConfig()->i2c_speed);
 
 #ifdef USE_HARDWARE_PREBOOT_SETUP
     initialisePreBootHardware();
 #endif
 
-    // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE); // src/main/drivers/system_stm32f*.c
+    addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
@@ -233,16 +216,16 @@ void init(void)
     latchActiveFeatures();
 
 #ifdef ALIENFLIGHTF3
-//    ledInit(hardwareRevision == AFF3_REV_1 ? false : true);
+    ledInit(hardwareRevision == AFF3_REV_1 ? false : true);
 #else
-//    ledInit(false);
+    ledInit(false);
 #endif
 
 #ifdef USE_EXTI
     EXTIInit();
 #endif
 
-    // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
 #ifdef USE_SPEKTRUM_BIND
     if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
@@ -286,13 +269,31 @@ void init(void)
     debugTraceInit();
 #endif
 
+#ifdef USE_SERVOS
+    servosInit();
+    mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
+#endif
 
+    drv_pwm_config_t pwm_params;
+    memset(&pwm_params, 0, sizeof(pwm_params));
+
+#ifdef USE_RANGEFINDER_HCSR04
+    // HC-SR04 has a dedicated connection to FC and require two pins
+    if (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) {
+        const rangefinderHardwarePins_t *rangefinderHardwarePins = rangefinderGetHardwarePins();
+        if (rangefinderHardwarePins) {
+            pwm_params.useTriggerRangefinder = true;
+            pwm_params.rangefinderIOConfig.triggerTag = rangefinderHardwarePins->triggerTag;
+            pwm_params.rangefinderIOConfig.echoTag = rangefinderHardwarePins->echoTag;
+        }
+    }
+#endif
 
     // when using airplane/wing mixer, servo/motor outputs are remapped
-//    pwm_params.flyingPlatformType = getFlyingPlatformType();
+    pwm_params.flyingPlatformType = getFlyingPlatformType();
 
 #if defined(USE_UART2) && defined(STM32F10X)
-    // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
+    pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
 #endif
 #ifdef STM32F303xC
     pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
@@ -303,46 +304,45 @@ void init(void)
 #if defined(USE_UART6) && defined(STM32F40_41xxx)
     pwm_params.useUART6 = doesConfigurationUsePort(SERIAL_PORT_USART6);
 #endif
-//     pwm_params.useVbat = feature(FEATURE_VBAT);
-//     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
-// //    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
-//     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
-// //    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
-// //        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
-//     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
-// //    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
-// //    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
-
+    pwm_params.useVbat = feature(FEATURE_VBAT);
+    pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
+    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
+    pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
+    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
+        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
+    pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
+    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
+    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
 
 #ifdef USE_SERVOS
-//    pwm_params.useServoOutputs = isMixerUsingServos();
-    // pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
-    // pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
-    // pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
+    pwm_params.useServoOutputs = isMixerUsingServos();
+    pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
+    pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
+    pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
 #endif
 
-    // pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
+    pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
 #ifndef BRUSHED_MOTORS
-    // pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
-    //                         (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
-    //                         (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
+    pwm_params.useFastPwm = (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT125) ||
+                            (motorConfig()->motorPwmProtocol == PWM_TYPE_ONESHOT42) ||
+                            (motorConfig()->motorPwmProtocol == PWM_TYPE_MULTISHOT);
 #endif
-    // pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
-    // pwm_params.idlePulse = motorConfig()->mincommand;
+    pwm_params.motorPwmRate = motorConfig()->motorPwmRate;
+    pwm_params.idlePulse = motorConfig()->mincommand;
     if (feature(FEATURE_3D)) {
-        // pwm_params.idlePulse = flight3DConfig()->neutral3d;
+        pwm_params.idlePulse = flight3DConfig()->neutral3d;
     }
 
-    // if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
-    //     pwm_params.useFastPwm = false;
-    //     featureClear(FEATURE_3D);
-    //     pwm_params.idlePulse = 0; // brushed motors
-    // }
+    if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
+        pwm_params.useFastPwm = false;
+        featureClear(FEATURE_3D);
+        pwm_params.idlePulse = 0; // brushed motors
+    }
 
-    // pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
+    pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
 #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
-//    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
+    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
 #endif
 
 #ifdef USE_PMW_SERVO_DRIVER
@@ -350,19 +350,19 @@ void init(void)
     If external PWM driver is enabled, for example PCA9685, disable internal
     servo handling mechanism, since external device will do that
     */
-    // if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-    //     pwm_params.useServoOutputs = false;
-    //     pwm_params.useChannelForwarding = false;
-    // }
+    if (feature(FEATURE_PWM_SERVO_DRIVER)) {
+        pwm_params.useServoOutputs = false;
+        pwm_params.useChannelForwarding = false;
+    }
 #endif
 
     // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
     pwmInit(&pwm_params);
 
-//    mixerUsePWMIOConfiguration();
+    mixerUsePWMIOConfiguration();
 
-    // if (!pwm_params.useFastPwm)
-    //     motorControlEnable = true;
+    if (!pwm_params.useFastPwm)
+        motorControlEnable = true;
 
     addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_MOTORS_READY;
@@ -484,9 +484,16 @@ void init(void)
     memset(&adc_params, 0, sizeof(adc_params));
 
     // Allocate and initialize ADC channels if features are configured - can't rely on sensor detection here, it's done later
+    if (feature(FEATURE_VBAT)) {
+        adc_params.adcFunctionChannel[ADC_BATTERY] = adcChannelConfig()->adcFunctionChannel[ADC_BATTERY];
+    }
 
     if (feature(FEATURE_RSSI_ADC)) {
         adc_params.adcFunctionChannel[ADC_RSSI] = adcChannelConfig()->adcFunctionChannel[ADC_RSSI];
+    }
+
+    if (feature(FEATURE_CURRENT_METER) && batteryConfig()->current.type == CURRENT_SENSOR_ADC) {
+        adc_params.adcFunctionChannel[ADC_CURRENT] =  adcChannelConfig()->adcFunctionChannel[ADC_CURRENT];
     }
 
 #if defined(USE_PITOT) && defined(USE_ADC) && defined(USE_PITOT_ADC)
@@ -495,34 +502,34 @@ void init(void)
     }
 #endif
 
-    // adcInit(&adc_params);
+    adcInit(&adc_params);
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)
-    // delay(500);
+    delay(500);
 
-    // /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
-    // if (!isMPUSoftReset()) {
-    //     addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
+    /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
+    if (!isMPUSoftReset()) {
+        addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
 
-    //     LED1_ON;
-    //     LED0_OFF;
+        LED1_ON;
+        LED0_OFF;
 
-    //     for (int i = 0; i < 5; i++) {
-    //         LED1_TOGGLE;
-    //         LED0_TOGGLE;
-    //         delay(100);
-    //     }
+        for (int i = 0; i < 5; i++) {
+            LED1_TOGGLE;
+            LED0_TOGGLE;
+            delay(100);
+        }
 
-    //     LED0_OFF;
-    //     LED1_OFF;
-    // }
+        LED0_OFF;
+        LED1_OFF;
+    }
 #endif
 
-//    initBoardAlignment();
+    initBoardAlignment();
 
 #ifdef USE_CMS
-    // cmsInit();
+    cmsInit();
 #endif
 
 #ifdef USE_DASHBOARD
@@ -532,15 +539,26 @@ void init(void)
 #endif
 
 #ifdef USE_GPS
-    // if (feature(FEATURE_GPS)) {
-    //     gpsPreInit();
-    // }
+    if (feature(FEATURE_GPS)) {
+        gpsPreInit();
+    }
 #endif
+
+    if (!sensorsAutodetect()) {
+        // if gyro was not detected due to whatever reason, we give up now.
+        failureMode(FAILURE_MISSING_ACC);
+    }
 
     addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_SENSORS_READY;
 
     flashLedsAndBeep();
+
+#ifdef USE_DTERM_NOTCH
+    pidInitFilters();
+#endif
+
+    imuInit();
 
     // Sensors have now been detected, mspFcInit() can now be called
     // to set the boxes up
@@ -550,14 +568,58 @@ void init(void)
     cliInit(serialConfig());
 #endif
 
-//    failsafeInit();
+    failsafeInit();
 
-//    rxInit();
+    rxInit();
+
+#if (defined(USE_OSD) || (defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)))
+    displayPort_t *osdDisplayPort = NULL;
+#endif
+
+#ifdef USE_OSD
+    if (feature(FEATURE_OSD)) {
+#if defined(USE_MAX7456)
+        // If there is a max7456 chip for the OSD then use it
+        static vcdProfile_t vcdProfile;
+        vcdProfile.video_system = osdConfig()->video_system;
+        osdDisplayPort = max7456DisplayPortInit(&vcdProfile);
+#elif defined(USE_OSD_OVER_MSP_DISPLAYPORT) // OSD over MSP; not supported (yet)
+        osdDisplayPort = displayPortMspInit();
+#endif
+        // osdInit  will register with CMS by itself.
+        osdInit(osdDisplayPort);
+    }
+#endif
 
 #if defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)
     // If OSD is not active, then register MSP_DISPLAYPORT as a CMS device.
     if (!osdDisplayPort) {
         cmsDisplayPortRegister(displayPortMspInit());
+    }
+#endif
+
+#ifdef USE_UAV_INTERCONNECT
+    uavInterconnectBusInit();
+#endif
+
+#ifdef USE_GPS
+    if (feature(FEATURE_GPS)) {
+        gpsInit();
+        addBootlogEvent2(BOOT_EVENT_GPS_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    }
+#endif
+
+
+#ifdef USE_NAV
+    navigationInit();
+#endif
+
+#ifdef USE_LED_STRIP
+    ledStripInit();
+
+    if (feature(FEATURE_LED_STRIP)) {
+        ledStripEnable();
+        addBootlogEvent2(BOOT_EVENT_LEDSTRIP_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
 
@@ -609,26 +671,26 @@ void init(void)
     blackboxInit();
 #endif
 
-//    gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
+    gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
 #ifdef USE_BARO
     baroStartCalibration();
 #endif
 
 #ifdef USE_PITOT
-//    pitotStartCalibration();
+    pitotStartCalibration();
 #endif
 
 #ifdef VTX_CONTROL
-    // vtxControlInit();
+    vtxControlInit();
 
-    // vtxCommonInit();
+    vtxCommonInit();
 
 #ifdef VTX_SMARTAUDIO
-    // vtxSmartAudioInit();
+    vtxSmartAudioInit();
 #endif
 
 #ifdef VTX_TRAMP
-    // vtxTrampInit();
+    vtxTrampInit();
 #endif
 
 #endif // VTX_CONTROL
@@ -638,6 +700,8 @@ void init(void)
     timerStart();
 
     // Now that everything has powered up the voltage and cell count be determined.
+    if (feature(FEATURE_VBAT | FEATURE_CURRENT_METER))
+        batteryInit();
 
 #ifdef CJMCU
     LED2_ON;
@@ -649,6 +713,10 @@ void init(void)
     }
 #endif
 
+#ifdef USE_RCDEVICE
+    rcdeviceInit();
+#endif // USE_RCDEVICE
+
     // Latch active features AGAIN since some may be modified by init().
     latchActiveFeatures();
     motorControlEnable = true;
@@ -656,19 +724,4 @@ void init(void)
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
     systemState |= SYSTEM_STATE_READY;
-
-#ifdef USE_UART1
-    uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
-    
-    serialBeginWrite(uart1);
-    serialWriteBuf(uart1, "READY\r\n", 7);
-    serialEndWrite(uart1);
-#endif // USE_UART1
-
-#ifdef USE_UART2
-#endif // USE_UART2
-    
-#ifdef USE_UART3
-#endif // USE_UART3
-    
 }
