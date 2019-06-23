@@ -248,6 +248,26 @@ typedef struct timerHardware_s
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
 
 
+## RX ##
+
+ Initialisation is done thru **rxInit ()** in **rx.c**.
+
+ rxConfig, rxRuntimeConfig
+
+ **failsafeInit()** needs to be discovered
+
+ The all checks for serial usage has to be wiped out:
+
+findSerialPortConfig(FUNCTION_RX_SERIAL)
+findSerialPortUsageByIdentifier(identifier)
+
+it looks that **serialInit ();** has to be called.
+
+raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()** when
+**rxRuntimeConfig.rcReadRawFn** is initialised to appropriate function pointer.
+
+[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
+
 ## PWM Out ##
 
  pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c

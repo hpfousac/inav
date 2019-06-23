@@ -41,10 +41,6 @@
 
 #include "cms/cms.h"
 
-#include "drivers/accgyro/accgyro.h"
-#include "drivers/adc.h"
-#include "drivers/compass/compass.h"
-#include "drivers/bus.h"
 #include "drivers/dma.h"
 #include "drivers/exti.h"
 #include "drivers/flash_m25p16.h"
@@ -171,8 +167,6 @@ typedef enum {
     SYSTEM_STATE_READY          = (1 << 7)
 } systemState_e;
 
-uint8_t systemState = SYSTEM_STATE_INITIALISING;
-
 void flashLedsAndBeep(void)
 {
     // LED1_ON;
@@ -190,16 +184,14 @@ void flashLedsAndBeep(void)
     // LED1_OFF;
 }
 
+
+bool spkUsartStatus = false;
+
 void init(void)
 {
 #ifdef USE_HAL_DRIVER
     HAL_Init();
 #endif
-
-    // systemState = SYSTEM_STATE_INITIALISING;
-    // initBootlog();
-
-    // printfSupportInit();
 
     // Initialize system and CPU clocks to their initial values
     systemInit(); // library standard function (specific for each chip family) BLUEPILL: src/main/drivers/system_stm32f*.c
@@ -211,21 +203,12 @@ void init(void)
     detectHardwareRevision();
 #endif
 
-    // initEEPROM();
-    // ensureEEPROMContainsValidData();
-    // readEEPROM();
-
     // Re-initialize system clock to their final values (if necessary)
     systemClockSetup(systemConfig()->cpuUnderclock);
     
-    // i2cSetSpeed(systemConfig()->i2c_speed);
-
 #ifdef USE_HARDWARE_PREBOOT_SETUP
     initialisePreBootHardware();
 #endif
-
-    // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE); // src/main/drivers/system_stm32f*.c
-    systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
 
@@ -242,9 +225,6 @@ void init(void)
     EXTIInit();
 #endif
 
-    // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-
-
 #ifdef USE_VCP
     // Early initialize USB hardware
     usbVcpInitHardware();
@@ -252,22 +232,7 @@ void init(void)
 
     timerInit();  // timer must be initialized before any channel is allocated
 
-
-    // Initialize MSP serial ports here so DEBUG_TRACE can share a port with MSP.
-    // XXX: Don't call mspFcInit() yet, since it initializes the boxes and needs
-    // to run after the sensors have been detected.
-    mspSerialInit();
-
-#if defined(USE_DEBUG_TRACE)
-    // Debug trace uses serial output, so we only can init it after serial port is ready
-    // From this point on we can use DEBUG_TRACE() to produce real-time debugging information
-    debugTraceInit();
-#endif
-
-
-
-    // when using airplane/wing mixer, servo/motor outputs are remapped
-//    pwm_params.flyingPlatformType = getFlyingPlatformType();
+    serialInit (false, SERIAL_PORT_NONE);
 
 #if defined(USE_UART2) && defined(STM32F10X)
     // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
@@ -281,66 +246,6 @@ void init(void)
 #if defined(USE_UART6) && defined(STM32F40_41xxx)
     pwm_params.useUART6 = doesConfigurationUsePort(SERIAL_PORT_USART6);
 #endif
-//     pwm_params.useVbat = feature(FEATURE_VBAT);
-//     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
-// //    pwm_params.useParallelPWM = (rxConfig()->receiverType == RX_TYPE_PWM);
-//     pwm_params.useRSSIADC = feature(FEATURE_RSSI_ADC);
-// //    pwm_params.useCurrentMeterADC = feature(FEATURE_CURRENT_METER)
-// //        && batteryConfig()->current.type == CURRENT_SENSOR_ADC;
-//     pwm_params.useLEDStrip = feature(FEATURE_LED_STRIP);
-// //    pwm_params.usePPM = (rxConfig()->receiverType == RX_TYPE_PPM);
-// //    pwm_params.useSerialRx = (rxConfig()->receiverType == RX_TYPE_SERIAL);
-
-#ifdef USE_SERVOS
-//    pwm_params.useServoOutputs = isMixerUsingServos();
-    // pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
-    // pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
-    // pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
-#endif
-
-    // if (feature(FEATURE_3D)) {
-    //     pwm_params.idlePulse = flight3DConfig()->neutral3d;
-    // }
-
-    // pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
-
-#if defined(USE_RX_PWM) || defined(USE_RX_PPM)
-//    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
-#endif
-
-#ifdef USE_PMW_SERVO_DRIVER
-    /*
-    If external PWM driver is enabled, for example PCA9685, disable internal
-    servo handling mechanism, since external device will do that
-    */
-    // if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-    //     pwm_params.useServoOutputs = false;
-    //     pwm_params.useChannelForwarding = false;
-    // }
-#endif
-
-    // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
-    // pwmInit(&pwm_params);
-
-//    mixerUsePWMIOConfiguration();
-
-    // if (!pwm_params.useFastPwm)
-    //     motorControlEnable = true;
-
-    addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_MOTORS_READY;
-
-#ifdef BEEPER
-    // beeperDevConfig_t beeperDevConfig = {
-    //     .ioTag = IO_TAG(BEEPER),
-#ifdef BEEPER_INVERTED
-        // .isOD = false,
-        // .isInverted = true
-#else
-        // .isOD = true,
-        // .isInverted = false
-#endif
-    // };
 
 #if defined(NAZE) && defined(USE_HARDWARE_REVISION_DETECTION)
     if (hardwareRevision >= NAZE32_REV5) {
@@ -350,8 +255,6 @@ void init(void)
     }
 #endif
 
-    // beeperInit(&beeperDevConfig);
-#endif
 #ifdef USE_LIGHTS
     lightsInit();
 #endif
@@ -500,9 +403,6 @@ void init(void)
     // }
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_SENSORS_READY;
-
     flashLedsAndBeep();
 
     // Sensors have now been detected, mspFcInit() can now be called
@@ -514,8 +414,6 @@ void init(void)
 #endif
 
 //    failsafeInit();
-
-//    rxInit();
 
 #if defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)
     // If OSD is not active, then register MSP_DISPLAYPORT as a CMS device.
@@ -552,19 +450,26 @@ void init(void)
     motorControlEnable = true;
     fcTasksInit();
 
-    addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_READY;
-
 #ifdef USE_UART1
     uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
     
     serialBeginWrite(uart1);
     serialWriteBuf(uart1, "READY\r\n", 7);
     serialEndWrite(uart1);
+
+    cliEnter(uart1);
 #endif // USE_UART1
 
-#ifdef USE_UART2
-#endif // USE_UART2
+// #ifdef USE_UART2
+
+    rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM2048;
+    // rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM1024;
+    rxConfigMutable()->halfDuplex        = false;
+
+
+    spkUsartStatus = spektrumInit(rxConfigMutable(), &rxRuntimeConfig);
+
+// #endif // USE_UART2
     
 #ifdef USE_UART3
 #endif // USE_UART3

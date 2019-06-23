@@ -340,11 +340,11 @@ serialPort_t *openSerialPort(
     UNUSED(options);
 #endif
 
-    serialPortUsage_t *serialPortUsage = findSerialPortUsageByIdentifier(identifier);
-    if (!serialPortUsage || serialPortUsage->function != FUNCTION_NONE) {
-        // not available / already in use
-        return NULL;
-    }
+    // serialPortUsage_t *serialPortUsage = findSerialPortUsageByIdentifier(identifier);
+    // if (!serialPortUsage || serialPortUsage->function != FUNCTION_NONE) {
+    //     // not available / already in use
+    //     return NULL;
+    // }
 
     serialPort_t *serialPort = NULL;
 
@@ -359,11 +359,11 @@ serialPort_t *openSerialPort(
             serialPort = uartOpen(USART1, rxCallback, rxCallbackData, baudRate, mode, options);
             break;
 #endif
-#ifdef USE_UART2
+// #ifdef USE_UART2
         case SERIAL_PORT_USART2:
             serialPort = uartOpen(USART2, rxCallback, rxCallbackData, baudRate, mode, options);
             break;
-#endif
+// #endif
 #ifdef USE_UART3
         case SERIAL_PORT_USART3:
             serialPort = uartOpen(USART3, rxCallback, rxCallbackData, baudRate, mode, options);
@@ -414,8 +414,8 @@ serialPort_t *openSerialPort(
 
     serialPort->identifier = identifier;
 
-    serialPortUsage->function = function;
-    serialPortUsage->serialPort = serialPort;
+    // serialPortUsage->function = function;
+    // serialPortUsage->serialPort = serialPort;
 
     return serialPort;
 }

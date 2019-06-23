@@ -1874,6 +1874,27 @@ static void cliVersion(char *cmdline)
     );
 }
 
+
+extern bool spkUsartStatus;
+extern volatile int nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive, nCompleteFrames;
+
+static void cliRxIn(char *cmdline)
+{
+    UNUSED(cmdline);
+
+    cliPrintLinef("# RXIN status=%d, nUsart1Irqs=%d, nUsart2Irqs=%d, isrSpektrumDataReceive=%d", 
+        (int) spkUsartStatus, nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive);
+
+    cliPrintLinef("       nCompleteFrames=%d", nCompleteFrames);
+
+    for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
+        cliPrintLinef(" rxin %d, rcData=%d", 
+            (int) i, 
+            (int) rcData[i]
+        );
+    }
+}
+
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
 static void cliResource(char *cmdline)
 {
@@ -2128,6 +2149,8 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("tasks", "show task stats", NULL, cliTasks),
 #endif
     CLI_COMMAND_DEF("version", "show version", NULL, cliVersion),
+
+    CLI_COMMAND_DEF("rxin", "show received values", NULL, cliRxIn),
 };
 
 static void cliHelp(char *cmdline)

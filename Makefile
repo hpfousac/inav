@@ -607,6 +607,9 @@ COMMON_SRC = \
             fc/settings.c \
             fc/stats.c \
             flight/hil.c \
+            flight/failsafe.c \
+            rx/rx.c \
+            rx/spektrum.c \
             io/serial.c \
             io/serial_4way.c \
             io/serial_4way_avrootloader.c \

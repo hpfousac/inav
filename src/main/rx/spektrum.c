@@ -81,6 +81,7 @@ static IO_t BindPin = DEFIO_IO(NONE);
 static IO_t BindPlug = DEFIO_IO(NONE);
 #endif
 
+volatile int isrSpektrumDataReceive, nCompleteFrames;
 
 // Receive ISR callback
 static void spektrumDataReceive(uint16_t c, void *rxCallbackData)
@@ -104,10 +105,13 @@ static void spektrumDataReceive(uint16_t c, void *rxCallbackData)
         spekFrame[spekFramePosition++] = (uint8_t)c;
         if (spekFramePosition == SPEK_FRAME_SIZE) {
             rcFrameComplete = true;
+            nCompleteFrames++;
         } else {
             rcFrameComplete = false;
         }
     }
+
+    ++isrSpektrumDataReceive;
 }
 
 static uint32_t spekChannelData[SPEKTRUM_MAX_SUPPORTED_CHANNEL_COUNT];
@@ -144,7 +148,6 @@ static uint8_t spektrumFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
         spek_fade_last_sec_count = fade;
         spek_fade_last_sec = current_secs;
     }
-
 
     for (int b = 3; b < SPEK_FRAME_SIZE; b += 2) {
         const uint8_t spekChannel = 0x0F & (spekFrame[b - 1] >> spek_chan_shift);
@@ -277,18 +280,18 @@ bool spektrumInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
     rxRuntimeConfig->rcReadRawFn = spektrumReadRawRC;
     rxRuntimeConfig->rcFrameStatusFn = spektrumFrameStatus;
 
-    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
-    if (!portConfig) {
-        return false;
-    }
+//    const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
+//    if (!portConfig) {
+//        return false;
+//    }
 
-#ifdef USE_TELEMETRY
-    bool portShared = telemetryCheckRxPortShared(portConfig);
-#else
+// #ifdef USE_TELEMETRY
+    // bool portShared = telemetryCheckRxPortShared(portConfig);
+// #else
     bool portShared = false;
-#endif
+// #endif
 
-    serialPort = openSerialPort(portConfig->identifier,
+    serialPort = openSerialPort(SERIAL_PORT_USART2,
         FUNCTION_RX_SERIAL,
         spektrumDataReceive,
         NULL,
@@ -297,16 +300,16 @@ bool spektrumInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
         SERIAL_NOT_INVERTED | (rxConfig->halfDuplex ? SERIAL_BIDIR : 0)
         );
 
-#ifdef USE_TELEMETRY
-    if (portShared) {
-        telemetrySharedPort = serialPort;
-    }
-#endif
+// #ifdef USE_TELEMETRY
+//     if (portShared) {
+//         telemetrySharedPort = serialPort;
+//     }
+// #endif
 
-    rssi_channel = rxConfig->rssi_channel - 1; // -1 because rxConfig->rssi_channel is 1-based and rssi_channel is 0-based.
-    if (rssi_channel >= rxRuntimeConfig->channelCount) {
-        rssi_channel = 0;
-    }
+    // rssi_channel = rxConfig->rssi_channel - 1; // -1 because rxConfig->rssi_channel is 1-based and rssi_channel is 0-based.
+    // if (rssi_channel >= rxRuntimeConfig->channelCount) {
+    //     rssi_channel = 0;
+    // }
 
     return serialPort != NULL;
 }
