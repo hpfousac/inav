@@ -227,15 +227,15 @@ static const motorMixer_t mixerHex6X[] = {
 
 const mixer_t * findMixer(mixerMode_e mixerMode)
 {
-#ifndef USE_QUAD_MIXER_ONLY
-    for (unsigned ii = 0; ii < sizeof(mixerTable)/sizeof(mixerTable[0]); ii++) {
-        if (mixerTable[ii].mixerMode == mixerMode)
-            return &mixerTable[ii];
-    }
-#else
-    if (mixerMode == MIXER_QUADX)
-        return &quadMixerDescriptor;
-#endif
+// #ifndef USE_QUAD_MIXER_ONLY
+//     for (unsigned ii = 0; ii < sizeof(mixerTable)/sizeof(mixerTable[0]); ii++) {
+//         if (mixerTable[ii].mixerMode == mixerMode)
+//             return &mixerTable[ii];
+//     }
+// #else
+//     if (mixerMode == MIXER_QUADX)
+//         return &quadMixerDescriptor;
+// #endif
 
     return NULL;
 }
@@ -264,25 +264,25 @@ bool isMixerEnabled(mixerMode_e mixerMode)
 #ifdef USE_SERVOS
 void mixerUpdateStateFlags(void)
 {
-    const mixer_t * mixer = findMixer(mixerConfig()->mixerMode);
+    // const mixer_t * mixer = findMixer(mixerConfig()->mixerMode);
 
-    // set flag that we're on something with wings
-    if (mixer->flyingPlatformType == PLATFORM_AIRPLANE) {
-        ENABLE_STATE(FIXED_WING);
-        DISABLE_STATE(HELICOPTER);
-    } else if (mixer->flyingPlatformType == PLATFORM_HELICOPTER) {
-        DISABLE_STATE(FIXED_WING);
-        ENABLE_STATE(HELICOPTER);
-    } else {
-        DISABLE_STATE(FIXED_WING);
-        DISABLE_STATE(HELICOPTER);
-    }
+    // // set flag that we're on something with wings
+    // if (mixer->flyingPlatformType == PLATFORM_AIRPLANE) {
+    //     ENABLE_STATE(FIXED_WING);
+    //     DISABLE_STATE(HELICOPTER);
+    // } else if (mixer->flyingPlatformType == PLATFORM_HELICOPTER) {
+    //     DISABLE_STATE(FIXED_WING);
+    //     ENABLE_STATE(HELICOPTER);
+    // } else {
+    //     DISABLE_STATE(FIXED_WING);
+    //     DISABLE_STATE(HELICOPTER);
+    // }
 
-    if (mixer->hasFlaps) {
-        ENABLE_STATE(FLAPERON_AVAILABLE);
-    } else {
-        DISABLE_STATE(FLAPERON_AVAILABLE);
-    }
+    // if (mixer->hasFlaps) {
+    //     ENABLE_STATE(FLAPERON_AVAILABLE);
+    // } else {
+    //     DISABLE_STATE(FLAPERON_AVAILABLE);
+    // }
 }
 
 void mixerUsePWMIOConfiguration(void)
@@ -403,16 +403,16 @@ void mixTable(void)
         input[PITCH] = rcCommand[PITCH];
         input[YAW] = rcCommand[YAW];
     }
-    else {
-        input[ROLL] = axisPID[ROLL];
-        input[PITCH] = axisPID[PITCH];
-        input[YAW] = axisPID[YAW];
+    // else {
+    //     input[ROLL] = axisPID[ROLL];
+    //     input[PITCH] = axisPID[PITCH];
+    //     input[YAW] = axisPID[YAW];
 
-        if (motorCount >= 4 && mixerConfig()->yaw_jump_prevention_limit < YAW_JUMP_PREVENTION_LIMIT_HIGH) {
-            // prevent "yaw jump" during yaw correction
-            input[YAW] = constrain(input[YAW], -mixerConfig()->yaw_jump_prevention_limit - ABS(rcCommand[YAW]), mixerConfig()->yaw_jump_prevention_limit + ABS(rcCommand[YAW]));
-        }
-    }
+    //     if (motorCount >= 4 && mixerConfig()->yaw_jump_prevention_limit < YAW_JUMP_PREVENTION_LIMIT_HIGH) {
+    //         // prevent "yaw jump" during yaw correction
+    //         input[YAW] = constrain(input[YAW], -mixerConfig()->yaw_jump_prevention_limit - ABS(rcCommand[YAW]), mixerConfig()->yaw_jump_prevention_limit + ABS(rcCommand[YAW]));
+    //     }
+    // }
 
     // Initial mixer concept by bdoiron74 reused and optimized for Air Mode
     int16_t rpyMix[MAX_SUPPORTED_MOTORS];

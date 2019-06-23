@@ -585,6 +585,8 @@ COMMON_SRC = \
             drivers/io_pca9685.c \
             drivers/logging.c \
             drivers/resource.c \
+            drivers/pwm_mapping.c \
+            drivers/pwm_output.c \
             drivers/rcc.c \
             drivers/serial.c \
             drivers/serial_uart.c \
@@ -607,6 +609,8 @@ COMMON_SRC = \
             fc/settings.c \
             fc/stats.c \
             flight/hil.c \
+            flight/mixer.c \
+            flight/servos.c \
             io/serial.c \
             io/serial_4way.c \
             io/serial_4way_avrootloader.c \

@@ -60,11 +60,8 @@ int main(void)
     init();
     loopbackInit();
 
-
-    cliEnter(uart1);
-
     while (true) {
-//        scheduler();
+       scheduler();
 //        processLoopback();
         cliProcess ();
     }
