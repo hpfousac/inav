@@ -142,6 +142,10 @@ BRUSHED_ESC_AUTODETECT
 
 CLI_MINIMAL_VERBOSITY
 
+MAX_PWM_OUTPUT_PORTS
+MAX_PWM_MOTORS
+MAX_PWM_SERVOS
+
 ONBOARDFLASH
 
 RX_CHANNELS_TAER
@@ -149,11 +153,8 @@ RX_CHANNELS_TAER
 SOFTSERIAL_LOOPBACK
 
 SKIP_TASK_STATISTICS
-<<<<<<< HEAD
-=======
 
  * **STACK_CHECK** - checks stack usage, probably for development purposes.
->>>>>>> inav-1.9.1-serialOnly
 
 USE_ADC
 USE_ASYNC_GYRO_PROCESSING
@@ -244,6 +245,12 @@ typedef struct timerHardware_s
 
 
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
+
+
+## PWM Out ##
+
+ pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
+ pwmWriteServo()
 
 ## board modification of default settings ##
 

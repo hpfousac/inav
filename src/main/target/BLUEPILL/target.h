@@ -210,6 +210,7 @@
 
 // Number of available PWM outputs
 #define MAX_PWM_OUTPUT_PORTS    10
+// #define MAX_PWM_SERVOS      MAX_PWM_OUTPUT_PORTS
 
 // IO - assuming all IOs on 48pin package
 #define TARGET_IO_PORTA         0xffff
