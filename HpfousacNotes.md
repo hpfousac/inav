@@ -142,6 +142,10 @@ BRUSHED_ESC_AUTODETECT
 
 CLI_MINIMAL_VERBOSITY
 
+MAX_PWM_OUTPUT_PORTS
+MAX_PWM_MOTORS
+MAX_PWM_SERVOS
+
 ONBOARDFLASH
 
 RX_CHANNELS_TAER
@@ -176,6 +180,7 @@ USE_RX_ELERES
 USE_RX_H8_3D
 USE_RX_INAV
 USE_RX_SOFTSPI
+USE_SERIALRX_SPEKTRUM
 USE_SERVOS
 USE_SOFTSPI
 USE_SPEKTRUM_BIND
@@ -241,6 +246,12 @@ typedef struct timerHardware_s
 
 
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
+
+
+## PWM Out ##
+
+ pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
+ pwmWriteServo()
 
 ## board modification of default settings ##
 
