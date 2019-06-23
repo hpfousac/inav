@@ -188,7 +188,7 @@ bool serialRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
 #endif
 #ifdef USE_SERIALRX_SBUS
     case SERIALRX_SBUS:
-        enabled = sbusInit(rxConfig, rxRuntimeConfig);
+        // enabled = sbusInit(rxConfig, rxRuntimeConfig);
         break;
 #endif
 #ifdef USE_SERIALRX_SUMD
@@ -224,7 +224,7 @@ bool serialRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
 #endif
 #ifdef USE_SERIALRX_FPORT
     case SERIALRX_FPORT:
-        enabled = fportRxInit(rxConfig, rxRuntimeConfig);
+        // enabled = fportRxInit(rxConfig, rxRuntimeConfig);
         break;
 #endif
     default:
@@ -269,7 +269,7 @@ void rxInit(void)
 #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
         case RX_TYPE_PWM:
         case RX_TYPE_PPM:
-            rxPwmInit(rxConfig(), &rxRuntimeConfig);
+            // rxPwmInit(rxConfig(), &rxRuntimeConfig);
             break;
 #endif
 
@@ -385,9 +385,13 @@ void resumeRxSignal(void)
     failsafeOnRxResume();
 }
 
+int nRxUpdateCheckOk, nRxUpdateCheck;
+
 bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
 {
     UNUSED(currentDeltaTime);
+
+    ++nRxUpdateCheck;
 
     if (rxSignalReceived) {
         if (currentTimeUs >= needRxSignalBefore) {
@@ -417,6 +421,7 @@ bool rxUpdateCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
         const uint8_t frameStatus = rxRuntimeConfig.rcFrameStatusFn(&rxRuntimeConfig);
         if (frameStatus & RX_FRAME_COMPLETE) {
             rxDataProcessingRequired = true;
+            ++nRxUpdateCheckOk;
             rxIsInFailsafeMode = (frameStatus & RX_FRAME_FAILSAFE) != 0;
             rxSignalReceived = !rxIsInFailsafeMode;
             needRxSignalBefore = currentTimeUs + rxRuntimeConfig.rxSignalTimeout;

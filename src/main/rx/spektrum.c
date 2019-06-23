@@ -122,6 +122,7 @@ static uint8_t spektrumFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
 
     if (!rcFrameComplete) {
         return RX_FRAME_PENDING;
+        // return RX_FRAME_COMPLETE;
     }
 
     rcFrameComplete = false;

@@ -1877,6 +1877,8 @@ static void cliVersion(char *cmdline)
 
 extern bool spkUsartStatus;
 extern volatile int nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive, nCompleteFrames;
+    
+extern int nRxUpdateCheckOk, nRxUpdateCheck;
 
 static void cliRxIn(char *cmdline)
 {
@@ -1886,6 +1888,13 @@ static void cliRxIn(char *cmdline)
         (int) spkUsartStatus, nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive);
 
     cliPrintLinef("       nCompleteFrames=%d", nCompleteFrames);
+    {
+        const uint8_t frameStatus = rxRuntimeConfig.rcFrameStatusFn(&rxRuntimeConfig);
+        cliPrintLinef("       rcFrameStatus=%d", (int) frameStatus);
+    }
+    cliPrintLinef("       nRxUpdateCheck=%d, nRxUpdateCheckOk=%d", nRxUpdateCheck, nRxUpdateCheckOk);
+    
+
 
     for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
         cliPrintLinef(" rxin %d, rcData=%d", 

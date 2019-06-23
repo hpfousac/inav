@@ -413,7 +413,9 @@ void init(void)
     cliInit(serialConfig());
 #endif
 
-//    failsafeInit();
+   failsafeInit();
+
+    rxInit();
 
 #if defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)
     // If OSD is not active, then register MSP_DISPLAYPORT as a CMS device.
@@ -462,8 +464,8 @@ void init(void)
 
 // #ifdef USE_UART2
 
-    rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM2048;
-    // rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM1024;
+    // rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM2048;
+    rxConfigMutable()->serialrx_provider = SERIALRX_SPEKTRUM1024;
     rxConfigMutable()->halfDuplex        = false;
 
 
