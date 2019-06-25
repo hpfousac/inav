@@ -50,7 +50,7 @@
 // https://wiki.stm32duino.com/images/a/ae/Bluepillpinout.gif
 
 #define USE_UART1
-// #define USE_UART2
+#define USE_UART2
 // #define USE_UART3
 
 // Note: next 2 lines looks as a hack
@@ -197,7 +197,7 @@
 // #define WS2811_DMA_TC_FLAG              DMA1_FLAG_TC6
 // #define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH6_HANDLER
 
-#undef USE_SERIALRX_SPEKTRUM
+// #define USE_SERIALRX_SPEKTRUM   1
 #undef USE_SERIALRX_IBUS
 //#define SPEKTRUM_BIND
 //#define BIND_PIN                PA3

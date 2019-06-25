@@ -160,16 +160,21 @@ uartPort_t *serialUART1(uint32_t baudRate, portMode_t mode, portOptions_t option
     return s;
 }
 
+volatile int nUsart1Irqs;
+
 // USART1 Rx/Tx IRQ Handler
 void USART1_IRQHandler(void)
 {
     uartPort_t *s = &uartPort1;
+
+    ++nUsart1Irqs;
+
     uartIrqCallback(s);
 }
 
 #endif
 
-#ifdef USE_UART2
+// #ifdef USE_UART2
 // USART2 - GPS or Spektrum or ?? (RX + TX by IRQ)
 uartPort_t *serialUART2(uint32_t baudRate, portMode_t mode, portOptions_t options)
 {
@@ -230,14 +235,19 @@ uartPort_t *serialUART2(uint32_t baudRate, portMode_t mode, portOptions_t option
 }
 
 
+volatile int nUsart2Irqs;
+
 // USART2 Rx/Tx IRQ Handler
 void USART2_IRQHandler(void)
 {
     uartPort_t *s = &uartPort2;
+
+    ++nUsart2Irqs;
+
     uartIrqCallback(s);
 }
 
-#endif
+// #endif
 
 #ifdef USE_UART3
 // USART3

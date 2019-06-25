@@ -41,10 +41,6 @@
 
 #include "cms/cms.h"
 
-#include "drivers/accgyro/accgyro.h"
-#include "drivers/adc.h"
-#include "drivers/compass/compass.h"
-#include "drivers/bus.h"
 #include "drivers/dma.h"
 #include "drivers/exti.h"
 #include "drivers/flash_m25p16.h"
@@ -155,8 +151,6 @@ typedef enum {
     SYSTEM_STATE_READY          = (1 << 7)
 } systemState_e;
 
-uint8_t systemState = SYSTEM_STATE_INITIALISING;
-
 void flashLedsAndBeep(void)
 {
     // LED1_ON;
@@ -173,6 +167,9 @@ void flashLedsAndBeep(void)
     // LED0_OFF;
     // LED1_OFF;
 }
+
+
+bool spkUsartStatus = false;
 
 void init(void)
 {

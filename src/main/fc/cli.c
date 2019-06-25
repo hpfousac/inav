@@ -2496,6 +2496,36 @@ static void cliVersion(char *cmdline)
     );
 }
 
+
+extern bool spkUsartStatus;
+extern volatile int nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive, nCompleteFrames;
+    
+extern int nRxUpdateCheckOk, nRxUpdateCheck;
+
+static void cliRxIn(char *cmdline)
+{
+    UNUSED(cmdline);
+
+    cliPrintLinef("# RXIN status=%d, nUsart1Irqs=%d, nUsart2Irqs=%d, isrSpektrumDataReceive=%d", 
+        (int) spkUsartStatus, nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive);
+
+    cliPrintLinef("       nCompleteFrames=%d", nCompleteFrames);
+    {
+        const uint8_t frameStatus = rxRuntimeConfig.rcFrameStatusFn(&rxRuntimeConfig);
+        cliPrintLinef("       rcFrameStatus=%d", (int) frameStatus);
+    }
+    cliPrintLinef("       nRxUpdateCheck=%d, nRxUpdateCheckOk=%d", nRxUpdateCheck, nRxUpdateCheckOk);
+    
+
+
+    for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
+        cliPrintLinef(" rxin %d, rcData=%d", 
+            (int) i, 
+            (int) rcData[i]
+        );
+    }
+}
+
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
 static void cliResource(char *cmdline)
 {
