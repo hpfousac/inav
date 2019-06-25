@@ -75,11 +75,6 @@ bit array containig rew stages.
 
  *How program work with this array should be investigated.*
 
-####  IO_TAG, DEFIO_TAG and ioTag_t####
-
- It look as a fuse for detection of unexistent IO on particular chip. *The relation with command resource
- has to be investigated.*
-
 ### Configuration and Parameters ###
 
  The code is comming from Cleanflight project and definitions are in *parameter_group.h*.
@@ -252,26 +247,6 @@ typedef struct timerHardware_s
 
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
 
-
-## RX ##
-
- Initialisation is done thru **rxInit ()** in **rx.c**.
-
- rxConfig, rxRuntimeConfig
-
- **failsafeInit()** needs to be discovered
-
- The all checks for serial usage has to be wiped out:
-
-findSerialPortConfig(FUNCTION_RX_SERIAL)
-findSerialPortUsageByIdentifier(identifier)
-
-it looks that **serialInit ();** has to be called.
-
-raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()** when
-**rxRuntimeConfig.rcReadRawFn** is initialised to appropriate function pointer.
-
-[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
 
 ## PWM Out ##
 

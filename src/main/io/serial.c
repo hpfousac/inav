@@ -340,11 +340,11 @@ serialPort_t *openSerialPort(
     UNUSED(options);
 #endif
 
-    serialPortUsage_t *serialPortUsage = findSerialPortUsageByIdentifier(identifier);
-    if (!serialPortUsage || serialPortUsage->function != FUNCTION_NONE) {
-        // not available / already in use
-        return NULL;
-    }
+    // serialPortUsage_t *serialPortUsage = findSerialPortUsageByIdentifier(identifier);
+    // if (!serialPortUsage || serialPortUsage->function != FUNCTION_NONE) {
+    //     // not available / already in use
+    //     return NULL;
+    // }
 
     serialPort_t *serialPort = NULL;
 
@@ -414,8 +414,8 @@ serialPort_t *openSerialPort(
 
     serialPort->identifier = identifier;
 
-    serialPortUsage->function = function;
-    serialPortUsage->serialPort = serialPort;
+    // serialPortUsage->function = function;
+    // serialPortUsage->serialPort = serialPort;
 
     return serialPort;
 }

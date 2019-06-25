@@ -260,13 +260,13 @@ void init(void)
     // serialInit(feature(FEATURE_SOFTSERIAL),
     //         (rxConfig()->receiverType == RX_TYPE_PWM) || (rxConfig()->receiverType == RX_TYPE_PPM) ? SERIAL_PORT_USART3 : SERIAL_PORT_NONE);
 // #else
-    serialInit(feature(FEATURE_SOFTSERIAL), SERIAL_PORT_NONE);
+    serialInit(false, SERIAL_PORT_NONE);
 // #endif
 
     // Initialize MSP serial ports here so DEBUG_TRACE can share a port with MSP.
     // XXX: Don't call mspFcInit() yet, since it initializes the boxes and needs
     // to run after the sensors have been detected.
-    mspSerialInit();
+    // mspSerialInit();
 
 #if defined(USE_DEBUG_TRACE)
     // Debug trace uses serial output, so we only can init it after serial port is ready
