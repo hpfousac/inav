@@ -177,7 +177,7 @@ void init(void)
     HAL_Init();
 #endif
 
-    systemState = SYSTEM_STATE_INITIALISING;
+    // systemState = SYSTEM_STATE_INITIALISING;
     initBootlog();
 
     printfSupportInit();
@@ -210,7 +210,7 @@ void init(void)
 #endif
 
     addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_CONFIG_LOADED;
+    // systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
 
@@ -367,7 +367,7 @@ void init(void)
         motorControlEnable = true;
 
     addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_MOTORS_READY;
+    // systemState |= SYSTEM_STATE_MOTORS_READY;
 
 #ifdef BEEPER
     beeperDevConfig_t beeperDevConfig = {
@@ -552,7 +552,7 @@ void init(void)
     // }
 
     addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_SENSORS_READY;
+    // systemState |= SYSTEM_STATE_SENSORS_READY;
 
     flashLedsAndBeep();
 
@@ -736,5 +736,5 @@ void init(void)
 
 
     addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
-    systemState |= SYSTEM_STATE_READY;
+    // systemState |= SYSTEM_STATE_READY;
 }

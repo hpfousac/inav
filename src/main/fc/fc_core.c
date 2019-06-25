@@ -392,7 +392,7 @@ void processRx(timeUs_t currentTimeUs)
 {
     static bool armedBeeperOn = false;
 
-    calculateRxChannelsAndUpdateFailsafe(currentTimeUs);
+    // calculateRxChannelsAndUpdateFailsafe(currentTimeUs);
 
     // in 3D mode, we need to be able to disarm by switch at any time
     if (feature(FEATURE_3D)) {
@@ -741,11 +741,11 @@ bool taskUpdateRxCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
 {
     UNUSED(currentDeltaTime);
 
-    return rxUpdateCheck(currentTimeUs, currentDeltaTime);
+    // return rxUpdateCheck(currentTimeUs, currentDeltaTime);
 }
 
 void taskUpdateRxMain(timeUs_t currentTimeUs)
 {
-    processRx(currentTimeUs);
+    // processRx(currentTimeUs);
     isRXDataNew = true;
 }
