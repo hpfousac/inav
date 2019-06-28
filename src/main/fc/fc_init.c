@@ -368,7 +368,7 @@ void init(void)
 #endif
 
     // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
-    // pwmInit(&pwm_params);
+    pwmInit(&pwm_params);
 
     // mixerUsePWMIOConfiguration();
 
