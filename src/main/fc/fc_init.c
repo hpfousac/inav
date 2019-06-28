@@ -268,7 +268,7 @@ void init(void)
 #if defined(USE_DEBUG_TRACE)
     // Debug trace uses serial output, so we only can init it after serial port is ready
     // From this point on we can use DEBUG_TRACE() to produce real-time debugging information
-    debugTraceInit();
+    // debugTraceInit();
 #endif
 
 #ifdef USE_SERVOS
@@ -564,7 +564,7 @@ void init(void)
 
     // Sensors have now been detected, mspFcInit() can now be called
     // to set the boxes up
-     mspFcInit();
+    //  mspFcInit();
 
 #ifdef USE_CLI
     cliInit(serialConfig());
