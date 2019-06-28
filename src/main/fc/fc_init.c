@@ -127,6 +127,15 @@
 
 #include "uav_interconnect/uav_interconnect.h"
 
+#undef USE_BLACKBOX
+#undef USE_PITOT
+#undef USE_TELEMETRY
+#undef USE_CMS
+#undef USE_DASHBOARD
+#undef USE_NAV
+#undef USE_GPS
+
+
 #ifdef USE_HARDWARE_REVISION_DETECTION
 #include "hardware_revision.h"
 #endif
@@ -203,7 +212,7 @@ void init(void)
     // Re-initialize system clock to their final values (if necessary)
     systemClockSetup(systemConfig()->cpuUnderclock);
     
-    i2cSetSpeed(systemConfig()->i2c_speed);
+    // i2cSetSpeed(systemConfig()->i2c_speed);
 
 #ifdef USE_HARDWARE_PREBOOT_SETUP
     initialisePreBootHardware();
@@ -295,16 +304,16 @@ void init(void)
     pwm_params.flyingPlatformType = 0; // getFlyingPlatformType();
 
 #if defined(USE_UART2) && defined(STM32F10X)
-    pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
+    // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
 #endif
 #ifdef STM32F303xC
-    pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
+    // pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
 #endif
 #if defined(USE_UART2) && defined(STM32F40_41xxx)
-    pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
+    // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
 #endif
 #if defined(USE_UART6) && defined(STM32F40_41xxx)
-    pwm_params.useUART6 = doesConfigurationUsePort(SERIAL_PORT_USART6);
+    // pwm_params.useUART6 = doesConfigurationUsePort(SERIAL_PORT_USART6);
 #endif
     pwm_params.useVbat = feature(FEATURE_VBAT);
     pwm_params.useSoftSerial = feature(FEATURE_SOFTSERIAL);
