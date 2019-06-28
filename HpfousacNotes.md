@@ -271,7 +271,18 @@ raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()*
 ## PWM Out ##
 
  pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
- pwmWriteServo()
+
+ symbols from HW definition **MAX_PWM_OUTPUT_PORTS** **USABLE_TIMER_CHANNEL_COUNT**
+
+ **pwmInit()** prepares config for particular pins
+
+ **pwmWriteServo()** writes value to the servo/pin
+
+ there is servos[] and motors[]
+
+ pwm_params.enablePWMOutput = /* feature(FEATURE_PWM_OUTPUT_ENABLE) */ true; // hardcoded for now
+
+ **servoConfig()->servoCenterPulse** here is place to change for personified center for each servo
 
 ## board modification of default settings ##
 

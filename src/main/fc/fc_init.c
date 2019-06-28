@@ -328,8 +328,8 @@ void init(void)
 #ifdef USE_SERVOS
     pwm_params.useServoOutputs = isMixerUsingServos();
     pwm_params.useChannelForwarding = feature(FEATURE_CHANNEL_FORWARDING);
-    pwm_params.servoCenterPulse = servoConfig()->servoCenterPulse;
-    pwm_params.servoPwmRate = servoConfig()->servoPwmRate;
+    pwm_params.servoCenterPulse = /* servoConfig()->servoCenterPulse  = */ 1500;
+    pwm_params.servoPwmRate = /*  servoConfig()->servoPwmRate = */ 50;
 #endif
 
     pwm_params.pwmProtocolType = motorConfig()->motorPwmProtocol;
@@ -350,7 +350,7 @@ void init(void)
     //     pwm_params.idlePulse = 0; // brushed motors
     // }
 
-    pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
+    pwm_params.enablePWMOutput = /* feature(FEATURE_PWM_OUTPUT_ENABLE) */ true; // hardcoded for now
 
 #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
     // pwmRxInit(systemConfig()->pwmRxInputFilteringMode);

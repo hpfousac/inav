@@ -2689,6 +2689,12 @@ static void cliDiff(char *cmdline)
 
 static void cliShowPwm(char *cmdline)
 {
+
+                // if (pwmServoConfig(timerHardwarePtr, pwmIOConfiguration.servoCount, init->servoPwmRate, init->servoCenterPulse, init->enablePWMOutput)) {
+    cliPrintLinef("# init->servoPwmRate = %d}", (int) servoConfig()->servoPwmRate);
+    cliPrintLinef("# init->servoCenterPulse = %d}", (int) servoConfig()->servoCenterPulse);
+//    cliPrintLinef("# init->enablePWMOutput = %d}", (int) init->enablePWMOutput);
+
     cliPrintLinef("# show pwm (pwmIOConfiguration=0x%08lX)", (unsigned long) &pwmIOConfiguration);
     cliPrintLinef(" servoCount=%d", (int) pwmIOConfiguration.servoCount);
     cliPrintLinef(" motorCount=%d", (int) pwmIOConfiguration.motorCount);

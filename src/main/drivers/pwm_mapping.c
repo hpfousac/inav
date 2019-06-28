@@ -100,13 +100,13 @@ pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init)
         }
 #endif
 
-#if defined(USE_SOFTSERIAL1)
-        const timerHardware_t *ss1TimerHardware = timerGetByTag(IO_TAG(SOFTSERIAL_1_RX_PIN), TIM_USE_ANY);
-        if (init->useSoftSerial && ss1TimerHardware != NULL && ss1TimerHardware->tim == timerHardwarePtr->tim) {
-            // addBootlogEvent6(BOOT_EVENT_TIMER_CH_SKIPPED, BOOT_EVENT_FLAGS_WARNING, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 3);
-            continue;
-        }
-#endif
+// #if defined(USE_SOFTSERIAL1)
+//         const timerHardware_t *ss1TimerHardware = timerGetByTag(IO_TAG(SOFTSERIAL_1_RX_PIN), TIM_USE_ANY);
+//         if (init->useSoftSerial && ss1TimerHardware != NULL && ss1TimerHardware->tim == timerHardwarePtr->tim) {
+//             // addBootlogEvent6(BOOT_EVENT_TIMER_CH_SKIPPED, BOOT_EVENT_FLAGS_WARNING, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 3);
+//             continue;
+//         }
+// #endif
 
 #if defined(USE_SOFTSERIAL2)
         const timerHardware_t *ss2TimerHardware = timerGetByTag(IO_TAG(SOFTSERIAL_2_RX_PIN), TIM_USE_ANY);
@@ -182,22 +182,22 @@ pwmIOConfiguration_t *pwmInit(drv_pwm_config_t *init)
             continue;
 
         if (type == MAP_TO_PPM_INPUT) {
-#if defined(USE_RX_PPM)
-            ppmInConfig(timerHardwarePtr, init->pwmProtocolType);
-            pwmIOConfiguration.ioConfigurations[pwmIOConfiguration.ioCount].flags = PWM_PF_PPM;
-            pwmIOConfiguration.ppmInputCount++;
+// #if defined(USE_RX_PPM)
+//             ppmInConfig(timerHardwarePtr, init->pwmProtocolType);
+//             pwmIOConfiguration.ioConfigurations[pwmIOConfiguration.ioCount].flags = PWM_PF_PPM;
+//             pwmIOConfiguration.ppmInputCount++;
 
-            // addBootlogEvent6(BOOT_EVENT_TIMER_CH_MAPPED, BOOT_EVENT_FLAGS_NONE, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 0);
-#endif
+//             // addBootlogEvent6(BOOT_EVENT_TIMER_CH_MAPPED, BOOT_EVENT_FLAGS_NONE, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 0);
+// #endif
         } else if (type == MAP_TO_PWM_INPUT) {
-#if defined(USE_RX_PWM)
-            pwmInConfig(timerHardwarePtr, channelIndex);
-            pwmIOConfiguration.ioConfigurations[pwmIOConfiguration.ioCount].flags = PWM_PF_PWM;
-            pwmIOConfiguration.pwmInputCount++;
-            channelIndex++;
+// #if defined(USE_RX_PWM)
+//             pwmInConfig(timerHardwarePtr, channelIndex);
+//             pwmIOConfiguration.ioConfigurations[pwmIOConfiguration.ioCount].flags = PWM_PF_PWM;
+//             pwmIOConfiguration.pwmInputCount++;
+//             channelIndex++;
 
-            // addBootlogEvent6(BOOT_EVENT_TIMER_CH_MAPPED, BOOT_EVENT_FLAGS_NONE, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 1);
-#endif
+//             // addBootlogEvent6(BOOT_EVENT_TIMER_CH_MAPPED, BOOT_EVENT_FLAGS_NONE, timerIndex, pwmIOConfiguration.motorCount, pwmIOConfiguration.servoCount, 1);
+// #endif
         } else if (type == MAP_TO_MOTOR_OUTPUT) {
             /* Check if we already configured maximum supported number of motors and skip the rest */
             if (pwmIOConfiguration.motorCount >= MAX_MOTORS) {
