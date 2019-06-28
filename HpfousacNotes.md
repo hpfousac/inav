@@ -248,8 +248,6 @@ typedef struct timerHardware_s
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
 
 
-<<<<<<< HEAD
-=======
 ## RX ##
 
  Initialisation is done thru **rxInit ()** in **rx.c**.
@@ -270,7 +268,6 @@ raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()*
 
 [TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
 
->>>>>>> inav-1.9.1-serialSpkTest
 ## PWM Out ##
 
  pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
