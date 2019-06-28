@@ -189,7 +189,7 @@ void init(void)
     // systemState = SYSTEM_STATE_INITIALISING;
     // initBootlog();
 
-    printfSupportInit();
+    // printfSupportInit();
 
     // Initialize system and CPU clocks to their initial values
     systemInit();
@@ -198,11 +198,11 @@ void init(void)
     IOInitGlobal();
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
-    detectHardwareRevision();
+    // detectHardwareRevision();
 #endif
 
 #ifdef BRUSHED_ESC_AUTODETECT
-    detectBrushedESC();
+    // detectBrushedESC();
 #endif
 
     // initEEPROM();
@@ -215,16 +215,16 @@ void init(void)
     // i2cSetSpeed(systemConfig()->i2c_speed);
 
 #ifdef USE_HARDWARE_PREBOOT_SETUP
-    initialisePreBootHardware();
+    // initialisePreBootHardware();
 #endif
 
     // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
-    debugMode = systemConfig()->debug_mode;
+    // debugMode = systemConfig()->debug_mode;
 
     // Latch active features to be used for feature() in the remainder of init().
-    latchActiveFeatures();
+    // latchActiveFeatures();
 
 // #ifdef ALIENFLIGHTF3
 //     ledInit(hardwareRevision == AFF3_REV_1 ? false : true);
@@ -233,7 +233,7 @@ void init(void)
 // #endif
 
 #ifdef USE_EXTI
-    EXTIInit();
+    // EXTIInit();
 #endif
 
     // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
@@ -254,7 +254,7 @@ void init(void)
 
 #ifdef USE_VCP
     // Early initialize USB hardware
-    usbVcpInitHardware();
+    // usbVcpInitHardware();
 #endif
 
     timerInit();  // timer must be initialized before any channel is allocated
@@ -281,24 +281,24 @@ void init(void)
 #endif
 
 #ifdef USE_SERVOS
-    servosInit();
-    mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
+    // servosInit();
+    // mixerUpdateStateFlags();    // This needs to be called early to allow pwm mapper to use information about FIXED_WING state
 #endif
 
     drv_pwm_config_t pwm_params;
     memset(&pwm_params, 0, sizeof(pwm_params));
 
-#ifdef USE_RANGEFINDER_HCSR04
-    // HC-SR04 has a dedicated connection to FC and require two pins
-    if (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) {
-        const rangefinderHardwarePins_t *rangefinderHardwarePins = rangefinderGetHardwarePins();
-        if (rangefinderHardwarePins) {
-            pwm_params.useTriggerRangefinder = true;
-            pwm_params.rangefinderIOConfig.triggerTag = rangefinderHardwarePins->triggerTag;
-            pwm_params.rangefinderIOConfig.echoTag = rangefinderHardwarePins->echoTag;
-        }
-    }
-#endif
+// #ifdef USE_RANGEFINDER_HCSR04
+//     // HC-SR04 has a dedicated connection to FC and require two pins
+//     if (rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) {
+//         const rangefinderHardwarePins_t *rangefinderHardwarePins = rangefinderGetHardwarePins();
+//         if (rangefinderHardwarePins) {
+//             pwm_params.useTriggerRangefinder = true;
+//             pwm_params.rangefinderIOConfig.triggerTag = rangefinderHardwarePins->triggerTag;
+//             pwm_params.rangefinderIOConfig.echoTag = rangefinderHardwarePins->echoTag;
+//         }
+//     }
+// #endif
 
     // when using airplane/wing mixer, servo/motor outputs are remapped
     pwm_params.flyingPlatformType = 0; // getFlyingPlatformType();
@@ -344,11 +344,11 @@ void init(void)
         pwm_params.idlePulse = flight3DConfig()->neutral3d;
     }
 
-    if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
-        pwm_params.useFastPwm = false;
-        featureClear(FEATURE_3D);
-        pwm_params.idlePulse = 0; // brushed motors
-    }
+    // if (motorConfig()->motorPwmProtocol == PWM_TYPE_BRUSHED) {
+    //     pwm_params.useFastPwm = false;
+    //     featureClear(FEATURE_3D);
+    //     pwm_params.idlePulse = 0; // brushed motors
+    // }
 
     pwm_params.enablePWMOutput = feature(FEATURE_PWM_OUTPUT_ENABLE);
 
@@ -368,9 +368,9 @@ void init(void)
 #endif
 
     // pwmInit() needs to be called as soon as possible for ESC compatibility reasons
-    pwmInit(&pwm_params);
+    // pwmInit(&pwm_params);
 
-    mixerUsePWMIOConfiguration();
+    // mixerUsePWMIOConfiguration();
 
     if (!pwm_params.useFastPwm)
         motorControlEnable = true;
@@ -398,42 +398,42 @@ void init(void)
     }
 #endif
 
-    beeperInit(&beeperDevConfig);
+    // beeperInit(&beeperDevConfig);
 #endif
 #ifdef USE_LIGHTS
-    lightsInit();
+    // lightsInit();
 #endif
 
 #ifdef USE_INVERTER
-    initInverters();
+    // initInverters();
 #endif
 
     // Initialize buses
-    busInit();
+    // busInit();
 
 #ifdef USE_SPI
 #ifdef USE_SPI_DEVICE_1
-    spiInit(SPIDEV_1);
+    // spiInit(SPIDEV_1);
 #endif
 #ifdef USE_SPI_DEVICE_2
-    spiInit(SPIDEV_2);
+    // spiInit(SPIDEV_2);
 #endif
 #ifdef USE_SPI_DEVICE_3
 #ifdef ALIENFLIGHTF3
     if (hardwareRevision == AFF3_REV_2) {
-        spiInit(SPIDEV_3);
+        // spiInit(SPIDEV_3);
     }
 #else
-    spiInit(SPIDEV_3);
+    // spiInit(SPIDEV_3);
 #endif
 #endif
 #ifdef USE_SPI_DEVICE_4
-    spiInit(SPIDEV_4);
+    // spiInit(SPIDEV_4);
 #endif
 #endif
 
 #ifdef USE_HARDWARE_REVISION_DETECTION
-    updateHardwareRevision();
+    // updateHardwareRevision();
 #endif
 
 // #if defined(USE_RANGEFINDER_HCSR04) && defined(USE_SOFTSERIAL1)
@@ -517,10 +517,10 @@ void init(void)
 #endif
 
 #if defined(USE_GPS) || defined(USE_MAG)
-    delay(500);
+    // delay(500);
 
     /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
-    if (!isMPUSoftReset()) {
+    // if (!isMPUSoftReset()) {
         // addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
 
         // LED1_ON;
@@ -534,19 +534,19 @@ void init(void)
 
         // LED0_OFF;
         // LED1_OFF;
-    }
+    // }
 #endif
 
     // initBoardAlignment();
 
 #ifdef USE_CMS
-    cmsInit();
+    // cmsInit();
 #endif
 
 #ifdef USE_DASHBOARD
-    if (feature(FEATURE_DASHBOARD)) {
-        dashboardInit();
-    }
+    // if (feature(FEATURE_DASHBOARD)) {
+    //     dashboardInit();
+    // }
 #endif
 
 #ifdef USE_GPS
@@ -563,10 +563,10 @@ void init(void)
     // addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_SENSORS_READY;
 
-    flashLedsAndBeep();
+    // flashLedsAndBeep();
 
 #ifdef USE_DTERM_NOTCH
-    pidInitFilters();
+    // pidInitFilters();
 #endif
 
     // imuInit();
@@ -598,19 +598,19 @@ void init(void)
         osdDisplayPort = displayPortMspInit();
 #endif
         // osdInit  will register with CMS by itself.
-        osdInit(osdDisplayPort);
+        // osdInit(osdDisplayPort);
     }
 #endif
 
 #if defined(USE_MSP_DISPLAYPORT) && defined(USE_CMS)
     // If OSD is not active, then register MSP_DISPLAYPORT as a CMS device.
     if (!osdDisplayPort) {
-        cmsDisplayPortRegister(displayPortMspInit());
+        // cmsDisplayPortRegister(displayPortMspInit());
     }
 #endif
 
 #ifdef USE_UAV_INTERCONNECT
-    uavInterconnectBusInit();
+    // uavInterconnectBusInit();
 #endif
 
 #ifdef USE_GPS
@@ -626,10 +626,10 @@ void init(void)
 #endif
 
 #ifdef USE_LED_STRIP
-    ledStripInit();
+    // ledStripInit();
 
     if (feature(FEATURE_LED_STRIP)) {
-        ledStripEnable();
+        // ledStripEnable();
         // addBootlogEvent2(BOOT_EVENT_LEDSTRIP_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
@@ -647,16 +647,16 @@ void init(void)
         m25p16_init(0);
     }
 #elif defined(USE_FLASH_M25P16)
-    m25p16_init(0);
+    // m25p16_init(0);
 #endif
 
-    flashfsInit();
+    // flashfsInit();
 #endif
 
 #ifdef USE_SDCARD
     bool sdcardUseDMA = false;
 
-    sdcardInsertionDetectInit();
+    // sdcardInsertionDetectInit();
 
 #ifdef SDCARD_DMA_CHANNEL_TX
 
@@ -673,9 +673,9 @@ void init(void)
 
 #endif
 
-    sdcard_init(sdcardUseDMA);
+    // sdcard_init(sdcardUseDMA);
 
-    afatfs_init();
+    // afatfs_init();
 #endif
 
 #ifdef USE_BLACKBOX
@@ -684,24 +684,24 @@ void init(void)
 
     // gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
 #ifdef USE_BARO
-    baroStartCalibration();
+    // baroStartCalibration();
 #endif
 
 #ifdef USE_PITOT
-    pitotStartCalibration();
+    // pitotStartCalibration();
 #endif
 
 #ifdef VTX_CONTROL
-    vtxControlInit();
+    // vtxControlInit();
 
-    vtxCommonInit();
+    // vtxCommonInit();
 
 #ifdef VTX_SMARTAUDIO
-    vtxSmartAudioInit();
+    // vtxSmartAudioInit();
 #endif
 
 #ifdef VTX_TRAMP
-    vtxTrampInit();
+    // vtxTrampInit();
 #endif
 
 #endif // VTX_CONTROL
@@ -719,17 +719,17 @@ void init(void)
 #endif
 
 #ifdef USE_PMW_SERVO_DRIVER
-    if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-        pwmDriverInitialize();
-    }
+    // if (feature(FEATURE_PWM_SERVO_DRIVER)) {
+    //     pwmDriverInitialize();
+    // }
 #endif
 
 #ifdef USE_RCDEVICE
-    rcdeviceInit();
+    // rcdeviceInit();
 #endif // USE_RCDEVICE
 
     // Latch active features AGAIN since some may be modified by init().
-    latchActiveFeatures();
+    // latchActiveFeatures();
     motorControlEnable = true;
     fcTasksInit();
     
