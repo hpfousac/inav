@@ -224,6 +224,11 @@ typedef struct timerHardware_s
 
 # Subsystems #
 
+ **io.c** - handles work with particular pins. Ouptut statistics is used by CLI resource.
+
+ IO Pins are in array: **ioDefUsedMask** this is the mask, which pins can be used.
+
+
 ## Serial Port(s) ##
 
  branch: **inav-1.9.1-serialOnly**
