@@ -427,59 +427,59 @@ void init(void)
     updateHardwareRevision();
 #endif
 
-#if defined(USE_RANGEFINDER_HCSR04) && defined(USE_SOFTSERIAL1)
-#if defined(FURYF3) || defined(OMNIBUS) || defined(SPRACINGF3MINI)
-    if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_SOFTSERIAL)) {
-        serialRemovePort(SERIAL_PORT_SOFTSERIAL1);
-    }
-#endif
-#endif
+// #if defined(USE_RANGEFINDER_HCSR04) && defined(USE_SOFTSERIAL1)
+// #if defined(FURYF3) || defined(OMNIBUS) || defined(SPRACINGF3MINI)
+//     if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_SOFTSERIAL)) {
+//         serialRemovePort(SERIAL_PORT_SOFTSERIAL1);
+//     }
+// #endif
+// #endif
 
-#if defined(USE_RANGEFINDER_HCSR04) && defined(USE_SOFTSERIAL2) && defined(SPRACINGF3)
-    if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_SOFTSERIAL)) {
-        serialRemovePort(SERIAL_PORT_SOFTSERIAL2);
-    }
-#endif
+// #if defined(USE_RANGEFINDER_HCSR04) && defined(USE_SOFTSERIAL2) && defined(SPRACINGF3)
+//     if ((rangefinderConfig()->rangefinder_hardware == RANGEFINDER_HCSR04) && feature(FEATURE_SOFTSERIAL)) {
+//         serialRemovePort(SERIAL_PORT_SOFTSERIAL2);
+//     }
+// #endif
 
-#ifdef USE_I2C
-#ifdef USE_I2C_DEVICE_1
-    #ifdef I2C_DEVICE_1_SHARES_UART3
-        if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
-            i2cInit(I2CDEV_1);
-        }
-    #else
-            i2cInit(I2CDEV_1);
-    #endif
-#endif
+// #ifdef USE_I2C
+// #ifdef USE_I2C_DEVICE_1
+//     #ifdef I2C_DEVICE_1_SHARES_UART3
+//         if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
+//             i2cInit(I2CDEV_1);
+//         }
+//     #else
+//             i2cInit(I2CDEV_1);
+//     #endif
+// #endif
 
-#ifdef USE_I2C_DEVICE_2
-    #ifdef I2C_DEVICE_2_SHARES_UART3
-        if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
-            i2cInit(I2CDEV_2);
-        }
-    #else
-            i2cInit(I2CDEV_2);
-    #endif
-#endif
+// #ifdef USE_I2C_DEVICE_2
+//     #ifdef I2C_DEVICE_2_SHARES_UART3
+//         if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
+//             i2cInit(I2CDEV_2);
+//         }
+//     #else
+//             i2cInit(I2CDEV_2);
+//     #endif
+// #endif
 
-#ifdef USE_I2C_DEVICE_3
-    i2cInit(I2CDEV_3);
-#endif
+// #ifdef USE_I2C_DEVICE_3
+//     i2cInit(I2CDEV_3);
+// #endif
 
-#ifdef USE_I2C_DEVICE_4
-    i2cInit(I2CDEV_4);
-#endif
+// #ifdef USE_I2C_DEVICE_4
+//     i2cInit(I2CDEV_4);
+// #endif
 
-#ifdef USE_I2C_DEVICE_EMULATED
-    #ifdef I2C_DEVICE_EMULATED_SHARES_UART3
-        if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
-            i2cInit(I2CDEV_EMULATED);
-        }
-    #else
-            i2cInit(I2CDEV_EMULATED);
-    #endif
-#endif
-#endif
+// #ifdef USE_I2C_DEVICE_EMULATED
+//     #ifdef I2C_DEVICE_EMULATED_SHARES_UART3
+//         if (!doesConfigurationUsePort(SERIAL_PORT_USART3)) {
+//             i2cInit(I2CDEV_EMULATED);
+//         }
+//     #else
+//             i2cInit(I2CDEV_EMULATED);
+//     #endif
+// #endif
+// #endif
 
 #ifdef USE_ADC
     drv_adc_config_t adc_params;
@@ -724,7 +724,7 @@ void init(void)
     motorControlEnable = true;
     fcTasksInit();
     
-#ifdef USE_UART1
+// #ifdef USE_UART1
     uart1 = openSerialPort (SERIAL_PORT_USART1, FUNCTION_MSP, NULL, NULL, 115200, MODE_RXTX, SERIAL_NOT_INVERTED);
     
     serialBeginWrite(uart1);
@@ -732,7 +732,7 @@ void init(void)
     serialEndWrite(uart1);
 
     cliEnter(uart1);
-#endif // USE_UART1
+// #endif // USE_UART1
 
 
     // addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
