@@ -178,7 +178,7 @@ void init(void)
 #endif
 
     // systemState = SYSTEM_STATE_INITIALISING;
-    initBootlog();
+    // initBootlog();
 
     printfSupportInit();
 
@@ -209,7 +209,7 @@ void init(void)
     initialisePreBootHardware();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_CONFIG_LOADED, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_CONFIG_LOADED;
 
     debugMode = systemConfig()->debug_mode;
@@ -227,7 +227,7 @@ void init(void)
     EXTIInit();
 #endif
 
-    addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_SYSTEM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
 
 // #ifdef USE_SPEKTRUM_BIND
 //     if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
@@ -366,7 +366,7 @@ void init(void)
     if (!pwm_params.useFastPwm)
         motorControlEnable = true;
 
-    addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_PWM_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_MOTORS_READY;
 
 #ifdef BEEPER
@@ -512,7 +512,7 @@ void init(void)
 
     /* Extra 500ms delay prior to initialising hardware if board is cold-booting */
     if (!isMPUSoftReset()) {
-        addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
+        // addBootlogEvent2(BOOT_EVENT_EXTRA_BOOT_DELAY, BOOT_EVENT_FLAGS_NONE);
 
         // LED1_ON;
         // LED0_OFF;
@@ -551,7 +551,7 @@ void init(void)
     //     failureMode(FAILURE_MISSING_ACC);
     // }
 
-    addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_SENSOR_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_SENSORS_READY;
 
     flashLedsAndBeep();
@@ -607,7 +607,7 @@ void init(void)
 #ifdef USE_GPS
     if (feature(FEATURE_GPS)) {
         // gpsInit();
-        addBootlogEvent2(BOOT_EVENT_GPS_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+        // addBootlogEvent2(BOOT_EVENT_GPS_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
 
@@ -621,14 +621,14 @@ void init(void)
 
     if (feature(FEATURE_LED_STRIP)) {
         ledStripEnable();
-        addBootlogEvent2(BOOT_EVENT_LEDSTRIP_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+        // addBootlogEvent2(BOOT_EVENT_LEDSTRIP_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
 
 #ifdef USE_TELEMETRY
     if (feature(FEATURE_TELEMETRY)) {
         // telemetryInit();
-        addBootlogEvent2(BOOT_EVENT_TELEMETRY_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
+        // addBootlogEvent2(BOOT_EVENT_TELEMETRY_INIT_DONE, BOOT_EVENT_FLAGS_NONE);
     }
 #endif
 
@@ -735,6 +735,6 @@ void init(void)
 #endif // USE_UART1
 
 
-    addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
+    // addBootlogEvent2(BOOT_EVENT_SYSTEM_READY, BOOT_EVENT_FLAGS_NONE);
     // systemState |= SYSTEM_STATE_READY;
 }

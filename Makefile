@@ -583,7 +583,6 @@ COMMON_SRC = \
             drivers/exti.c \
             drivers/io.c \
             drivers/io_pca9685.c \
-            drivers/logging.c \
             drivers/resource.c \
             drivers/pwm_mapping.c \
             drivers/pwm_output.c \
