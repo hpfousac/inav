@@ -44,6 +44,20 @@ typedef enum {
     PWM_TYPE_BRUSHED
 } motorPwmProtocolTypes_e;
 
+typedef void (*pwmWriteFuncPtr)(uint8_t index, uint16_t value);  // function pointer used to write motors
+
+
+typedef struct {
+    volatile timCCR_t *ccr;
+    TIM_TypeDef *tim;
+    uint16_t period;
+    pwmWriteFuncPtr pwmWritePtr;
+} pwmOutputPort_t;
+
+extern pwmOutputPort_t *servos[]; // MAX_PWM_SERVOS
+
+
+
 void pwmWriteMotor(uint8_t index, uint16_t value);
 void pwmShutdownPulsesForAllMotors(uint8_t motorCount);
 

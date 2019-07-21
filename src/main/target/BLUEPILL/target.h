@@ -231,3 +231,6 @@
 #define PWM_RANGE_MAX 2000
 #define PWM_PULSE_MIN   750       // minimum PWM pulse width which is considered valid
 #define PWM_PULSE_MAX   2250      // maximum PWM pulse width which is considered valid
+
+#define STM32F1
+//#define STM32F10X

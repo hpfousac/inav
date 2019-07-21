@@ -33,6 +33,8 @@ extern uint8_t __config_end;
 
 #ifdef USE_CLI
 
+#include "platform.h"
+
 #include "blackbox/blackbox.h"
 
 #include "build/assert.h"
@@ -69,6 +71,7 @@ extern uint8_t __config_end;
 #include "drivers/system.h"
 #include "drivers/time.h"
 #include "drivers/timer.h"
+#include "drivers/pwm_output.h"
 
 #include "fc/cli.h"
 #include "fc/config.h"
@@ -2687,6 +2690,7 @@ static void cliDiff(char *cmdline)
     printConfig(cmdline, true);
 }
 
+
 static void cliShowPwm(char *cmdline)
 {
 
@@ -2708,6 +2712,17 @@ static void cliShowPwm(char *cmdline)
         cliPrintLinef("  ioConf[%d].flags=%d", timerIndex, (int) ioConf->flags);
 
     }
+
+    cliPrintLinef(" MAX_PWM_SERVOS=%d", (int) MAX_PWM_SERVOS);
+    for (int servoIndex = 0; servoIndex < MAX_PWM_SERVOS; servoIndex++) {
+        cliPrintLinef("# show pwm (servo[%d]=0x%08lX)", servoIndex, (unsigned long) servos[servoIndex]);
+        cliPrintLinef("  servos[%d].ccr=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->ccr);
+        cliPrintLinef("  servos[%d].tim=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->tim);
+        cliPrintLinef("  servos[%d].period=%d", servoIndex, (int) servos[servoIndex]->period);
+        cliPrintLinef("  servos[%d].pwmWritePtr=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->pwmWritePtr);
+
+    }
+
 }
 
 

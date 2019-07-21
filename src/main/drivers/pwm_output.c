@@ -38,21 +38,12 @@
 #define MULTISHOT_5US_PW    (MULTISHOT_TIMER_MHZ * 5)
 #define MULTISHOT_20US_MULT (MULTISHOT_TIMER_MHZ * 20 / 1000.0f)
 
-typedef void (*pwmWriteFuncPtr)(uint8_t index, uint16_t value);  // function pointer used to write motors
-
-typedef struct {
-    volatile timCCR_t *ccr;
-    TIM_TypeDef *tim;
-    uint16_t period;
-    pwmWriteFuncPtr pwmWritePtr;
-} pwmOutputPort_t;
-
 static pwmOutputPort_t pwmOutputPorts[MAX_PWM_OUTPUT_PORTS];
 
 static pwmOutputPort_t *motors[MAX_PWM_MOTORS];
 
 #ifdef USE_SERVOS
-static pwmOutputPort_t *servos[MAX_PWM_SERVOS];
+pwmOutputPort_t *servos[MAX_PWM_SERVOS];
 #endif
 
 #ifdef BEEPER_PWM
