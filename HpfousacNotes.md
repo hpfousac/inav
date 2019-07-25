@@ -281,6 +281,9 @@ raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()*
 
  **pwmInit()** prepares config for particular pins
 
+
+ **pwmServoConfig** 
+
  **pwmWriteServo()** writes value to the servo/pin
 
  there is servos[] and motors[]

@@ -57,7 +57,6 @@ typedef struct {
 extern pwmOutputPort_t *servos[]; // MAX_PWM_SERVOS
 
 
-
 void pwmWriteMotor(uint8_t index, uint16_t value);
 void pwmShutdownPulsesForAllMotors(uint8_t motorCount);
 

@@ -370,6 +370,8 @@ void init(void)
     pwmInit(&pwm_params);
 
     // mixerUsePWMIOConfiguration();
+    pwmWriteServo(0, 1000);
+
 
     if (!pwm_params.useFastPwm)
         motorControlEnable = true;
