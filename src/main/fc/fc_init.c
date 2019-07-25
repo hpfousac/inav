@@ -371,6 +371,7 @@ void init(void)
 
     // mixerUsePWMIOConfiguration();
     pwmWriteServo(0, 1000);
+    pwmWriteServo(1, 2000);
 
 
     if (!pwm_params.useFastPwm)
