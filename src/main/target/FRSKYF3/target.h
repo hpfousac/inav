@@ -18,7 +18,6 @@
 #pragma once
 
 #define TARGET_BOARD_IDENTIFIER "FRF3"
-#define TARGET_CONFIG
 
 #define LED0_PIN                PB3
 #define BEEPER                  PC15
@@ -85,11 +84,11 @@
 #define SPI1_MOSI_PIN           PA7
 
 #define USE_SDCARD
-
+#define USE_SDCARD_SPI
 #define SDCARD_DETECT_INVERTED
-#define SDCARD_DETECT_PIN                   PB5
-#define SDCARD_SPI_INSTANCE                 SPI1
-#define SDCARD_SPI_CS_PIN                   SPI1_NSS_PIN
+#define SDCARD_DETECT_PIN       PB5
+#define SDCARD_SPI_BUS          BUS_SPI1
+#define SDCARD_CS_PIN           SPI1_NSS_PIN
 
 #define USE_ADC
 #define ADC_INSTANCE                ADC2

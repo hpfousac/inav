@@ -157,7 +157,7 @@ static int profile_compare(profile_comp_t *a, profile_comp_t *b) {
 }
 
 // Find profile matching plugged battery for profile_autoselect
-static int8_t profileDetect() {
+static int8_t profileDetect(void) {
     profile_comp_t profile_comp_array[MAX_BATTERY_PROFILE_COUNT];
 
     // Prepare profile sort
@@ -552,7 +552,7 @@ uint8_t calculateBatteryPercentage(void)
         uint32_t capacityDiffBetweenFullAndEmpty = currentBatteryProfile->capacity.value - currentBatteryProfile->capacity.critical;
         return constrain(batteryRemainingCapacity * 100 / capacityDiffBetweenFullAndEmpty, 0, 100);
     } else
-        return constrain((vbat - batteryCriticalVoltage) * 100L / (batteryFullVoltage - batteryCriticalVoltage), 0, 100);
+        return constrain((getBatteryVoltage() - batteryCriticalVoltage) * 100L / (batteryFullVoltage - batteryCriticalVoltage), 0, 100);
 }
 
 void batteryDisableProfileAutoswitch(void) {

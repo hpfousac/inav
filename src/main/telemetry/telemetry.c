@@ -48,8 +48,10 @@
 #include "telemetry/jetiexbus.h"
 #include "telemetry/ibus.h"
 #include "telemetry/crsf.h"
+#include "telemetry/sim.h"
 
-PG_REGISTER_WITH_RESET_TEMPLATE(telemetryConfig_t, telemetryConfig, PG_TELEMETRY_CONFIG, 1);
+
+PG_REGISTER_WITH_RESET_TEMPLATE(telemetryConfig_t, telemetryConfig, PG_TELEMETRY_CONFIG, 3);
 
 PG_RESET_TEMPLATE(telemetryConfig_t, telemetryConfig,
     .gpsNoFixLatitude = 0,
@@ -59,12 +61,27 @@ PG_RESET_TEMPLATE(telemetryConfig_t, telemetryConfig,
     .frsky_coordinate_format = FRSKY_FORMAT_DMS,
     .frsky_unit = FRSKY_UNIT_METRICS,
     .frsky_vfas_precision = 0,
+    .frsky_pitch_roll = 0,
     .report_cell_voltage = 0,
     .hottAlarmSoundInterval = 5,
-    .smartportUartUnidirectional = 0,
+    .uartUnidirectional = 0,
     .smartportFuelUnit = SMARTPORT_FUEL_UNIT_MAH,
     .ibusTelemetryType = 0,
     .ltmUpdateRate = LTM_RATE_NORMAL,
+    .simTransmitInterval = SIM_DEFAULT_TRANSMIT_INTERVAL,
+    .simTransmitFlags = SIM_DEFAULT_TX_FLAGS,
+    .simLowAltitude = INT16_MIN,
+    .accEventThresholdHigh = 0,
+    .accEventThresholdLow = 0,
+    .accEventThresholdNegX = 0,
+
+    .mavlink = {
+        .extended_status_rate = 2,
+        .rc_channels_rate = 5,
+        .position_rate = 2,
+        .extra1_rate = 10,
+        .extra2_rate = 2
+    }
 );
 
 void telemetryInit(void)
@@ -97,7 +114,11 @@ void telemetryInit(void)
     initIbusTelemetry();
 #endif
 
-#if defined(USE_TELEMETRY_CRSF)
+#if defined(USE_TELEMETRY_SIM)
+    initSimTelemetry();
+#endif
+
+#if defined(USE_SERIALRX_CRSF) && defined(USE_TELEMETRY_CRSF)
     initCrsfTelemetry();
 #endif
 
@@ -155,7 +176,11 @@ void telemetryCheckState(void)
     checkIbusTelemetryState();
 #endif
 
-#if defined(USE_TELEMETRY_CRSF)
+#if defined(USE_TELEMETRY_SIM)
+    checkSimTelemetryState();
+#endif
+
+#if defined(USE_SERIALRX_CRSF) && defined(USE_TELEMETRY_CRSF)
     checkCrsfTelemetryState();
 #endif
 }
@@ -192,7 +217,11 @@ void telemetryProcess(timeUs_t currentTimeUs)
     handleIbusTelemetry();
 #endif
 
-#if defined(USE_TELEMETRY_CRSF)
+#if defined(USE_TELEMETRY_SIM)
+    handleSimTelemetry();
+#endif
+
+#if defined(USE_SERIALRX_CRSF) && defined(USE_TELEMETRY_CRSF)
     handleCrsfTelemetry(currentTimeUs);
 #endif
 }

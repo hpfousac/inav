@@ -29,13 +29,6 @@
 #define ONESHOT_FEATURE_CHANGED_DELAY_ON_BOOT_MS 1500
 #define MAX_NAME_LENGTH 16
 
-#define ACC_TASK_FREQUENCY_DEFAULT 500
-#define ACC_TASK_FREQUENCY_MIN 100
-#define ACC_TASK_FREQUENCY_MAX 1000
-#define ATTITUDE_TASK_FREQUENCY_DEFAULT 250
-#define ATTITUDE_TASK_FREQUENCY_MIN 100
-#define ATTITUDE_TASK_FREQUENCY_MAX 1000
-
 typedef enum {
     ASYNC_MODE_NONE,
     ASYNC_MODE_GYRO,
@@ -74,20 +67,15 @@ typedef enum {
     FEATURE_PWM_OUTPUT_ENABLE = 1 << 28,
     FEATURE_OSD = 1 << 29,
     FEATURE_FW_LAUNCH = 1 << 30,
-    FEATURE_DEBUG_TRACE = 1 << 31,
 } features_e;
 
 typedef struct systemConfig_s {
-    uint16_t accTaskFrequency;
-    uint16_t attitudeTaskFrequency;
     uint8_t current_profile_index;
     uint8_t current_battery_profile_index;
-    uint8_t asyncMode;
     uint8_t debug_mode;
     uint8_t i2c_speed;
     uint8_t cpuUnderclock;
-    uint8_t throttle_tilt_compensation_strength;      // the correction that will be applied at throttle_correction_angle.
-    inputFilteringMode_e pwmRxInputFilteringMode;
+    uint8_t throttle_tilt_compensation_strength;    // the correction that will be applied at throttle_correction_angle.
     char name[MAX_NAME_LENGTH + 1];
 } systemConfig_t;
 
@@ -130,6 +118,7 @@ void ensureEEPROMContainsValidData(void);
 
 void saveConfigAndNotify(void);
 void validateAndFixConfig(void);
+void validateAndFixTargetConfig(void);
 
 uint8_t getConfigProfile(void);
 bool setConfigProfile(uint8_t profileIndex);
@@ -146,10 +135,4 @@ void createDefaultConfig(void);
 void resetConfigs(void);
 void targetConfiguration(void);
 
-uint32_t getPidUpdateRate(void);
-timeDelta_t getGyroUpdateRate(void);
-uint16_t getAccUpdateRate(void);
-#ifdef USE_ASYNC_GYRO_PROCESSING
-uint16_t getAttitudeUpdateRate(void);
-uint8_t getAsyncMode(void);
-#endif
+uint32_t getLooptime(void);

@@ -29,9 +29,15 @@
 
 #include "drivers/display.h"
 #include "drivers/max7456.h"
-#include "drivers/vcd.h"
 
 #include "io/displayport_max7456.h"
+
+// 'I', 'N', 'A', 'V', 1
+#define CHR_IS_METADATA(chr) ((chr)->data[0] == 'I' && \
+    (chr)->data[1] == 'N' && \
+    (chr)->data[2] == 'A' && \
+    (chr)->data[3] == 'V' && \
+    (chr)->data[4] == 1)
 
 displayPort_t max7456DisplayPort;
 
@@ -72,7 +78,7 @@ static int clearScreen(displayPort_t *displayPort)
 static int drawScreen(displayPort_t *displayPort)
 {
     UNUSED(displayPort);
-    max7456DrawScreenPartial();
+    max7456Update();
 
     return 0;
 }
@@ -80,7 +86,7 @@ static int drawScreen(displayPort_t *displayPort)
 static int screenSize(const displayPort_t *displayPort)
 {
     UNUSED(displayPort);
-    return maxScreenSize;
+    return max7456GetScreenSize();
 }
 
 static int writeString(displayPort_t *displayPort, uint8_t x, uint8_t y, const char *s, textAttributes_t attr)
@@ -91,7 +97,7 @@ static int writeString(displayPort_t *displayPort, uint8_t x, uint8_t y, const c
     return 0;
 }
 
-static int writeChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint8_t c, textAttributes_t attr)
+static int writeChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint16_t c, textAttributes_t attr)
 {
     UNUSED(displayPort);
     max7456WriteChar(x, y, c, max7456Mode(attr));
@@ -99,7 +105,7 @@ static int writeChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint8_t c
     return 0;
 }
 
-static bool readChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint8_t *c, textAttributes_t *attr)
+static bool readChar(displayPort_t *displayPort, uint8_t x, uint8_t y, uint16_t *c, textAttributes_t *attr)
 {
     UNUSED(displayPort);
     return max7456ReadChar(x, y, c, attr);
@@ -142,6 +148,39 @@ static textAttributes_t supportedTextAttributes(const displayPort_t *displayPort
     return attr;
 }
 
+static bool getFontMetadata(displayFontMetadata_t *metadata, const displayPort_t *displayPort)
+{
+    UNUSED(displayPort);
+
+    osdCharacter_t chr;
+
+    max7456ReadNvm(255, &chr);
+
+    if (CHR_IS_METADATA(&chr)) {
+        metadata->version = chr.data[5];
+        // Not all MAX7456 chips support 512 characters. To detect this,
+        // we place metadata in both characters 255 and 256. This way we
+        // can find out how many characters the font in NVM has.
+        max7456ReadNvm(256, &chr);
+        if (CHR_IS_METADATA(&chr)) {
+            metadata->charCount = 512;
+        } else {
+            metadata->charCount = 256;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+static int writeFontCharacter(displayPort_t *instance, uint16_t addr, const osdCharacter_t *chr)
+{
+    UNUSED(instance);
+
+    max7456WriteNvm(addr, chr);
+    return 0;
+}
+
 static const displayPortVTable_t max7456VTable = {
     .grab = grab,
     .release = release,
@@ -156,12 +195,14 @@ static const displayPortVTable_t max7456VTable = {
     .resync = resync,
     .txBytesFree = txBytesFree,
     .supportedTextAttributes = supportedTextAttributes,
+    .getFontMetadata = getFontMetadata,
+    .writeFontCharacter = writeFontCharacter,
 };
 
 displayPort_t *max7456DisplayPortInit(const videoSystem_e videoSystem)
 {
-    displayInit(&max7456DisplayPort, &max7456VTable);
     max7456Init(videoSystem);
+    displayInit(&max7456DisplayPort, &max7456VTable);
     resync(&max7456DisplayPort);
     return &max7456DisplayPort;
 }

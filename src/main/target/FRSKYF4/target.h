@@ -17,7 +17,6 @@
 
 #define TARGET_BOARD_IDENTIFIER "FRF4"
 #define USBD_PRODUCT_STRING "FRSKYF4"
-#define TARGET_CONFIG
 
 #define LED0                    PB5
 #define BEEPER                  PB4
@@ -51,10 +50,11 @@
 #define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
 #define USE_SDCARD
+#define USE_SDCARD_SPI
 #define SDCARD_DETECT_INVERTED
-#define SDCARD_DETECT_PIN               PB7
-#define SDCARD_SPI_INSTANCE             SPI2
-#define SDCARD_SPI_CS_PIN               SPI2_NSS_PIN
+#define SDCARD_DETECT_PIN       PB7
+#define SDCARD_SPI_BUS          BUS_SPI2
+#define SDCARD_CS_PIN           SPI2_NSS_PIN
 
 #define USE_VCP
 #define VBUS_SENSING_PIN PC5
