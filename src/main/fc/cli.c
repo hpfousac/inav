@@ -89,7 +89,7 @@ extern uint8_t __config_end;
 #include "flight/servos.h"
 
 #include "io/asyncfatfs/asyncfatfs.h"
-#include "io/beeper.h"
+//#include "io/beeper.h"
 #include "io/flashfs.h"
 #include "io/gimbal.h"
 #include "io/gps.h"
@@ -138,10 +138,6 @@ static uint32_t bufferIndex = 0;
 
 #if defined(USE_ASSERT)
 static void cliAssert(char *cmdline);
-#endif
-
-#if defined(USE_BOOTLOG)
-static void cliBootlog(char *cmdline);
 #endif
 
 static const char* const emptyName = "-";
@@ -578,45 +574,6 @@ static void cliAssert(char *cmdline)
 }
 #endif
 
-#if defined(USE_BOOTLOG)
-static void cliBootlog(char *cmdline)
-{
-    UNUSED(cmdline);
-
-    int bootEventCount = getBootlogEventCount();
-
-#if defined(BOOTLOG_DESCRIPTIONS)
-    cliPrintLine("Time Evt            Description  Parameters");
-#else
-    cliPrintLine("Time Evt Parameters");
-#endif
-
-    for (int idx = 0; idx < bootEventCount; idx++) {
-        bootLogEntry_t * event = getBootlogEvent(idx);
-
-#if defined(BOOTLOG_DESCRIPTIONS)
-        const char * eventDescription = getBootlogEventDescription(event->eventCode);
-        if (!eventDescription) {
-            eventDescription = "";
-        }
-
-        cliPrintf("%4d: %2d %22s ", event->timestamp, event->eventCode, eventDescription);
-#else
-        cliPrintf("%4d: %2d ", event->timestamp, event->eventCode);
-#endif
-
-        if (event->eventFlags & BOOT_EVENT_FLAGS_PARAM16) {
-            cliPrintLinef(" (%d, %d, %d, %d)", event->params.u16[0], event->params.u16[1], event->params.u16[2], event->params.u16[3]);
-        }
-        else if (event->eventFlags & BOOT_EVENT_FLAGS_PARAM32) {
-            cliPrintLinef(" (%d, %d)", event->params.u32[0], event->params.u32[1]);
-        }
-        else {
-            cliPrintLinefeed();
-        }
-    }
-}
-#endif
 
 static void printAux(uint8_t dumpMask, const modeActivationCondition_t *modeActivationConditions, const modeActivationCondition_t *defaultModeActivationConditions)
 {
@@ -1795,89 +1752,6 @@ static void cliFeature(char *cmdline)
     }
 }
 
-#ifdef BEEPER
-static void printBeeper(uint8_t dumpMask, const beeperConfig_t *beeperConfig, const beeperConfig_t *beeperConfigDefault)
-{
-    const uint8_t beeperCount = beeperTableEntryCount();
-    const uint32_t mask = beeperConfig->beeper_off_flags;
-    const uint32_t defaultMask = beeperConfigDefault->beeper_off_flags;
-    for (int i = 0; i < beeperCount - 2; i++) {
-        const char *formatOff = "beeper -%s";
-        const char *formatOn = "beeper %s";
-        cliDefaultPrintLinef(dumpMask, ~(mask ^ defaultMask) & (1 << i), mask & (1 << i) ? formatOn : formatOff, beeperNameForTableIndex(i));
-        cliDumpPrintLinef(dumpMask, ~(mask ^ defaultMask) & (1 << i), mask & (1 << i) ? formatOff : formatOn, beeperNameForTableIndex(i));
-    }
-}
-
-static void cliBeeper(char *cmdline)
-{
-    uint32_t len = strlen(cmdline);
-    uint8_t beeperCount = beeperTableEntryCount();
-    uint32_t mask = getBeeperOffMask();
-
-    if (len == 0) {
-        cliPrintf("Disabled:");
-        for (int32_t i = 0; ; i++) {
-            if (i == beeperCount - 2){
-                if (mask == 0)
-                    cliPrint("  none");
-                break;
-            }
-            if (mask & (1 << (beeperModeForTableIndex(i) - 1)))
-                cliPrintf("  %s", beeperNameForTableIndex(i));
-        }
-        cliPrintLinefeed();
-    } else if (sl_strncasecmp(cmdline, "list", len) == 0) {
-        cliPrint("Available:");
-        for (uint32_t i = 0; i < beeperCount; i++)
-            cliPrintf("  %s", beeperNameForTableIndex(i));
-        cliPrintLinefeed();
-        return;
-    } else {
-        bool remove = false;
-        if (cmdline[0] == '-') {
-            remove = true;     // this is for beeper OFF condition
-            cmdline++;
-            len--;
-        }
-
-        for (uint32_t i = 0; ; i++) {
-            if (i == beeperCount) {
-                cliPrintLine("Invalid name");
-                break;
-            }
-            if (sl_strncasecmp(cmdline, beeperNameForTableIndex(i), len) == 0) {
-                if (remove) { // beeper off
-                    if (i == BEEPER_ALL-1)
-                        beeperOffSetAll(beeperCount-2);
-                    else
-                        if (i == BEEPER_PREFERENCE-1)
-                            setBeeperOffMask(getPreferredBeeperOffMask());
-                        else {
-                            mask = 1 << (beeperModeForTableIndex(i) - 1);
-                            beeperOffSet(mask);
-                        }
-                    cliPrint("Disabled");
-                }
-                else { // beeper on
-                    if (i == BEEPER_ALL-1)
-                        beeperOffClearAll();
-                    else
-                        if (i == BEEPER_PREFERENCE-1)
-                            setPreferredBeeperOffMask(getBeeperOffMask());
-                        else {
-                            mask = 1 << (beeperModeForTableIndex(i) - 1);
-                            beeperOffClear(mask);
-                        }
-                    cliPrint("Enabled");
-                }
-            cliPrintLinef(" %s", beeperNameForTableIndex(i));
-            break;
-            }
-        }
-    }
-}
-#endif
 
 // static void printMap(uint8_t dumpMask, const rxConfig_t *rxConfig, const rxConfig_t *defaultRxConfig)
 // {
@@ -2120,40 +1994,6 @@ static void cliName(char *cmdline)
     printName(DUMP_MASTER, systemConfig());
 }
 
-#ifdef PLAY_SOUND
-static void cliPlaySound(char *cmdline)
-{
-    int i;
-    const char *name;
-    static int lastSoundIdx = -1;
-
-    if (isEmpty(cmdline)) {
-        i = lastSoundIdx + 1;     //next sound index
-        if ((name=beeperNameForTableIndex(i)) == NULL) {
-            while (true) {   //no name for index; try next one
-                if (++i >= beeperTableEntryCount())
-                    i = 0;   //if end then wrap around to first entry
-                if ((name=beeperNameForTableIndex(i)) != NULL)
-                    break;   //if name OK then play sound below
-                if (i == lastSoundIdx + 1) {     //prevent infinite loop
-                    cliPrintLine("Error playing sound");
-                    return;
-                }
-            }
-        }
-    } else {       //index value was given
-        i = fastA2I(cmdline);
-        if ((name=beeperNameForTableIndex(i)) == NULL) {
-            cliPrintLinef("No sound for index %d", i);
-            return;
-        }
-    }
-    lastSoundIdx = i;
-    beeperSilence();
-    cliPrintLinef("Playing sound %d: %s", i, name);
-    beeper(beeperModeForTableIndex(i));
-}
-#endif
 
 static void cliProfile(char *cmdline)
 {
@@ -2619,11 +2459,6 @@ static void printConfig(const char *cmdline, bool doDiff)
         cliPrintHashLine("feature");
         printFeature(dumpMask, &featureConfig_Copy, featureConfig());
 
-#ifdef BEEPER
-        cliPrintHashLine("beeper");
-        printBeeper(dumpMask, &beeperConfig_Copy, beeperConfig());
-#endif
-
         // cliPrintHashLine("map");
         // printMap(dumpMask, &rxConfig_Copy, rxConfig());
 
@@ -2760,13 +2595,6 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("assert", "", NULL, cliAssert),
 #endif
     CLI_COMMAND_DEF("aux", "configure modes", NULL, cliAux),
-#ifdef BEEPER
-    CLI_COMMAND_DEF("beeper", "turn on/off beeper", "list\r\n"
-            "\t<+|->[name]", cliBeeper),
-#endif
-#if defined(USE_BOOTLOG)
-    CLI_COMMAND_DEF("bootlog", "show boot events", NULL, cliBootlog),
-#endif
 #ifdef USE_LED_STRIP
     CLI_COMMAND_DEF("color", "configure colors", NULL, cliColor),
     CLI_COMMAND_DEF("mode_color", "configure mode and special colors", NULL, cliModeColor),
@@ -2809,9 +2637,6 @@ const clicmd_t cmdTable[] = {
 #endif
     CLI_COMMAND_DEF("motor",  "get/set motor", "<index> [<value>]", cliMotor),
     CLI_COMMAND_DEF("name", "name of craft", NULL, cliName),
-#ifdef PLAY_SOUND
-    CLI_COMMAND_DEF("play_sound", NULL, "[<index>]\r\n", cliPlaySound),
-#endif
     CLI_COMMAND_DEF("profile", "change profile",
         "[<index>]", cliProfile),
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)

@@ -76,3 +76,9 @@
 
 #define USABLE_TIMER_CHANNEL_COUNT 17
 #define USED_TIMERS             ( TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(15) | TIM_N(16) | TIM_N(17) )
+
+// from rx.h (see BLUEPILL target)
+#define PWM_RANGE_MIN 1000
+#define PWM_RANGE_MAX 2000
+#define PWM_PULSE_MIN   750       // minimum PWM pulse width which is considered valid
+#define PWM_PULSE_MAX   2250      // maximum PWM pulse width which is considered valid

@@ -24,23 +24,23 @@
 #include "drivers/bus.h"
 
 const timerHardware_t timerHardware[USABLE_TIMER_CHANNEL_COUNT] = {
-    { TIM16, IO_TAG(PA6),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO }, // PWM1
-    { TIM17, IO_TAG(PA7),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO }, // PWM2
-    { TIM4,  IO_TAG(PA11), TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_FW_SERVO }, // PWM3
-    { TIM4,  IO_TAG(PA12), TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_FW_SERVO }, // PWM4
-    { TIM4,  IO_TAG(PB8),  TIM_Channel_3, 1, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO }, // PWM5
-    { TIM4,  IO_TAG(PB9),  TIM_Channel_4, 1, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO }, // PWM6
-    { TIM15, IO_TAG(PA2),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_9,    TIM_USE_FW_SERVO }, // PWM7
-    { TIM15, IO_TAG(PA3),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_9,    TIM_USE_FW_SERVO }, // PWM8
+    { TIM16, IO_TAG(PA6),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO }, // PWM1 - tested 10.8.2019
+    { TIM17, IO_TAG(PA7),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO }, // PWM2 - tested 10.8.2019
+    { TIM4,  IO_TAG(PA11), TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_FW_SERVO }, // PWM3 - tested 10.8.2019
+    { TIM4,  IO_TAG(PA12), TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_10,   TIM_USE_FW_SERVO }, // PWM4 - tested 10.8.2019
+    { TIM4,  IO_TAG(PB8),  TIM_Channel_3, 1, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO }, // PWM5 - tested 10.8.2019
+    { TIM4,  IO_TAG(PB9),  TIM_Channel_4, 1, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO }, // PWM6 - tested 10.8.2019
+    { TIM15, IO_TAG(PA2),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_9,    TIM_USE_FW_SERVO }, // PWM7 - tested 10.8.2019
+    { TIM15, IO_TAG(PA3),  TIM_Channel_2, 1, IOCFG_AF_PP, GPIO_AF_9,    TIM_USE_FW_SERVO }, // PWM8 - tested 10.8.2019
 
     { TIM1,  IO_TAG(PA8),  TIM_Channel_1, 1, IOCFG_AF_PP, GPIO_AF_6,    TIM_USE_ANY }, // GPIO_TIMER / LED_STRIP
 
     { TIM2,  IO_TAG(PA0),  TIM_Channel_1, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_ANY },        // RC_CH1
-    { TIM2,  IO_TAG(PA1),  TIM_Channel_2, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_ANY },                       // RC_CH2
-    { TIM2,  IO_TAG(PB11), TIM_Channel_4, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_ANY },                      // RC_CH3
-    { TIM2,  IO_TAG(PB10), TIM_Channel_3, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_ANY },                      // RC_CH4
-    { TIM3,  IO_TAG(PB4),  TIM_Channel_1, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_ANY },   // RC_CH5
-    { TIM3,  IO_TAG(PB5),  TIM_Channel_2, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_ANY },   // RC_CH6
+    { TIM2,  IO_TAG(PA1),  TIM_Channel_2, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO },   // RC_CH2 - tested 10.8.2019
+    { TIM2,  IO_TAG(PB11), TIM_Channel_4, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO },                      // RC_CH3
+    { TIM2,  IO_TAG(PB10), TIM_Channel_3, 0, IOCFG_AF_PP, GPIO_AF_1,    TIM_USE_FW_SERVO },                      // RC_CH4
+    { TIM3,  IO_TAG(PB4),  TIM_Channel_1, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO },   // RC_CH5
+    { TIM3,  IO_TAG(PB5),  TIM_Channel_2, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO },   // RC_CH6
     { TIM3,  IO_TAG(PB0),  TIM_Channel_3, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO },   // RC_CH7 + PWM9
     { TIM3,  IO_TAG(PB1),  TIM_Channel_4, 0, IOCFG_AF_PP, GPIO_AF_2,    TIM_USE_FW_SERVO },   // RC_CH8 + PWM10
 };
