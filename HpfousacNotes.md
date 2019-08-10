@@ -3,25 +3,25 @@
  New branch, mostly for study on STM32 behaviour
 
 * make RX_PPM enabled by default
- featureNames[0] = "RX_PPM"
+ `featureNames[0] = "RX_PPM"`
 
- * related compile time symbol: USE_RX_PPM
+ * related compile time symbol: **USE_RX_PPM**
 
  <featureMask()>, 
 
- from cli: <featureClear(mask);>, <featureSet(mask);> -- tady jsem zatim skoncil --
+ from cli: `<`featureClear(mask);`, `featureSet(mask);` -- tady jsem zatim skoncil --
 
- * featureConfig() ?
+ * `featureConfig()` ?
 
- * featureConfigMutable() ? (also found in 2.0.1)
+ * `featureConfigMutable()` ? (also found in 2.0.1)
 
  On general what is difference between * & *Mutable.
 
- * pwmWriteServo(): src/main/drivers/pwm_output.c
+ * `pwmWriteServo()`: src/main/drivers/pwm_output.c
 
- typo found there: USE_PMW_SERVO_DRIVER
+ typo found there: **USE_PMW_SERVO_DRIVER**
 
- found *servos[index]->ccr as pointer to HW registers
+ found `*servos[index]->ccr` as pointer to HW registers
 
 ## Designed features ##
 
@@ -37,7 +37,7 @@
   rxConfig()->midrc
 ~~~~
 
-  found message *MSP_SERVO_CONFIGURATIONS* and *MSP_SET_SERVO_CONFIGURATION*
+  found message **MSP_SERVO_CONFIGURATIONS** and **MSP_SET_SERVO_CONFIGURATION**
   
  ~~~~
  case MSP_SERVO_CONFIGURATIONS:
@@ -59,7 +59,7 @@
 
  * removed mixers
 
- * excluded many HW components from *Makefile*
+ * excluded many HW components from `Makefile`
 
 
 ### System State ###
@@ -68,16 +68,16 @@ bit array containig rew stages.
 
 ### IO Port map ###
 
- Defined type: **ioRec_t** array with size **DEFIO_IO_USED_COUNT** defined in 
- *src/main/drivers/io.c*. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
- particular *target.c* file.
- The array is named **ioRecs**. It is not configured it is initialized in *void IOInitGlobal(void);*.
+ Defined type: `ioRec_t` array with size **DEFIO_IO_USED_COUNT** defined in 
+ `src/main/drivers/io.c`. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
+ particular `target.c` file.
+ The array is named **ioRecs**. It is not configured it is initialized in `void IOInitGlobal(void);`.
 
  *How program work with this array should be investigated.*
 
 ### Configuration and Parameters ###
 
- The code is comming from Cleanflight project and definitions are in *parameter_group.h*.
+ The code is comming from Cleanflight project and definitions are in `parameter_group.h`.
 
  Discover how configuration is stored in persistent store.
 
@@ -89,7 +89,7 @@ bit array containig rew stages.
 
 ### Features ###
 
- See **feature()** function. It looks like bitmask.
+ See `feature();` function. It looks like bitmask.
 
 ## planned steps ##
 
@@ -121,19 +121,18 @@ bit array containig rew stages.
 
 # Other investigation should go there: #
 
- Check if some commands/features in CLI is disabled when related USE_ is commented out
+ Check if some commands/features in CLI is disabled when related **USE_** is commented out
 
-  Probably found typo: <USE_PMW_SERVO_DRIVER>
 
 # Best practice/way (recomendations) #
 
- Step by step disable one *USE_* then another and see what happens, and or if code is compilable
+ Step by step disable one **USE_** then another and see what happens, and or if code is compilable
 
 # Other #
 
 ## Compile-time Symbols ##
 
-Some of them are defined somewhere else from *TARGET*, **Makefile** and **target.mk**.
+Some of them are defined somewhere else from *TARGET*, `Makefile` and `target.mk`.
 
 AVOID_UART2_FOR_PWM_PPM
 AVOID_UART3_FOR_PWM_PPM
