@@ -7,7 +7,7 @@
 
  * related compile time symbol: **USE_RX_PPM**
 
- <featureMask()>, 
+ `featureMask()`, 
 
  from cli: `<`featureClear(mask);`, `featureSet(mask);` -- tady jsem zatim skoncil --
 
@@ -134,98 +134,138 @@ bit array containig rew stages.
 
 Some of them are defined somewhere else from *TARGET*, `Makefile` and `target.mk`.
 
-AVOID_UART2_FOR_PWM_PPM
-AVOID_UART3_FOR_PWM_PPM
+ * **AVOID_UART2_FOR_PWM_PPM**
 
-BRUSHED_ESC_AUTODETECT
+ * **AVOID_UART3_FOR_PWM_PPM**
 
-CLI_MINIMAL_VERBOSITY
+ * **BRUSHED_ESC_AUTODETECT**
 
-MAX_PWM_OUTPUT_PORTS
-MAX_PWM_MOTORS
-MAX_PWM_SERVOS
+ * **CLI_MINIMAL_VERBOSITY**
 
-ONBOARDFLASH
+ * **MAX_PWM_OUTPUT_PORTS**
 
-RX_CHANNELS_TAER
+ * **MAX_PWM_MOTORS**
 
-SOFTSERIAL_LOOPBACK
+ * **MAX_PWM_SERVOS**
 
-SKIP_TASK_STATISTICS
+ * **ONBOARDFLASH**
+
+ * **RX_CHANNELS_TAER**
+
+ * **SOFTSERIAL_LOOPBACK**
+
+ * **SKIP_TASK_STATISTICS**
 
  * **STACK_CHECK** - checks stack usage, probably for development purposes.
 
-USE_ADC
-USE_ASYNC_GYRO_PROCESSING
-USE_BLACKBOX
-USE_CLI
-USE_CMS - neni u F1
-USE_DEBUG_TRACE
+ * **USE_ADC**
+
+ * **USE_ASYNC_GYRO_PROCESSING**
+
+ * **USE_BLACKBOX**
+
+ * **USE_CLI**
+
+ * **USE_CMS** - neni u F1
+
+ * **USE_DEBUG_TRACE**
 
  * **USE_EXTI** - enables externa INT for MAG, MPU, or some others, and it can be used or not used on specific HW
 
-USE_FLASHFS
-USE_GPS
-USE_HARDWARE_REVISION_DETECTION
-USE_NAV
-NAV_NON_VOLATILE_WAYPOINT_STORAGE
-USE_PITOT
-USE_PMW_SERVO_DRIVER
-USE_QUAD_MIXER_ONLY
-USE_RANGEFINDER_HCSR04
-USE_RCDEVICE
-USE_RX_CX10
-USE_RX_ELERES
-USE_RX_H8_3D
-USE_RX_INAV
-USE_RX_SOFTSPI
-USE_SERIALRX_SPEKTRUM
-USE_SERVOS
-USE_SOFTSPI
-USE_SPEKTRUM_BIND
-USE_TELEMETRY
+ * **USE_FLASHFS**
 
-USE_UART1
-USE_UART2
-USE_UART2_RX_DMA
-USE_UART2_TX_DMA
-USE_UART3
-USE_UART4
-USE_UART5
-USE_UART6
-USE_UART7
-USE_UART8
+ * **USE_GPS**
+
+ * **USE_HARDWARE_REVISION_DETECTION**
+
+ * **USE_NAV**
+
+ * **NAV_NON_VOLATILE_WAYPOINT_STORAGE**
+
+ * **USE_PITOT**
+
+ * **USE_PMW_SERVO_DRIVER**
+
+ * **USE_QUAD_MIXER_ONLY**
+
+ * **USE_RANGEFINDER_HCSR04**
+
+ * **USE_RCDEVICE**
+
+ * **USE_RX_CX10**
+
+ * **USE_RX_ELERES**
+
+ * **USE_RX_H8_3D**
+
+ * **USE_RX_INAV**
+
+ * **USE_RX_SOFTSPI**
+
+ * **USE_SERIALRX_SPEKTRUM**
+
+ * **USE_SERVOS**
+
+ * **USE_SOFTSPI**
+
+ * **USE_SPEKTRUM_BIND**
+
+ * **USE_TELEMETRY**
+
+ * **USE_UART1**
+
+ * **USE_UART2**
+
+ * **USE_UART2_RX_DMA**
+
+ * **USE_UART2_TX_DMA**
+
+ * **USE_UART3**
+
+ * **USE_UART4**
+
+ * **USE_UART5**
+
+ * **USE_UART6**
+
+ * **USE_UART7**
+
+ * **USE_UART8**
 
  * **USE_SOFTSERIAL1** - ?
 
  * **USE_SOFTSERIAL2** - ?
 
-USE_VCP
+ * **USE_VCP**
 
 ## Config arrays/blocks ##
 
  Here should be detected **_System** and **_Mutable** and ...
 
-gyroConfig
-navConfig
-rcControlsConfig
-telemetryConfig
+ * **gyroConfig**
 
-PG_FOREACH - vypada jako ze ma v pozadi nejaky seznam memory bloku
+ * **navConfig**
 
-PG_REGISTER_WITH_RESET_FN - dalsi zajimave makro
+ * **rcControlsConfig**
+
+ * **telemetryConfig**
+
+ `PG_FOREACH` - vypada jako ze ma v pozadi nejaky seznam memory bloku
+
+ `PG_REGISTER_WITH_RESET_FN` - dalsi zajimave makro
 
 # Recomended changes #
-typedef struct timerHardware_s
+
+`typedef struct timerHardware_s`
 
  move conditionally added fields to the end of list. Obey this can result in strange behaviour after 
  sucessfull compilation and linking based on wrong combination of parameters/attributes.
 
 # Subsystems #
 
- **io.c** - handles work with particular pins. Ouptut statistics is used by CLI resource.
+ `io.c`**` - handles work with particular pins. Ouptut statistics is used by CLI resource.
 
- IO Pins are in array: **ioDefUsedMask** this is the mask, which pins can be used.
+ IO Pins are in array: `ioDefUsedMask` this is the mask, which pins can be used.
 
 
 ## Serial Port(s) ##
@@ -234,62 +274,63 @@ typedef struct timerHardware_s
 
 ### Initialization ###
 
- * **uartPort_t *serialUARTx(uint32_t baudRate, portMode_t mode, portOptions_t options);** Low level init
+ * `uartPort_t *serialUARTx(uint32_t baudRate, portMode_t mode, portOptions_t options);` Low level init
 
- * **serialPort_t *uartOpen(USART_TypeDef *USARTx,  ...);** higher level the **USART_TypeDef** is coming from **CMISIS**
+ * `serialPort_t *uartOpen(USART_TypeDef *USARTx,  ...);** higher level the **USART_TypeDef` is coming from **CMISIS**
 
- * **serialPort_t *openSerialPort();**
+ * `serialPort_t *openSerialPort();`
 
 ### operations ###
 
- * **serialBeginWrite(serialPort_t *instance)**
+ * `serialBeginWrite(serialPort_t *instance)`
 
   **find which task is responsible for reading CLI/MSP serial** check for **TASK_SERIAL**
-  **taskHandleSerial ()**, **cliProcess();** there is wariable **cliPort** check **cliEnter()**
-  see: **mspSerialAllocatePorts ();** which is calling **openSerialPort();** using appropriate parameters.
+  `taskHandleSerial ()`, `cliProcess();` there is wariable `cliPort` check `cliEnter()`
+  see: `mspSerialAllocatePorts ();` which is calling `openSerialPort();` using appropriate parameters.
 
 
- **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
+ `serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);`
 
 
 ## RX ##
 
- Initialisation is done thru **rxInit ()** in **rx.c**.
+ Initialisation is done thru `rxInit ()` in `rx.c`.
 
- rxConfig, rxRuntimeConfig
+ `rxConfig`, `rxRuntimeConfig`
 
- **failsafeInit()** needs to be discovered
+ `failsafeInit()` needs to be discovered
 
  The all checks for serial usage has to be wiped out:
 
-findSerialPortConfig(FUNCTION_RX_SERIAL)
-findSerialPortUsageByIdentifier(identifier)
+`findSerialPortConfig(FUNCTION_RX_SERIAL)`
 
-it looks that **serialInit ();** has to be called.
+`findSerialPortUsageByIdentifier(identifier)`
 
-raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()** when
-**rxRuntimeConfig.rcReadRawFn** is initialised to appropriate function pointer.
+it looks that `serialInit ();`` has to be called.
 
-[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
+raw RX data are read and evaluated by: `calculateRxChannelsAndUpdateFailsafe()` when
+`rxRuntimeConfig.rcReadRawFn` is initialised to appropriate function pointer.
+
+`[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()`
 
 ## PWM Out ##
 
- pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
+ `pwmServoConfig ()` in file: `pwm_output.c` called from `pwmInit()` `pwm_mapping.c`
 
  symbols from HW definition **MAX_PWM_OUTPUT_PORTS** **USABLE_TIMER_CHANNEL_COUNT**
 
- **pwmInit()** prepares config for particular pins
+ `pwmInit()` prepares config for particular pins
 
 
- **pwmServoConfig** 
+ `pwmServoConfig`
 
- **pwmWriteServo()** writes value to the servo/pin
+ `pwmWriteServo()` writes value to the servo/pin
 
- there is servos[] and motors[]
+ there is `servos[]` and `motors[]`
 
- pwm_params.enablePWMOutput = /* feature(FEATURE_PWM_OUTPUT_ENABLE) */ true; // hardcoded for now
+ `pwm_params.enablePWMOutput = /* feature(FEATURE_PWM_OUTPUT_ENABLE) */ true;` // hardcoded for now
 
- **servoConfig()->servoCenterPulse** here is place to change for personified center for each servo
+ `servoConfig()->servoCenterPulse` here is place to change for personified center for each servo
 
 ## board modification of default settings ##
 
@@ -298,7 +339,7 @@ raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()*
 void targetConfiguration(void) ...
 ~~~
 
- check code snippet from *src/main/fc/config.c*
+ check code snippet from `src/main/fc/config.c`
 
 ~~~
 #if defined(TARGET_CONFIG)
