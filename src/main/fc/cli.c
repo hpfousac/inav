@@ -2716,7 +2716,7 @@ static void cliShowPwm(char *cmdline)
     cliPrintLinef(" MAX_PWM_SERVOS=%d", (int) MAX_PWM_SERVOS);
     for (int servoIndex = 0; servoIndex < MAX_PWM_SERVOS; servoIndex++) {
         cliPrintLinef("# show pwm (servo[%d]=0x%08lX)", servoIndex, (unsigned long) servos[servoIndex]);
-        cliPrintLinef("  servos[%d].ccr=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->ccr);
+        cliPrintLinef("  servos[%d].ccr addr=0x%08lX, value=%d", servoIndex, (unsigned long) servos[servoIndex]->ccr, (unsigned) *servos[servoIndex]->ccr);
         cliPrintLinef("  servos[%d].tim=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->tim);
         cliPrintLinef("  servos[%d].period=%d", servoIndex, (int) servos[servoIndex]->period);
         cliPrintLinef("  servos[%d].pwmWritePtr=0x%08lX", servoIndex, (unsigned long) servos[servoIndex]->pwmWritePtr);

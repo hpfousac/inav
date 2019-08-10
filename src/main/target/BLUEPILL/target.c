@@ -31,18 +31,18 @@ const timerHardware_t timerHardware[USABLE_TIMER_CHANNEL_COUNT] = {
     { TIM2, IO_TAG(PA3),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_ANY },        // PWM4 - RC4 (RX2)
 #endif // USE_UART2
 
-    { TIM3, IO_TAG(PA6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM5 - RC5
-    { TIM3, IO_TAG(PA7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM6 - RC6
-    { TIM3, IO_TAG(PB0),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM7 - RC7
-    { TIM3, IO_TAG(PB1),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_FW_SERVO  },   // PWM8 - RC8
+    { TIM3, IO_TAG(PA6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM5 - RC5 - tested 10.8.2019
+    { TIM3, IO_TAG(PA7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM6 - RC6 - tested 10.8.2019
+    { TIM3, IO_TAG(PB0),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_FW_SERVO },   // PWM7 - RC7 - tested 10.8.2019
+    { TIM3, IO_TAG(PB1),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_FW_SERVO  },   // PWM8 - RC8 - tested 10.8.2019
 
-    { TIM1, IO_TAG(PA8),  TIM_Channel_1, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM9 - OUT1
+    { TIM1, IO_TAG(PA8),  TIM_Channel_1, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM9 - OUT1 - tested 10.8.2019
 // PA9  - TX1
 // PA10 - RX1
-    { TIM1, IO_TAG(PA11), TIM_Channel_4, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM10 - OUT2
-    { TIM4, IO_TAG(PB6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM11 - OUT3
-    { TIM4, IO_TAG(PB7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM12 - OUT4
-    { TIM4, IO_TAG(PB8),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM13 - OUT5
+    { TIM1, IO_TAG(PA11), TIM_Channel_4, 1, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM10 - OUT2 - tested 10.8.2019
+    { TIM4, IO_TAG(PB6),  TIM_Channel_1, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM11 - OUT3 - tested 10.8.2019
+    { TIM4, IO_TAG(PB7),  TIM_Channel_2, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM12 - OUT4 - tested 10.8.2019
+    { TIM4, IO_TAG(PB8),  TIM_Channel_3, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }, // PWM13 - OUT5 - tested 10.8.2019
     { TIM4, IO_TAG(PB9),  TIM_Channel_4, 0, IOCFG_IPD,  TIM_USE_FW_SERVO }  // PWM14 - OUT6
 };
 

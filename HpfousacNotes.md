@@ -324,13 +324,16 @@ raw RX data are read and evaluated by: `calculateRxChannelsAndUpdateFailsafe()` 
 
  `pwmServoConfig`
 
- `pwmWriteServo()` writes value to the servo/pin
+ `pwmWriteServo()` writes value to the servo/pin and uses:
 
  there is `servos[]` and `motors[]`
 
  `pwm_params.enablePWMOutput = /* feature(FEATURE_PWM_OUTPUT_ENABLE) */ true;` // hardcoded for now
 
  `servoConfig()->servoCenterPulse` here is place to change for personified center for each servo
+
+  Number of servos is limited by compile-time symbol **MAX_PWM_SERVOS** - in actual development version of upstream project
+  is module `pwm_output.*` different.
 
 ## board modification of default settings ##
 
