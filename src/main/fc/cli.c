@@ -2495,6 +2495,41 @@ static void cliVersion(char *cmdline)
     );
 }
 
+static void cliRxIn(char *cmdline)
+{
+    UNUSED(cmdline);
+
+    cliPrintLinef("# RXIN");
+
+//     cliPrintLinef("# RXIN status=%d, isrSpektrumDataReceive=%d", 
+//         (int) spkUsartStatus, isrSpektrumDataReceive);
+
+// #ifdef USE_UART1
+//     cliPrintLinef("\tnUsart1Irqs=%d", nUsart1Irqs);
+// #endif
+
+// #ifdef USE_UART2
+//     cliPrintLinef("\tnUsart2Irqs=%d", nUsart2Irqs);
+// #endif
+
+// #ifdef USE_UART3
+//     cliPrintLinef("\tnUsart3Irqs=%d", nUsart3Irqs);
+// #endif
+
+//     cliPrintLinef("       nCompleteFrames=%d", nCompleteFrames);
+//     {
+//         const uint8_t frameStatus = rxRuntimeConfig.rcFrameStatusFn(&rxRuntimeConfig);
+//         cliPrintLinef("       rcFrameStatus=%d", (int) frameStatus);
+//     }
+//     cliPrintLinef("       nRxUpdateCheck=%d, nRxUpdateCheckOk=%d", nRxUpdateCheck, nRxUpdateCheckOk);
+    
+    for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
+        cliPrintLinef(" rxin %d, rcData=%d", (int) i, (int) rcData[i]
+        );
+    }
+}
+
+
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
 static void cliResource(char *cmdline)
 {
@@ -2796,6 +2831,7 @@ const clicmd_t cmdTable[] = {
     CLI_COMMAND_DEF("tasks", "show task stats", NULL, cliTasks),
 #endif
     CLI_COMMAND_DEF("version", "show version", NULL, cliVersion),
+    CLI_COMMAND_DEF("rxin", "show received values", NULL, cliRxIn),
 };
 
 static void cliHelp(char *cmdline)
