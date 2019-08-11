@@ -296,4 +296,13 @@ focused on testung with serial spektrum receiver like SPM4649T.
 
  It is in `spektrum.c` file and it is initialised in function `spektrumInit()`, where is set callback to
  function `spektrumDataReceive()`, where part of frame is processed.
- 
+
+ next fragment describes *(I hope)* relevant settings for **RX_SERIAL**.
+
+~~~ 
+#define USE_SERIALRX_SPEKTRUM
+#define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
+#define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
+#define SERIALRX_UART           SERIAL_PORT_USART3
+#define SERIALRX_PROVIDER       SERIALRX_SPEKTRUM1024
+~~~
