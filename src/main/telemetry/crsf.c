@@ -57,6 +57,8 @@
 #include "telemetry/telemetry.h"
 
 
+#ifdef USE_SERIALRX_CRSF
+
 #define CRSF_CYCLETIME_US                   100000 // 100ms, 10 Hz
 
 static bool crsfTelemetryEnabled;
@@ -354,3 +356,5 @@ int getCrsfFrame(uint8_t *frame, crsfFrameType_e frameType)
     return frameSize;
 }
 #endif
+
+#endif // USE_SERIALRX_CRSF

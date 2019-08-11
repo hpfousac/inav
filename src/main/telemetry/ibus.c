@@ -166,6 +166,8 @@
  *
  */
 
+#ifdef USE_SERIALRX_IBUS
+
 static serialPort_t *ibusSerialPort = NULL;
 static serialPortConfig_t *ibusSerialPortConfig;
 static uint8_t outboundBytesToIgnoreOnRxCount = 0;
@@ -321,3 +323,6 @@ void freeIbusTelemetryPort(void) {
 }
 
 #endif
+
+#endif // USE_SERIALRX_IBUS
+

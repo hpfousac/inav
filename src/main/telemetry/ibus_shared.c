@@ -24,6 +24,7 @@
 #if defined(USE_TELEMETRY) && defined(USE_TELEMETRY_IBUS)
 
 #include "common/maths.h"
+#include "common/utils.h"
 #include "common/axis.h"
 
 #include "drivers/serial.h"
@@ -51,6 +52,9 @@
 #include "fc/config.h"
 #include "config/feature.h"
 #include "io/gps.h"
+
+#ifdef USE_SERIALRX_IBUS
+
 #define IBUS_TEMPERATURE_OFFSET (0x0190)
 
 typedef uint8_t ibusAddress_t;
@@ -281,6 +285,7 @@ static uint8_t dispatchMeasurementRequest(ibusAddress_t address) {
 }
 
 uint8_t respondToIbusRequest(uint8_t ibusPacket[static IBUS_RX_BUF_LEN]) {
+    UNUSED(ibusPacket);
     ibusAddress_t returnAddress = getAddress(ibusPacket);
     if (returnAddress < sizeof SENSOR_ADDRESS_TYPE_LOOKUP) {
         if (isCommand(IBUS_COMMAND_DISCOVER_SENSOR, ibusPacket)) {
@@ -308,3 +313,5 @@ void changeTypeIbusTelemetry(uint8_t id, uint8_t type, uint8_t value) {
 }
 
 #endif //defined(USE_TELEMETRY) && defined(USE_TELEMETRY_IBUS)
+
+#endif // USE_SERIALRX_IBUS
