@@ -287,3 +287,13 @@ void targetConfiguration(void) ...
     targetConfiguration();
 #endif
 ~~~
+
+# inav-1.9.1-serialSpkTest #
+
+focused on testung with serial spektrum receiver like SPM4649T. 
+
+## receiver part ##
+
+ It is in `spektrum.c` file and it is initialised in function `spektrumInit()`, where is set callback to
+ function `spektrumDataReceive()`, where part of frame is processed.
+ 

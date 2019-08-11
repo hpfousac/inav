@@ -423,9 +423,13 @@ void USART2_IRQHandler(void)
 #endif
 
 #ifdef USE_UART3
+volatile int nUsart3Irqs;
+
 void USART3_IRQHandler(void)
 {
     uartPort_t *s = &uartPort3;
+
+    ++nUsart3Irqs;
 
     usartIrqHandler(s);
 }

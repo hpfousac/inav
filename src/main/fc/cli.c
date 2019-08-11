@@ -1876,7 +1876,7 @@ static void cliVersion(char *cmdline)
 
 
 extern bool spkUsartStatus;
-extern volatile int nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive, nCompleteFrames;
+extern volatile int nUsart1Irqs, nUsart2Irqs, nUsart3Irqs, isrSpektrumDataReceive, nCompleteFrames;
     
 extern int nRxUpdateCheckOk, nRxUpdateCheck;
 
@@ -1884,8 +1884,20 @@ static void cliRxIn(char *cmdline)
 {
     UNUSED(cmdline);
 
-    cliPrintLinef("# RXIN status=%d, nUsart1Irqs=%d, nUsart2Irqs=%d, isrSpektrumDataReceive=%d", 
-        (int) spkUsartStatus, nUsart1Irqs, nUsart2Irqs, isrSpektrumDataReceive);
+    cliPrintLinef("# RXIN status=%d, isrSpektrumDataReceive=%d", 
+        (int) spkUsartStatus, isrSpektrumDataReceive);
+
+#ifdef USE_UART1
+    cliPrintLinef("\tnUsart1Irqs=%d", nUsart1Irqs);
+#endif
+
+#ifdef USE_UART2
+    cliPrintLinef("\tnUsart2Irqs=%d", nUsart2Irqs);
+#endif
+
+#ifdef USE_UART3
+    cliPrintLinef("\tnUsart3Irqs=%d", nUsart3Irqs);
+#endif
 
     cliPrintLinef("       nCompleteFrames=%d", nCompleteFrames);
     {

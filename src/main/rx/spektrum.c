@@ -292,7 +292,12 @@ bool spektrumInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
     bool portShared = false;
 // #endif
 
-    serialPort = openSerialPort(SERIAL_PORT_USART2,
+    serialPort = openSerialPort(
+#ifdef SPRACINGF3
+        SERIAL_PORT_USART2,
+#else     
+        SERIAL_PORT_USART2,
+#endif // SPRACINGF3
         FUNCTION_RX_SERIAL,
         spektrumDataReceive,
         NULL,
