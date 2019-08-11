@@ -397,18 +397,26 @@ void usartIrqHandler(uartPort_t *s)
 }
 
 #ifdef USE_UART1
+volatile int nUsart1Irqs;
+
 void USART1_IRQHandler(void)
 {
     uartPort_t *s = &uartPort1;
+
+    ++nUsart1Irqs;
 
     usartIrqHandler(s);
 }
 #endif
 
 #ifdef USE_UART2
+volatile int nUsart2Irqs;
+
 void USART2_IRQHandler(void)
 {
     uartPort_t *s = &uartPort2;
+
+    ++nUsart2Irqs;
 
     usartIrqHandler(s);
 }

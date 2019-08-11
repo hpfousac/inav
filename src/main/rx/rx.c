@@ -186,47 +186,47 @@ bool serialRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig
         enabled = spektrumInit(rxConfig, rxRuntimeConfig);
         break;
 #endif
-#ifdef USE_SERIALRX_SBUS
-    case SERIALRX_SBUS:
-        // enabled = sbusInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_SUMD
-    case SERIALRX_SUMD:
-        enabled = sumdInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_SUMH
-    case SERIALRX_SUMH:
-        enabled = sumhInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_XBUS
-    case SERIALRX_XBUS_MODE_B:
-    case SERIALRX_XBUS_MODE_B_RJ01:
-        enabled = xBusInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_IBUS
-    case SERIALRX_IBUS:
-        enabled = ibusInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_JETIEXBUS
-    case SERIALRX_JETIEXBUS:
-        enabled = jetiExBusInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_CRSF
-    case SERIALRX_CRSF:
-        enabled = crsfRxInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
-#ifdef USE_SERIALRX_FPORT
-    case SERIALRX_FPORT:
-        // enabled = fportRxInit(rxConfig, rxRuntimeConfig);
-        break;
-#endif
+// #ifdef USE_SERIALRX_SBUS
+//     case SERIALRX_SBUS:
+//         // enabled = sbusInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_SUMD
+//     case SERIALRX_SUMD:
+//         enabled = sumdInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_SUMH
+//     case SERIALRX_SUMH:
+//         enabled = sumhInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_XBUS
+//     case SERIALRX_XBUS_MODE_B:
+//     case SERIALRX_XBUS_MODE_B_RJ01:
+//         enabled = xBusInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_IBUS
+//     case SERIALRX_IBUS:
+//         enabled = ibusInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_JETIEXBUS
+//     case SERIALRX_JETIEXBUS:
+//         enabled = jetiExBusInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_CRSF
+//     case SERIALRX_CRSF:
+//         enabled = crsfRxInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
+// #ifdef USE_SERIALRX_FPORT
+//     case SERIALRX_FPORT:
+//         // enabled = fportRxInit(rxConfig, rxRuntimeConfig);
+//         break;
+// #endif
     default:
         enabled = false;
         break;
@@ -283,27 +283,27 @@ void rxInit(void)
             break;
 #endif
 
-#ifdef USE_RX_MSP
-        case RX_TYPE_MSP:
-            rxMspInit(rxConfig(), &rxRuntimeConfig);
-            break;
-#endif
+// #ifdef USE_RX_MSP
+//         case RX_TYPE_MSP:
+//             rxMspInit(rxConfig(), &rxRuntimeConfig);
+//             break;
+// #endif
 
-#ifdef USE_RX_UIB
-        case RX_TYPE_UIB:
-            rxUIBInit(rxConfig(), &rxRuntimeConfig);
-            break;
-#endif
+// #ifdef USE_RX_UIB
+//         case RX_TYPE_UIB:
+//             rxUIBInit(rxConfig(), &rxRuntimeConfig);
+//             break;
+// #endif
 
-#ifdef USE_RX_SPI
-        case RX_TYPE_SPI:
-            if (!rxSpiInit(rxConfig(), &rxRuntimeConfig)) {
-                rxConfigMutable()->receiverType = RX_TYPE_NONE;
-                rxRuntimeConfig.rcReadRawFn = nullReadRawRC;
-                rxRuntimeConfig.rcFrameStatusFn = nullFrameStatus;
-            }
-            break;
-#endif
+// #ifdef USE_RX_SPI
+//         case RX_TYPE_SPI:
+//             if (!rxSpiInit(rxConfig(), &rxRuntimeConfig)) {
+//                 rxConfigMutable()->receiverType = RX_TYPE_NONE;
+//                 rxRuntimeConfig.rcReadRawFn = nullReadRawRC;
+//                 rxRuntimeConfig.rcFrameStatusFn = nullFrameStatus;
+//             }
+//             break;
+// #endif
 
         case RX_TYPE_NONE:
         default:

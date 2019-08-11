@@ -142,42 +142,42 @@ typedef enum {
     MSP_FLASHFS_BIT_SUPPORTED    = 2
 } mspFlashfsFlags_e;
 
-#ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
-#define ESC_4WAY 0xff
+// #ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
+// #define ESC_4WAY 0xff
 
-static uint8_t escMode;
-static uint8_t escPortIndex;
+// static uint8_t escMode;
+// static uint8_t escPortIndex;
 
-static void mspFc4waySerialCommand(sbuf_t *dst, sbuf_t *src, mspPostProcessFnPtr *mspPostProcessFn)
-{
-    const unsigned int dataSize = sbufBytesRemaining(src);
+// static void mspFc4waySerialCommand(sbuf_t *dst, sbuf_t *src, mspPostProcessFnPtr *mspPostProcessFn)
+// {
+//     const unsigned int dataSize = sbufBytesRemaining(src);
 
-    if (dataSize == 0) {
-        // Legacy format
-        escMode = ESC_4WAY;
-    } else {
-        escMode = sbufReadU8(src);
-        escPortIndex = sbufReadU8(src);
-    }
+//     if (dataSize == 0) {
+//         // Legacy format
+//         escMode = ESC_4WAY;
+//     } else {
+//         escMode = sbufReadU8(src);
+//         escPortIndex = sbufReadU8(src);
+//     }
 
-    switch (escMode) {
-    case ESC_4WAY:
-        // get channel number
-        // switch all motor lines HI
-        // reply with the count of ESC found
-        sbufWriteU8(dst, esc4wayInit());
+//     switch (escMode) {
+//     case ESC_4WAY:
+//         // get channel number
+//         // switch all motor lines HI
+//         // reply with the count of ESC found
+//         sbufWriteU8(dst, esc4wayInit());
 
-        if (mspPostProcessFn) {
-            *mspPostProcessFn = esc4wayProcess;
-        }
-        break;
+//         if (mspPostProcessFn) {
+//             *mspPostProcessFn = esc4wayProcess;
+//         }
+//         break;
 
-    default:
-        sbufWriteU8(dst, 0);
-    }
-}
+//     default:
+//         sbufWriteU8(dst, 0);
+//     }
+// }
 
-#endif
+// #endif
 
 static void mspRebootFn(serialPort_t *serialPort)
 {
@@ -1575,11 +1575,11 @@ mspResult_e mspFcProcessCommand(mspPacket_t *cmd, mspPacket_t *reply, mspPostPro
 
     if (mspFcProcessOutCommand(cmdMSP, dst, mspPostProcessFn)) {
         ret = MSP_RESULT_ACK;
-#ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
-    } else if (cmdMSP == MSP_SET_4WAY_IF) {
-        mspFc4waySerialCommand(dst, src, mspPostProcessFn);
-        ret = MSP_RESULT_ACK;
-#endif
+// #ifdef USE_SERIAL_4WAY_BLHELI_INTERFACE
+//     } else if (cmdMSP == MSP_SET_4WAY_IF) {
+//         mspFc4waySerialCommand(dst, src, mspPostProcessFn);
+//         ret = MSP_RESULT_ACK;
+// #endif
 #ifdef USE_NAV
     } else if (cmdMSP == MSP_WP) {
         mspFcWaypointOutCommand(dst, src);

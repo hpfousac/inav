@@ -17,7 +17,7 @@
 
 # The target to build, see VALID_TARGETS below
 #TARGET    ?= BLUEPILL
-TARGET    ?=  BLUEPILL
+TARGET    ?=  SPRACINGF3
 
 # Compile-time options
 OPTIONS   ?= 
@@ -611,9 +611,6 @@ COMMON_SRC = \
             rx/rx.c \
             rx/spektrum.c \
             io/serial.c \
-            io/serial_4way.c \
-            io/serial_4way_avrootloader.c \
-            io/serial_4way_stk500v2.c \
             io/statusindicator.c \
             io/rcdevice.c \
             io/rcdevice_cam.c \

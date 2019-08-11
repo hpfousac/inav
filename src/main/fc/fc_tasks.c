@@ -237,16 +237,16 @@ void taskLedStrip(timeUs_t currentTimeUs)
 }
 #endif
 
-#ifdef USE_PMW_SERVO_DRIVER
-void taskSyncPwmDriver(timeUs_t currentTimeUs)
-{
-    UNUSED(currentTimeUs);
+// #ifdef USE_PMW_SERVO_DRIVER
+// void taskSyncPwmDriver(timeUs_t currentTimeUs)
+// {
+//     UNUSED(currentTimeUs);
 
-    if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-        pwmDriverSync();
-    }
-}
-#endif
+//     if (feature(FEATURE_PWM_SERVO_DRIVER)) {
+//         pwmDriverSync();
+//     }
+// }
+// #endif
 
 #ifdef USE_ASYNC_GYRO_PROCESSING
 void taskAttitude(timeUs_t currentTimeUs)
@@ -331,9 +331,9 @@ void fcTasksInit(void)
 #ifdef STACK_CHECK
     setTaskEnabled(TASK_STACK_CHECK, true);
 #endif
-#ifdef USE_PMW_SERVO_DRIVER
-    setTaskEnabled(TASK_PWMDRIVER, feature(FEATURE_PWM_SERVO_DRIVER));
-#endif
+// #ifdef USE_PMW_SERVO_DRIVER
+//     setTaskEnabled(TASK_PWMDRIVER, feature(FEATURE_PWM_SERVO_DRIVER));
+// #endif
 #ifdef USE_OSD
     setTaskEnabled(TASK_OSD, feature(FEATURE_OSD));
 #endif
@@ -533,14 +533,14 @@ cfTask_t cfTasks[TASK_COUNT] = {
     },
 #endif
 
-#ifdef USE_PMW_SERVO_DRIVER
-    [TASK_PWMDRIVER] = {
-        .taskName = "PWMDRIVER",
-        .taskFunc = taskSyncPwmDriver,
-        .desiredPeriod = TASK_PERIOD_HZ(200),         // 200 Hz
-        .staticPriority = TASK_PRIORITY_HIGH,
-    },
-#endif
+// #ifdef USE_PMW_SERVO_DRIVER
+//     [TASK_PWMDRIVER] = {
+//         .taskName = "PWMDRIVER",
+//         .taskFunc = taskSyncPwmDriver,
+//         .desiredPeriod = TASK_PERIOD_HZ(200),         // 200 Hz
+//         .staticPriority = TASK_PRIORITY_HIGH,
+//     },
+// #endif
 
 #ifdef STACK_CHECK
     [TASK_STACK_CHECK] = {

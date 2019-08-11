@@ -696,31 +696,31 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     // Calculate stabilisation
     // pidController();
 
-#ifdef HIL
-    if (hilActive) {
-        hilUpdateControlState();
-        motorControlEnable = false;
-    }
-#endif
+// #ifdef HIL
+//     if (hilActive) {
+//         hilUpdateControlState();
+//         motorControlEnable = false;
+//     }
+// #endif
 
 //    mixTable();
 
-#ifdef USE_SERVOS
-    if (isMixerUsingServos()) {
-        servoMixer(dT);
-        processServoAutotrim();
-    }
+// #ifdef USE_SERVOS
+//     if (isMixerUsingServos()) {
+//         servoMixer(dT);
+//         processServoAutotrim();
+//     }
 
-    // Servo tilt is not part of servo mixer, but uses servos
-    if (feature(FEATURE_SERVO_TILT)) {
-        processServoTilt();
-    }
+//     // Servo tilt is not part of servo mixer, but uses servos
+//     if (feature(FEATURE_SERVO_TILT)) {
+//         processServoTilt();
+//     }
 
-    //Servos should be filtered or written only when mixer is using servos or special feaures are enabled
-    if (isServoOutputEnabled()) {
-        writeServos();
-    }
-#endif
+//     //Servos should be filtered or written only when mixer is using servos or special feaures are enabled
+//     if (isServoOutputEnabled()) {
+//         writeServos();
+//     }
+// #endif
 
 //    if (motorControlEnable) {
 //        writeMotors();

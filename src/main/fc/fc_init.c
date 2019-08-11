@@ -238,7 +238,7 @@ void init(void)
     // pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
 #endif
 #ifdef STM32F303xC
-    pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
+    // pwm_params.useUART3 = doesConfigurationUsePort(SERIAL_PORT_USART3);
 #endif
 #if defined(USE_UART2) && defined(STM32F40_41xxx)
     pwm_params.useUART2 = doesConfigurationUsePort(SERIAL_PORT_USART2);
@@ -441,11 +441,11 @@ void init(void)
     LED2_ON;
 #endif
 
-#ifdef USE_PMW_SERVO_DRIVER
-    if (feature(FEATURE_PWM_SERVO_DRIVER)) {
-        pwmDriverInitialize();
-    }
-#endif
+// #ifdef USE_PMW_SERVO_DRIVER
+//     if (feature(FEATURE_PWM_SERVO_DRIVER)) {
+//         pwmDriverInitialize();
+//     }
+// #endif
 
     // Latch active features AGAIN since some may be modified by init().
     latchActiveFeatures();
