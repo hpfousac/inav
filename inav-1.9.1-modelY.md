@@ -25,4 +25,6 @@
 #undef USE_SERIALRX_FPORT
 ~~~ 
 
+ * (re?)enable RX_SERIAL, FEATURE_RX_SERIAL
+
 # HW description/Limitation # 

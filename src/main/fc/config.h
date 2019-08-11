@@ -46,7 +46,7 @@ typedef enum {
     FEATURE_UNUSED_1 = 1 << 0,          // RX_PPM
     FEATURE_VBAT = 1 << 1,
     FEATURE_TX_PROF_SEL = 1 << 2,       // Profile selection by TX stick command
-    FEATURE_UNUSED_2 = 1 << 3,          // RX_SERIAL
+    FEATURE_RX_SERIAL = 1 << 3,          // RX_SERIAL
     FEATURE_MOTOR_STOP = 1 << 4,
     FEATURE_SERVO_TILT = 1 << 5,
     FEATURE_SOFTSERIAL = 1 << 6,
