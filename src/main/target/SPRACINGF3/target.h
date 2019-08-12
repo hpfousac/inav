@@ -114,6 +114,9 @@
 #undef USE_RX_PWM
 #undef USE_RX_PPM
 
+#define MAX_SUPPORTED_SERVOS    12
+#define MAX_PWM_SERVOS          12 // ./src/main/build/build_config.c:34:2: error: #error Servo configuration mismatch
+
 #define USE_SERIALRX_SPEKTRUM
 #define DEFAULT_FEATURES        (FEATURE_RX_SERIAL | FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
 #define DEFAULT_RX_TYPE         RX_TYPE_SERIAL

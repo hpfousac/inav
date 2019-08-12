@@ -19,10 +19,13 @@
 
 #include "config/parameter_group.h"
 
-#if defined(USE_QUAD_MIXER_ONLY)
-#define MAX_SUPPORTED_SERVOS 1
-#else
-#define MAX_SUPPORTED_SERVOS 8
+
+#ifndef MAX_SUPPORTED_SERVOS
+# if defined(USE_QUAD_MIXER_ONLY)
+#  define MAX_SUPPORTED_SERVOS 1
+# else
+#  define MAX_SUPPORTED_SERVOS 8
+# endif
 #endif
 
 // These must be consecutive, see 'reversedSources'

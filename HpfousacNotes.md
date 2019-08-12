@@ -356,4 +356,49 @@ focused on testung with serial spektrum receiver like SPM4649T.
    * if pin is marked as **MAP_TO_PPM_INPUT** or **MAP_TO_PWM_INPUT** then it is not included in further evaluation even
     the feature(s) are disabled **USE_RX_PPM** and **USE_RX_PWM**.
 
-    
+### TIMER_CHANNEL_MAPPED/BOOT_EVENT_TIMER_CH_MAPPED ###
+
+ * **0** - MAP_TO_PPM_INPUT
+
+ * **1** - MAP_TO_PWM_INPUT
+
+ * **2** - MAP_TO_MOTOR_OUTPUT
+
+ * **3** - MAP_TO_SERVO_OUTPUT
+
+###  TIMER_CHANNEL_SKIPPED/BOOT_EVENT_TIMER_CH_SKIPPED ###
+
+ Modified by me
+
+ * **0** - OLIMEXINO_UNCUT_LED2_E_JUMPER/PWM2
+
+ * **1** - useUART2
+
+ * **2** - useUART3
+
+ * **3** - useUART6
+
+ * **4** - SOFTSERIAL_1_RX_PI
+
+ * **5** - SOFTSERIAL_2_RX_PIN
+
+ * **6** - WS2811_TIMER
+
+ * **7** - WS2811_PIN
+
+ * **8** - VBAT_ADC_PIN
+
+ * **9** - RSSI_ADC_PIN
+
+ * **10** - CURRENT_METER_ADC_PIN
+
+ * **11** - useTriggerRangefinder
+
+ * **12** - pwmIOConfiguration.motorCount >= MAX_MOTORS
+
+ * **13** - `pwmMotorConfig()` - failed
+
+ * **14** - pwmIOConfiguration.servoCount >=  MAX_SERVOS
+
+ * **15** - `pwmServoConfig()` failed
+
