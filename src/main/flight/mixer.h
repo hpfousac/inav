@@ -61,7 +61,9 @@ typedef enum mixerMode
     MIXER_CUSTOM_TRI = 25
 } mixerMode_e;
 
-#define DEFAULT_MIXER MIXER_QUADX
+#ifndef DEFAULT_MIXER
+# define DEFAULT_MIXER MIXER_QUADX
+#endif // DEFAULT_MIXER
 
 typedef struct motorAxisCorrectionLimits_s {
     int16_t min;

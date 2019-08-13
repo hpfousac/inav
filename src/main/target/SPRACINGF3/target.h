@@ -15,6 +15,7 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #pragma once
 
 #define TARGET_BOARD_IDENTIFIER "SRF3"
@@ -40,19 +41,39 @@
 
 #define MPU6050_I2C_BUS         BUS_I2C1
 
-#define USE_BARO
-#define BARO_I2C_BUS            BUS_I2C1
-#define USE_BARO_MS5611
-#define USE_BARO_BMP085
-#define USE_BARO_BMP280
+// ************************************************************************
+// SP3 6DOF
+#undef USE_BARO
+// #define USE_BARO
+// #define BARO_I2C_BUS            BUS_I2C1
+// #define USE_BARO_MS5611
+// #define USE_BARO_BMP085
+// #define USE_BARO_BMP280
 
-#define USE_MAG
-#define MAG_I2C_BUS             BUS_I2C1
-#define MAG_HMC5883_ALIGN       CW270_DEG
-#define USE_MAG_HMC5883
-#define USE_MAG_QMC5883
-#define USE_MAG_IST8310
-#define USE_MAG_MAG3110
+#undef USE_MAG
+// #define USE_MAG
+// #define MAG_I2C_BUS             BUS_I2C1
+// #define MAG_HMC5883_ALIGN       CW270_DEG
+// #define USE_MAG_HMC5883
+// #define USE_MAG_QMC5883
+// #define USE_MAG_IST8310
+// #define USE_MAG_MAG3110
+
+#undef USE_LED_STRIP
+// #define USE_LED_STRIP
+// #define WS2811_PIN                      PA8
+// #define WS2811_DMA_STREAM               DMA1_Channel2
+// #define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
+
+#undef USE_RANGEFINDER
+// #define USE_RANGEFINDER
+// #define USE_RANGEFINDER_HCSR04
+// #define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
+// #define RANGEFINDER_HCSR04_ECHO_PIN          PB1
+// #define USE_RANGEFINDER_HCSR04_I2C
+// #define RANGEFINDER_I2C_BUS             BUS_I2C1
+
+// ************************************************************************
 
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
@@ -73,10 +94,10 @@
 #define UART3_TX_PIN            PB10 // PB10 (AF7)
 #define UART3_RX_PIN            PB11 // PB11 (AF7)
 
-#define SOFTSERIAL_1_RX_PIN     PB4
-#define SOFTSERIAL_1_TX_PIN     PB5
-#define SOFTSERIAL_2_RX_PIN     PB0
-#define SOFTSERIAL_2_TX_PIN     PB1
+// #define SOFTSERIAL_1_RX_PIN     PB4
+// #define SOFTSERIAL_1_TX_PIN     PB5
+// #define SOFTSERIAL_2_RX_PIN     PB0
+// #define SOFTSERIAL_2_TX_PIN     PB1
 
 #define USE_I2C
 #define USE_I2C_DEVICE_1
@@ -97,33 +118,25 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_2
 #define RSSI_ADC_CHANNEL                ADC_CHN_3
 
-#define USE_LED_STRIP
-#define WS2811_PIN                      PA8
-#define WS2811_DMA_STREAM               DMA1_Channel2
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
-
-#define USE_RANGEFINDER
-#define USE_RANGEFINDER_HCSR04
-#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
-#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
-#define USE_RANGEFINDER_HCSR04_I2C
-#define RANGEFINDER_I2C_BUS             BUS_I2C1
-
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
+
+#undef USE_RX_SPI
 #undef USE_RX_PWM
 #undef USE_RX_PPM
 
 #define MAX_SUPPORTED_SERVOS    12
 #define MAX_PWM_SERVOS          12 // ./src/main/build/build_config.c:34:2: error: #error Servo configuration mismatch
 
+#define DEFAULT_MIXER MIXER_CUSTOM_AIRPLANE
+
 #define USE_SERIALRX_SPEKTRUM
 #define DEFAULT_FEATURES        (FEATURE_RX_SERIAL | FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
 #define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
 #define SERIALRX_UART           SERIAL_PORT_USART3
 #define SERIALRX_PROVIDER       SERIALRX_SPEKTRUM2048
-#define USE_SPEKTRUM_BIND
-#define BIND_PIN                PB11 // UART3
+// #define USE_SPEKTRUM_BIND
+// #define BIND_PIN                PB11 // UART3
 
 #undef USE_SERIALRX_SBUS
 #undef USE_SERIALRX_SUMD
