@@ -354,7 +354,7 @@ void mixerUsePWMIOConfiguration(void)
     motorCount = 0;
 
     const mixerMode_e currentMixerMode = mixerConfig()->mixerMode;
-    const mixer_t * mixer = findMixer(mixerConfig()->mixerMode);
+    const mixer_t * mixer = findMixer(currentMixerMode);
 
     if (currentMixerMode == MIXER_CUSTOM || currentMixerMode == MIXER_CUSTOM_TRI || currentMixerMode == MIXER_CUSTOM_AIRPLANE) {
         // load custom mixer into currentMixer

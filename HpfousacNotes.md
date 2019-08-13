@@ -402,3 +402,12 @@ focused on testung with serial spektrum receiver like SPM4649T.
 
  * **15** - `pwmServoConfig()` failed
 
+# 12 out ports is working #
+
+ tested using newly implemented `rxout` command.
+
+ **TODO** 
+ 
+  * cli command to show flight mode (mask) `flightModeFlags_e` command `fmode`
+
+  * disable PID loop if no stab is used
