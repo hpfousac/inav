@@ -60,6 +60,7 @@ extern uint8_t __config_end;
 #include "drivers/io.h"
 #include "drivers/io_impl.h"
 #include "drivers/logging.h"
+#include "drivers/pwm_output.h"
 #include "drivers/rx_pwm.h"
 #include "drivers/sdcard.h"
 #include "drivers/sensor.h"
@@ -2494,6 +2495,51 @@ static void cliVersion(char *cmdline)
         shortGitRevision
     );
 }
+static void cliRxOut(char *cmdline)
+{
+    int pin_index = 0;
+    int pin_value = 0;
+    int index = 0;
+    char *pch = NULL;
+    char *saveptr;
+
+    if (isEmpty(cmdline)) {
+        cliShowParseError();
+
+        return;
+    }
+
+    pch = strtok_r(cmdline, " ", &saveptr);
+    while (pch != NULL) {
+        switch (index) {
+            case 0:
+                pin_index = fastA2I(pch);
+                break;
+            case 1:
+                pin_value = fastA2I(pch);
+                break;
+        }
+        index++;
+        pch = strtok_r(NULL, " ", &saveptr);
+    }
+
+    if (pin_index < 0 || pin_index >= MAX_SUPPORTED_SERVOS) {
+        cliShowArgumentRangeError("index", 0, MAX_SUPPORTED_SERVOS - 1);
+        return;
+    }
+
+    if (index == 2) {
+        if (pin_value < PWM_RANGE_MIN || pin_value > PWM_RANGE_MAX) {
+            cliShowArgumentRangeError("value", 1000, 2000);
+            return;
+        } else {
+            pwmWriteServo (pin_index, pin_value);
+            cliPrintLinef("# rxout %d: %d", pin_index, pin_value);
+        }
+    }
+
+
+} // cliRxOut
 
 static void cliRxIn(char *cmdline)
 {
@@ -2832,6 +2878,7 @@ const clicmd_t cmdTable[] = {
 #endif
     CLI_COMMAND_DEF("version", "show version", NULL, cliVersion),
     CLI_COMMAND_DEF("rxin", "show received values", NULL, cliRxIn),
+    CLI_COMMAND_DEF("rxout", "set RC out pin values", NULL, cliRxOut),
 };
 
 static void cliHelp(char *cmdline)
