@@ -609,6 +609,7 @@ COMMON_SRC = \
             fc/config.c \
             fc/controlrate_profile.c \
             fc/fc_core.c \
+            fc/fc_custom_model9y.c \
             fc/fc_init.c \
             fc/fc_tasks.c \
             fc/fc_hardfaults.c \

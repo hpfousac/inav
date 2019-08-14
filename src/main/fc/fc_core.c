@@ -844,8 +844,8 @@ bool taskUpdateRxCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
     return rxUpdateCheck(currentTimeUs, currentDeltaTime);
 }
 
-void taskUpdateRxMain(timeUs_t currentTimeUs)
-{
-    processRx(currentTimeUs);
-    isRXDataNew = true;
-}
+// void taskUpdateRxMain(timeUs_t currentTimeUs)
+// {
+//     processRx(currentTimeUs);
+//     isRXDataNew = true;
+// }
