@@ -700,142 +700,142 @@ void taskGyro(timeUs_t currentTimeUs) {
 #endif
 }
 
-static float calculateThrottleTiltCompensationFactor(uint8_t throttleTiltCompensationStrength)
-{
-    if (throttleTiltCompensationStrength) {
-        float tiltCompFactor = 1.0f / constrainf(calculateCosTiltAngle(), 0.6f, 1.0f);  // max tilt about 50 deg
-        return 1.0f + (tiltCompFactor - 1.0f) * (throttleTiltCompensationStrength / 100.f);
-    } else {
-        return 1.0f;
-    }
-}
+// static float calculateThrottleTiltCompensationFactor(uint8_t throttleTiltCompensationStrength)
+// {
+//     if (throttleTiltCompensationStrength) {
+//         float tiltCompFactor = 1.0f / constrainf(calculateCosTiltAngle(), 0.6f, 1.0f);  // max tilt about 50 deg
+//         return 1.0f + (tiltCompFactor - 1.0f) * (throttleTiltCompensationStrength / 100.f);
+//     } else {
+//         return 1.0f;
+//     }
+// }
 
-void taskMainPidLoop(timeUs_t currentTimeUs)
-{
-    cycleTime = getTaskDeltaTime(TASK_SELF);
-    dT = (float)cycleTime * 0.000001f;
+// void taskMainPidLoop(timeUs_t currentTimeUs)
+// {
+//     cycleTime = getTaskDeltaTime(TASK_SELF);
+//     dT = (float)cycleTime * 0.000001f;
 
-#ifdef USE_ASYNC_GYRO_PROCESSING
-    if (getAsyncMode() == ASYNC_MODE_NONE) {
-        taskGyro(currentTimeUs);
-    }
+// #ifdef USE_ASYNC_GYRO_PROCESSING
+//     if (getAsyncMode() == ASYNC_MODE_NONE) {
+//         taskGyro(currentTimeUs);
+//     }
 
-    if (getAsyncMode() != ASYNC_MODE_ALL && sensors(SENSOR_ACC)) {
-        imuUpdateAccelerometer();
-        imuUpdateAttitude(currentTimeUs);
-    }
-#else
-    /* Update gyroscope */
-    taskGyro(currentTimeUs);
-    imuUpdateAccelerometer();
-    imuUpdateAttitude(currentTimeUs);
-#endif
+//     if (getAsyncMode() != ASYNC_MODE_ALL && sensors(SENSOR_ACC)) {
+//         imuUpdateAccelerometer();
+//         imuUpdateAttitude(currentTimeUs);
+//     }
+// #else
+//     /* Update gyroscope */
+//     taskGyro(currentTimeUs);
+//     imuUpdateAccelerometer();
+//     imuUpdateAttitude(currentTimeUs);
+// #endif
 
 
-    annexCode();
+//     annexCode();
 
-    if (rxConfig()->rcSmoothing) {
-        filterRc(isRXDataNew);
-    }
+//     if (rxConfig()->rcSmoothing) {
+//         filterRc(isRXDataNew);
+//     }
 
-#if defined(USE_NAV)
-    if (isRXDataNew) {
-        updateWaypointsAndNavigationMode();
-    }
-#endif
+// #if defined(USE_NAV)
+//     if (isRXDataNew) {
+//         updateWaypointsAndNavigationMode();
+//     }
+// #endif
 
-    isRXDataNew = false;
+//     isRXDataNew = false;
 
-#if defined(USE_NAV)
-    updatePositionEstimator();
-    applyWaypointNavigationAndAltitudeHold();
-#endif
+// #if defined(USE_NAV)
+//     updatePositionEstimator();
+//     applyWaypointNavigationAndAltitudeHold();
+// #endif
 
-    // If we're armed, at minimum throttle, and we do arming via the
-    // sticks, do not process yaw input from the rx.  We do this so the
-    // motors do not spin up while we are trying to arm or disarm.
-    // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
-    if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig()->mincheck
-#ifndef USE_QUAD_MIXER_ONLY
-#ifdef USE_SERVOS
-            && !((mixerConfig()->mixerMode == MIXER_TRI || mixerConfig()->mixerMode == MIXER_CUSTOM_TRI) && servoConfig()->tri_unarmed_servo)
-#endif
-            && mixerConfig()->mixerMode != MIXER_AIRPLANE
-            && mixerConfig()->mixerMode != MIXER_FLYING_WING
-            && mixerConfig()->mixerMode != MIXER_CUSTOM_AIRPLANE
-#endif
-    ) {
-        rcCommand[YAW] = 0;
-    }
+//     // If we're armed, at minimum throttle, and we do arming via the
+//     // sticks, do not process yaw input from the rx.  We do this so the
+//     // motors do not spin up while we are trying to arm or disarm.
+//     // Allow yaw control for tricopters if the user wants the servo to move even when unarmed.
+//     if (isUsingSticksForArming() && rcData[THROTTLE] <= rxConfig()->mincheck
+// #ifndef USE_QUAD_MIXER_ONLY
+// #ifdef USE_SERVOS
+//             && !((mixerConfig()->mixerMode == MIXER_TRI || mixerConfig()->mixerMode == MIXER_CUSTOM_TRI) && servoConfig()->tri_unarmed_servo)
+// #endif
+//             && mixerConfig()->mixerMode != MIXER_AIRPLANE
+//             && mixerConfig()->mixerMode != MIXER_FLYING_WING
+//             && mixerConfig()->mixerMode != MIXER_CUSTOM_AIRPLANE
+// #endif
+//     ) {
+//         rcCommand[YAW] = 0;
+//     }
 
-    // Apply throttle tilt compensation
-    if (!STATE(FIXED_WING)) {
-        int16_t thrTiltCompStrength = 0;
+//     // Apply throttle tilt compensation
+//     if (!STATE(FIXED_WING)) {
+//         int16_t thrTiltCompStrength = 0;
 
-        if (navigationRequiresThrottleTiltCompensation()) {
-            thrTiltCompStrength = 100;
-        }
-        else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
-            thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
-        }
+//         if (navigationRequiresThrottleTiltCompensation()) {
+//             thrTiltCompStrength = 100;
+//         }
+//         else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
+//             thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
+//         }
 
-        if (thrTiltCompStrength) {
-            rcCommand[THROTTLE] = constrain(motorConfig()->minthrottle
-                                            + (rcCommand[THROTTLE] - motorConfig()->minthrottle) * calculateThrottleTiltCompensationFactor(thrTiltCompStrength),
-                                            motorConfig()->minthrottle,
-                                            motorConfig()->maxthrottle);
-        }
-    }
-    else {
-        // FIXME: throttle pitch comp for FW
-    }
+//         if (thrTiltCompStrength) {
+//             rcCommand[THROTTLE] = constrain(motorConfig()->minthrottle
+//                                             + (rcCommand[THROTTLE] - motorConfig()->minthrottle) * calculateThrottleTiltCompensationFactor(thrTiltCompStrength),
+//                                             motorConfig()->minthrottle,
+//                                             motorConfig()->maxthrottle);
+//         }
+//     }
+//     else {
+//         // FIXME: throttle pitch comp for FW
+//     }
 
-    // Update PID coefficients
-    updatePIDCoefficients();
+//     // Update PID coefficients
+//     updatePIDCoefficients();
 
-    // Calculate stabilisation
-    pidController();
+//     // Calculate stabilisation
+//     pidController();
 
-#ifdef HIL
-    if (hilActive) {
-        hilUpdateControlState();
-        motorControlEnable = false;
-    }
-#endif
+// #ifdef HIL
+//     if (hilActive) {
+//         hilUpdateControlState();
+//         motorControlEnable = false;
+//     }
+// #endif
 
-    mixTable();
+//     mixTable();
 
-#ifdef USE_SERVOS
-    if (isMixerUsingServos()) {
-        servoMixer(dT);
-        processServoAutotrim();
-    }
+// #ifdef USE_SERVOS
+//     if (isMixerUsingServos()) {
+//         servoMixer(dT);
+//         processServoAutotrim();
+//     }
 
-    // Servo tilt is not part of servo mixer, but uses servos
-    if (feature(FEATURE_SERVO_TILT)) {
-        processServoTilt();
-    }
+//     // Servo tilt is not part of servo mixer, but uses servos
+//     if (feature(FEATURE_SERVO_TILT)) {
+//         processServoTilt();
+//     }
 
-    //Servos should be filtered or written only when mixer is using servos or special feaures are enabled
-    if (isServoOutputEnabled()) {
-        writeServos();
-    }
-#endif
+//     //Servos should be filtered or written only when mixer is using servos or special feaures are enabled
+//     if (isServoOutputEnabled()) {
+//         writeServos();
+//     }
+// #endif
 
-    if (motorControlEnable) {
-        writeMotors();
-    }
+//     if (motorControlEnable) {
+//         writeMotors();
+//     }
 
-#ifdef USE_SDCARD
-    afatfs_poll();
-#endif
+// #ifdef USE_SDCARD
+//     afatfs_poll();
+// #endif
 
-#ifdef USE_BLACKBOX
-    if (!cliMode && feature(FEATURE_BLACKBOX)) {
-        blackboxUpdate(micros());
-    }
-#endif
-}
+// #ifdef USE_BLACKBOX
+//     if (!cliMode && feature(FEATURE_BLACKBOX)) {
+//         blackboxUpdate(micros());
+//     }
+// #endif
+// }
 
 bool taskUpdateRxCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
 {
@@ -844,8 +844,8 @@ bool taskUpdateRxCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTime)
     return rxUpdateCheck(currentTimeUs, currentDeltaTime);
 }
 
-// void taskUpdateRxMain(timeUs_t currentTimeUs)
-// {
-//     processRx(currentTimeUs);
-//     isRXDataNew = true;
-// }
+void taskUpdateRxMain(timeUs_t currentTimeUs)
+{
+    processRx(currentTimeUs);
+    isRXDataNew = true;
+}

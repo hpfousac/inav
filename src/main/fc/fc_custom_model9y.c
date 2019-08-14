@@ -85,7 +85,8 @@
 # define OUT_GEAR   8
 
 
-void taskUpdateRxMain(timeUs_t currentTimeUs)
+
+void taskMainPidLoop(timeUs_t currentTimeUs)
 {
 int16_t 
     midrc = rxConfig()->midrc,
@@ -109,7 +110,7 @@ int16_t
 	pwmWriteServo (OUT_RUDD,   midrc + iYaw);
 
 	pwmWriteServo (OUT_RFLAP,  midrc + iFlaps);
-	pwmWriteServo (OUT_LFLAP,  midrc * iFlaps);
+	pwmWriteServo (OUT_LFLAP,  midrc - iFlaps);
 
 	pwmWriteServo (OUT_GEAR,   midrc + iGear);
 
