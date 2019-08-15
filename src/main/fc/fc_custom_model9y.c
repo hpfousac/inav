@@ -72,46 +72,75 @@
 #include "config/feature.h"
 
 
-# define OUT_THRO	0
-# define OUT_LYTAIL	1 // left Y-tail
-# define OUT_RYTAIL	2 // right Y-tail
-# define OUT_RUDD	3
+#define OUT_THRO	0
+#define OUT_LYTAIL	1 // left Y-tail
+#define OUT_RYTAIL	2 // right Y-tail
+#define OUT_RUDD	3
 
-# define OUT_LAILE	4 // left aile
-# define OUT_LFLAP  5 // left flap
-# define OUT_RFLAP  6 // right flap
-# define OUT_RAILE	7 // right aile
+#define OUT_LAILE	4 // left aile
+#define OUT_LFLAP  5 // left flap
+#define OUT_RFLAP  6 // right flap
+#define OUT_RAILE	7 // right aile
 
-# define OUT_GEAR   8
+#define OUT_MAIN_GEAR   8
+#define OUT_FRONT_GEAR  9
+
+#define SERVO_OUT_CHANNELS  10
 
 
+#define SERVO_HALF_RANGE ((DEFAULT_SERVO_MAX - DEFAULT_SERVO_MIN)/2)
 
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
 int16_t 
     midrc = rxConfig()->midrc,
-    iThro  = rcData[THROTTLE] - midrc,
-    iYaw   = rcData[YAW]      - midrc,
-    iRoll  = rcData[ROLL]     - midrc,
-    iPitch = rcData[PITCH]    - midrc,
-    iFlaps = rcData[AUX2]     - midrc,
-    iGear  = rcData[AUX1]     - midrc;
-    // input[INPUT_RC_AUX3]     = rcData[AUX3]     - rxConfig()->midrc;
-    // input[INPUT_RC_AUX4]     = rcData[AUX4]     - rxConfig()->midrc;
+    servo[SERVO_OUT_CHANNELS];
 
     UNUSED(currentTimeUs);
 
+    servo[OUT_THRO]      = rcData[THROTTLE] - midrc;
+    servo[OUT_RUDD]      = rcData[YAW]      - midrc;
 
-	pwmWriteServo (OUT_THRO,   midrc + iThro);
-	pwmWriteServo (OUT_RAILE,  midrc + iRoll);
-	pwmWriteServo (OUT_LAILE,  midrc + iRoll);
-	pwmWriteServo (OUT_RYTAIL, midrc + iPitch - (iYaw >> 2));
-	pwmWriteServo (OUT_LYTAIL, midrc - iPitch - (iYaw >> 2));
-	pwmWriteServo (OUT_RUDD,   midrc + iYaw);
+    servo[OUT_LAILE]     = servo[OUT_RAILE] = rcData[ROLL] - midrc;
 
-	pwmWriteServo (OUT_RFLAP,  midrc + iFlaps);
-	pwmWriteServo (OUT_LFLAP,  midrc - iFlaps);
+    servo[OUT_RYTAIL]    = rcData[PITCH]    - midrc;
+    servo[OUT_LYTAIL]    = - servo[OUT_RYTAIL];
 
-	pwmWriteServo (OUT_GEAR,   midrc + iGear);
+    servo[OUT_LFLAP]     = rcData[AUX2]     - midrc;
+    servo[OUT_RFLAP]     = - servo[OUT_LFLAP];
 
+    servo[OUT_MAIN_GEAR] = servo[OUT_FRONT_GEAR] = rcData[AUX1] - midrc;
+
+    // input[INPUT_RC_AUX3]     = rcData[AUX3]     - rxConfig()->midrc;
+    // input[INPUT_RC_AUX4]     = rcData[AUX4]     - rxConfig()->midrc;
+
+    // V-mix
+    servo[OUT_RYTAIL]  -= (servo[OUT_RUDD] >> 2);
+    servo[OUT_LYTAIL]  -= (servo[OUT_RUDD] >> 2);
+
+	if (servo[OUT_THRO] >= 0) {
+    const servoParam_t *throServoParam = servoParams(OUT_THRO);
+        servo[OUT_THRO] = (servo[OUT_THRO] - (((throServoParam->max - throServoParam->min) >> 2) << 1));
+//		iOutAirbrake = 0; => OUT_RAILE & OUT_LAILE remains unaffected (by thro)
+	} else {
+// replace variable usage, iThro is not needed after calling RC_Out_setOut (OUT_THRO, ...);
+#define iOutAirbrake	(servo[OUT_THRO] >> 1)
+		servo[OUT_RAILE] += iOutAirbrake;
+		servo[OUT_LAILE] -= iOutAirbrake;
+#undef iOutAirbrake
+        servo[OUT_THRO] = DEFAULT_SERVO_MIN - DEFAULT_SERVO_MIDDLE; // should result in -500
+	}
+
+    for (int16_t i = 0; i < SERVO_OUT_CHANNELS; ++i) {
+    const servoParam_t *iServoParam = servoParams(i);
+        /* scale */
+        servo[i] = ((int32_t)iServoParam->rate * servo[i]) / 100L;
+
+        /* normalize for output */
+        servo[i] = iServoParam->middle + servo[i];
+
+        /* limiting */
+        servo[i] =  constrain(servo[i], iServoParam->min, iServoParam->max);
+		pwmWriteServo (i, servo[i]);
+    }
 }
