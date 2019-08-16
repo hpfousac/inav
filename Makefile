@@ -879,10 +879,12 @@ VPATH        := $(VPATH):$(STDPERIPH_DIR)/src
 ifneq ($(TOOLCHAINPATH),)
 CROSS_CC    = $(TOOLCHAINPATH)/arm-none-eabi-gcc
 OBJCOPY     = $(TOOLCHAINPATH)/arm-none-eabi-objcopy
+OBJDUMP     = $(TOOLCHAINPATH)/arm-none-eabi-objdump
 SIZE        = $(TOOLCHAINPATH)/arm-none-eabi-size
 else
 CROSS_CC    = arm-none-eabi-gcc
 OBJCOPY     = arm-none-eabi-objcopy
+OBJDUMP     = arm-none-eabi-objdump
 SIZE        = arm-none-eabi-size
 endif
 
@@ -955,6 +957,7 @@ CPPCHECK        = cppcheck $(CSOURCES) --enable=all --platform=unix64 \
 TARGET_BIN      = $(BIN_DIR)/$(FORKNAME)_$(FC_VER)_$(TARGET).bin
 TARGET_HEX      = $(BIN_DIR)/$(FORKNAME)_$(FC_VER)_$(TARGET).hex
 TARGET_ELF      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).elf
+TARGET_UASM     = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).uasm
 TARGET_OBJS     = $(addsuffix .o,$(addprefix $(OBJECT_DIR)/$(TARGET)/,$(basename $(TARGET_SRC))))
 TARGET_DEPS     = $(addsuffix .d,$(addprefix $(OBJECT_DIR)/$(TARGET)/,$(basename $(TARGET_SRC))))
 TARGET_MAP      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).map
@@ -962,7 +965,7 @@ TARGET_MAP      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).map
 
 CLEAN_ARTIFACTS := $(TARGET_BIN)
 CLEAN_ARTIFACTS += $(TARGET_HEX)
-CLEAN_ARTIFACTS += $(TARGET_ELF) $(TARGET_OBJS) $(TARGET_MAP)
+CLEAN_ARTIFACTS += $(TARGET_ELF) $(TARGET_OBJS) $(TARGET_MAP) $(TARGET_UASM)
 
 # Make sure build date and revision is updated on every incremental build
 $(OBJECT_DIR)/$(TARGET)/build/version.o : $(TARGET_SRC)
@@ -997,11 +1000,14 @@ clean-settings:
 # List of buildable ELF files and their object dependencies.
 # It would be nice to compute these lists, but that seems to be just beyond make.
 
-$(TARGET_HEX): $(TARGET_ELF)
+$(TARGET_HEX): $(TARGET_ELF) $(TARGET_UASM)
 	$(V0) $(OBJCOPY) -O ihex --set-start 0x8000000 $< $@
 
 $(TARGET_BIN): $(TARGET_ELF)
 	$(V0) $(OBJCOPY) -O binary $< $@
+
+$(TARGET_UASM): $(TARGET_ELF)
+	$(V1) ${OBJDUMP} -D $(TARGET_ELF) > $(TARGET_UASM)
 
 $(TARGET_ELF): $(TARGET_OBJS)
 	$(V1) echo Linking $(TARGET)
