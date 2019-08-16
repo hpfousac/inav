@@ -86,3 +86,20 @@
 
 # Branch: feature/inav-1.9.1-modelY-customCode #
 
+## gear delay ##
+
+ Designed sequence;
+
+ * Closed
+
+ * Open main gear
+
+ * Open front gear
+
+ * Opened
+
+ * Close front gear
+
+ * Close main gear
+
+ * Closed

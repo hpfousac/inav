@@ -90,13 +90,29 @@
 
 #define SERVO_HALF_RANGE ((DEFAULT_SERVO_MAX - DEFAULT_SERVO_MIN)/2)
 
+
+typedef enum {
+    GEAR_UNKNOWN      = 0, // stable state
+    GEAR_CLOSED       = 1,
+    GEAR_OPENINGMAIN  = 2,
+    GEAR_OPENINGFRONT = 3,
+    GEAR_OPEN         = 4, // stable state
+    GEAR_CLOSINGFRONT = 5,
+    GEAR_CLOSINGMAIN  = 6
+} gearState_e;
+
+#define GEAR_MOVE_DURATION_US 4000000 // it can become set parameter
+
+
+static int16_t prevServoPosition[SERVO_OUT_CHANNELS];
+static gearState_e frontGearState = GEAR_UNKNOWN;
+static timeUs_t lastGearTimestamp; // usually beginning of some delay
+
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
 int16_t 
     midrc = rxConfig()->midrc,
     servo[SERVO_OUT_CHANNELS];
-
-    UNUSED(currentTimeUs);
 
     servo[OUT_THRO]      = rcData[THROTTLE] - midrc;
     servo[OUT_RUDD]      = rcData[YAW]      - midrc;
@@ -131,6 +147,125 @@ int16_t
         servo[OUT_THRO] = DEFAULT_SERVO_MIN - DEFAULT_SERVO_MIDDLE; // should result in -500
 	}
 
+    if (servo[OUT_FRONT_GEAR] < 0) { // gear switch down
+        switch (frontGearState) {
+        case GEAR_UNKNOWN:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->min - midrc;
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc;
+            frontGearState = GEAR_CLOSED;
+            break;
+        case GEAR_CLOSED:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->min - midrc;
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc;
+            break;
+        case GEAR_OPENINGMAIN: // wait for fully opened then close
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc; // keep opening
+            } else { // main gear considered fully opened
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->min - midrc;  // start closing
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                frontGearState = GEAR_CLOSINGMAIN;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        case GEAR_OPENINGFRONT: // wait for fully opened then start closing sequention
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->max - midrc; // keep opening
+                servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+            } else { // main gear considered fully opened
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // start closing
+                frontGearState = GEAR_CLOSINGFRONT;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        case GEAR_OPEN: // start closing sequention
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc; // keep open
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // start closing
+            frontGearState = GEAR_CLOSINGFRONT;
+            lastGearTimestamp = currentTimeUs;
+            break;
+        case GEAR_CLOSINGFRONT:
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closing
+                servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+            } else { // main gear considered fully opened
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->min - midrc;  // start closing
+                frontGearState = GEAR_CLOSINGMAIN;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        case GEAR_CLOSINGMAIN:
+            servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+            servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->min - midrc;  // keep closing/closed
+            if ((currentTimeUs - lastGearTimestamp) >= GEAR_MOVE_DURATION_US) {
+                frontGearState = GEAR_CLOSED;
+            }
+            break;
+        }
+    } else { // gear switch up
+        switch (frontGearState) {
+        case GEAR_UNKNOWN:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->max - midrc;
+            frontGearState = GEAR_OPEN;
+            break;
+        case GEAR_CLOSED:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc; // start opening
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+            frontGearState = GEAR_OPENINGMAIN;
+            lastGearTimestamp = currentTimeUs;
+            break;
+            break;
+        case GEAR_OPENINGMAIN:
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep opening
+            } else { // main gear considered fully opened
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->max - midrc; // start opening
+                frontGearState = GEAR_OPENINGFRONT;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        case GEAR_OPENINGFRONT:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->max - midrc; // start opening
+            if ((currentTimeUs - lastGearTimestamp) >= GEAR_MOVE_DURATION_US) {
+                frontGearState = GEAR_OPEN;
+            }
+            break;
+        case GEAR_OPEN:
+            servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;
+            servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->max - midrc;
+            break;
+        case GEAR_CLOSINGMAIN:
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->min - midrc;  // keep closing
+            } else { // main gear considered fully closed
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;  // start opening
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closed
+                frontGearState = GEAR_OPENINGMAIN;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        case GEAR_CLOSINGFRONT:
+            if ((currentTimeUs - lastGearTimestamp) < GEAR_MOVE_DURATION_US) {
+                servo[OUT_FRONT_GEAR]  = servoParams(OUT_FRONT_GEAR)->min - midrc; // keep closing
+                servo[OUT_MAIN_GEAR]   = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+            } else { // front gear considered fully closed
+                servo[OUT_MAIN_GEAR]  = servoParams(OUT_MAIN_GEAR)->max - midrc;  // keep open
+                servo[OUT_FRONT_GEAR] = servoParams(OUT_FRONT_GEAR)->max - midrc; // start opening
+                frontGearState = GEAR_OPENINGFRONT;
+                lastGearTimestamp = currentTimeUs;
+            }
+            break;
+        }
+    }
+
     for (int16_t i = 0; i < SERVO_OUT_CHANNELS; ++i) {
     const servoParam_t *iServoParam = servoParams(i);
         /* scale */
@@ -141,6 +276,10 @@ int16_t
 
         /* limiting */
         servo[i] =  constrain(servo[i], iServoParam->min, iServoParam->max);
-		pwmWriteServo (i, servo[i]);
+
+        // move if needed
+        if (prevServoPosition[i] != servo[i]) {
+		    pwmWriteServo (i, prevServoPosition[i] = servo[i]);
+        }
     }
 }
