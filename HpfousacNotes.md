@@ -411,3 +411,13 @@ focused on testung with serial spektrum receiver like SPM4649T.
   * cli command to show flight mode (mask) `flightModeFlags_e` command `fmode`
 
   * disable PID loop if no stab is used
+
+# Where config is stored #
+
+ After short investigation was confirmed that config is stored in FLASH Memory.
+The region is reserved by **FLASH_CONFIG** symbol. The reference from final code 
+is provided by `__config_start` and `__config_end` variables.
+
+Detail are in source code and in linker script.
+
+*It means it can work on BLUEPILL devices*
