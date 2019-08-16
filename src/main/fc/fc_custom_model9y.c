@@ -90,7 +90,6 @@
 
 #define SERVO_HALF_RANGE ((DEFAULT_SERVO_MAX - DEFAULT_SERVO_MIN)/2)
 
-
 typedef enum {
     GEAR_UNKNOWN      = 0, // stable state
     GEAR_CLOSED       = 1,
@@ -136,7 +135,7 @@ int16_t
 
 	if (servo[OUT_THRO] >= 0) {
     const servoParam_t *throServoParam = servoParams(OUT_THRO);
-        servo[OUT_THRO] = (servo[OUT_THRO] - (((throServoParam->max - throServoParam->min) >> 2) << 1));
+        servo[OUT_THRO] = (servo[OUT_THRO] - ((throServoParam->max - throServoParam->min) >> 2)) << 1;
 //		iOutAirbrake = 0; => OUT_RAILE & OUT_LAILE remains unaffected (by thro)
 	} else {
 // replace variable usage, iThro is not needed after calling RC_Out_setOut (OUT_THRO, ...);
