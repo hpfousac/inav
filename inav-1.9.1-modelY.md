@@ -103,3 +103,25 @@
  * Close main gear
 
  * Closed
+
+ # Settings #
+
+ ~~~
+ #
+mixer CUSTOMAIRPLANE
+map TAER
+servo 0  850 2150 1500 100 -1 
+servo 1  850 2150 1500 100 -1 
+servo 2  850 2150 1500 100 -1 
+servo 3  850 2150 1500 100 -1 
+servo 4  850 2150 1500 100 -1 
+servo 5  850 2150 1500 100 -1 
+servo 6  850 2150 1500 100 -1 
+servo 7 1000 2000 1500 100 -1 
+servo 8 1000 2000 1500 100 -1 
+servo 9 1000 2000 1500 100 -1 
+servo 10 1000 2000 1500 100 -1 
+servo 11 1000 2000 1500 100 -1 
+
+save
+~~~

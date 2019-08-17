@@ -82,8 +82,8 @@
 #define OUT_RFLAP  6 // right flap
 #define OUT_RAILE	7 // right aile
 
-#define OUT_MAIN_GEAR   8
-#define OUT_FRONT_GEAR  9
+#define OUT_MAIN_GEAR   9
+#define OUT_FRONT_GEAR  8
 
 #define SERVO_OUT_CHANNELS  10
 
@@ -100,7 +100,7 @@ typedef enum {
     GEAR_CLOSINGMAIN  = 6
 } gearState_e;
 
-#define GEAR_MOVE_DURATION_US 4000000 // it can become set parameter
+#define GEAR_MOVE_DURATION_US 3000000 // it can become set parameter
 
 
 static int16_t prevServoPosition[SERVO_OUT_CHANNELS];
