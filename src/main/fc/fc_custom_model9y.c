@@ -91,8 +91,8 @@
 #define SERVO_HALF_RANGE ((DEFAULT_SERVO_MAX - DEFAULT_SERVO_MIN)/2)
 
 typedef enum {
-    GEAR_UNKNOWN      = 0, // stable state
-    GEAR_CLOSED       = 1,
+    GEAR_UNKNOWN      = 0,
+    GEAR_CLOSED       = 1, // stable state
     GEAR_OPENINGMAIN  = 2,
     GEAR_OPENINGFRONT = 3,
     GEAR_OPEN         = 4, // stable state
