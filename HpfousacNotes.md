@@ -248,26 +248,6 @@ typedef struct timerHardware_s
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
 
 
-## RX ##
-
- Initialisation is done thru **rxInit ()** in **rx.c**.
-
- rxConfig, rxRuntimeConfig
-
- **failsafeInit()** needs to be discovered
-
- The all checks for serial usage has to be wiped out:
-
-findSerialPortConfig(FUNCTION_RX_SERIAL)
-findSerialPortUsageByIdentifier(identifier)
-
-it looks that **serialInit ();** has to be called.
-
-raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()** when
-**rxRuntimeConfig.rcReadRawFn** is initialised to appropriate function pointer.
-
-[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
-
 ## PWM Out ##
 
  pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
@@ -286,23 +266,4 @@ void targetConfiguration(void) ...
 #if defined(TARGET_CONFIG)
     targetConfiguration();
 #endif
-~~~
-
-# inav-1.9.1-serialSpkTest #
-
-focused on testung with serial spektrum receiver like SPM4649T. 
-
-## receiver part ##
-
- It is in `spektrum.c` file and it is initialised in function `spektrumInit()`, where is set callback to
- function `spektrumDataReceive()`, where part of frame is processed.
-
- next fragment describes *(I hope)* relevant settings for **RX_SERIAL**.
-
-~~~ 
-#define USE_SERIALRX_SPEKTRUM
-#define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
-#define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
-#define SERIALRX_UART           SERIAL_PORT_USART3
-#define SERIALRX_PROVIDER       SERIALRX_SPEKTRUM1024
 ~~~
