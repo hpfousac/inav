@@ -248,6 +248,26 @@ typedef struct timerHardware_s
  **serialInit(bool softserialEnabled, serialPortIdentifier_e serialPortToDisable);**
 
 
+## RX ##
+
+ Initialisation is done thru **rxInit ()** in **rx.c**.
+
+ rxConfig, rxRuntimeConfig
+
+ **failsafeInit()** needs to be discovered
+
+ The all checks for serial usage has to be wiped out:
+
+findSerialPortConfig(FUNCTION_RX_SERIAL)
+findSerialPortUsageByIdentifier(identifier)
+
+it looks that **serialInit ();** has to be called.
+
+raw RX data are read and evaluated by: **calculateRxChannelsAndUpdateFailsafe()** when
+**rxRuntimeConfig.rcReadRawFn** is initialised to appropriate function pointer.
+
+[TASK_RX] -> taskUpdateRxMain() -> processRx() -> calculateRxChannelsAndUpdateFailsafe()
+
 ## PWM Out ##
 
  pwmServoConfig () in file: pwm_output.c called from pwmInit() pwm_mapping.c
@@ -267,3 +287,127 @@ void targetConfiguration(void) ...
     targetConfiguration();
 #endif
 ~~~
+
+# inav-1.9.1-serialSpkTest #
+
+focused on testung with serial spektrum receiver like SPM4649T. 
+
+## receiver part ##
+
+ It is in `spektrum.c` file and it is initialised in function `spektrumInit()`, where is set callback to
+ function `spektrumDataReceive()`, where part of frame is processed.
+
+ next fragment describes *(I hope)* relevant settings for **RX_SERIAL**.
+
+~~~ 
+#define USE_SERIALRX_SPEKTRUM
+#define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
+#define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
+#define SERIALRX_UART           SERIAL_PORT_USART3
+#define SERIALRX_PROVIDER       SERIALRX_SPEKTRUM1024
+~~~
+
+# feature/inav-1.9.1-modelY #
+
+## regular init and port allocation sequence ##
+
+ * boot log
+
+ * system init (i.e. clock)
+
+ * detect hardware
+
+ * EEPROM (i.e. read config)
+
+ * i2c set speed
+
+ * led init
+
+ * timerInit();
+
+ * serial init (incl MSP serial)
+
+ * servos init
+
+ * allocate pwm & ppm inputs, if enabled *it may explain why some pins are not activated properly*
+
+ ~~~
+ #if defined(USE_RX_PWM) || defined(USE_RX_PPM)
+    pwmRxInit(systemConfig()->pwmRxInputFilteringMode);
+#endif
+ ~~~
+
+  * `pwmInit();` loop over each timer pin (in order to priority, first user of pin wins)
+
+   * uart2 on STM32F10X
+
+   * soft serials
+
+   * WS2811 timer
+
+   * ADC pins if is used
+
+   * rangefinder
+
+   * // Handle timer mapping to PWM/PPM inputs?
+
+   * check if multirotor or helicopter/airplane then assign mapping to (in mentioned order) servo, motor
+
+   * if pin is marked as **MAP_TO_PPM_INPUT** or **MAP_TO_PWM_INPUT** then it is not included in further evaluation even
+    the feature(s) are disabled **USE_RX_PPM** and **USE_RX_PWM**.
+
+### TIMER_CHANNEL_MAPPED/BOOT_EVENT_TIMER_CH_MAPPED ###
+
+ * **0** - MAP_TO_PPM_INPUT
+
+ * **1** - MAP_TO_PWM_INPUT
+
+ * **2** - MAP_TO_MOTOR_OUTPUT
+
+ * **3** - MAP_TO_SERVO_OUTPUT
+
+###  TIMER_CHANNEL_SKIPPED/BOOT_EVENT_TIMER_CH_SKIPPED ###
+
+ Modified by me
+
+ * **0** - OLIMEXINO_UNCUT_LED2_E_JUMPER/PWM2
+
+ * **1** - useUART2
+
+ * **2** - useUART3
+
+ * **3** - useUART6
+
+ * **4** - SOFTSERIAL_1_RX_PI
+
+ * **5** - SOFTSERIAL_2_RX_PIN
+
+ * **6** - WS2811_TIMER
+
+ * **7** - WS2811_PIN
+
+ * **8** - VBAT_ADC_PIN
+
+ * **9** - RSSI_ADC_PIN
+
+ * **10** - CURRENT_METER_ADC_PIN
+
+ * **11** - useTriggerRangefinder
+
+ * **12** - pwmIOConfiguration.motorCount >= MAX_MOTORS
+
+ * **13** - `pwmMotorConfig()` - failed
+
+ * **14** - pwmIOConfiguration.servoCount >=  MAX_SERVOS
+
+ * **15** - `pwmServoConfig()` failed
+
+# 12 out ports is working #
+
+ tested using newly implemented `rxout` command.
+
+ **TODO** 
+ 
+  * cli command to show flight mode (mask) `flightModeFlags_e` command `fmode`
+
+  * disable PID loop if no stab is used
