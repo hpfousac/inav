@@ -349,3 +349,30 @@ void targetConfiguration(void) ...
     targetConfiguration();
 #endif
 ~~~
+
+# Branch: feature/planeOnly #
+
+ Only plane features will be available.
+ No specific mixer at all.
+
+## Starting size ##
+
+~~~
+Linking SPRACINGF3
+Memory region         Used Size  Region Size  %age Used
+           FLASH:      217980 B       250 KB     85.15%
+    FLASH_CONFIG:          0 GB         6 KB      0.00%
+             RAM:       33964 B        40 KB     82.92%
+             CCM:        7996 B         8 KB     97.61%
+       MEMORY_B1:          0 GB         0 GB      -nan%
+arm-none-eabi-size ./obj/main/inav_SPRACINGF3.elf
+   text	   data	    bss	    dec	    hex	filename
+ 215536	   2444	  39512	 257492	  3edd4	./obj/main/inav_SPRACINGF3.elf
+arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf obj/inav_2.3.0_SPRACINGF3.hex
+~~~
+
+## LED Strip ##
+
+Driven by DMA see **timerPWMConfigChannelDMA()** it shiuld be used as inspiration for (C)PPM outpupt to the TX
+
+
