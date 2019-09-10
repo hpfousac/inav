@@ -390,7 +390,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
 #### TODO ####
 
- * Remove all occurences of **TIM_USE_MC_SERVO** *(Multicopter Servo ?)*
+ * Remove all occurences of **TIM_USE_MC_SERVO** *(Multicopter servo output (i.e. TRI))* + TIM_USE_MC_CHNFW + TIM_USE_MC_MOTOR
 
  * Remove all ocurences of **USE_AUTOTUNE_MULTIROTOR**
 

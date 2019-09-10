@@ -34,12 +34,12 @@ BUSDEV_REGISTER_I2C_TAG(busdev_mag3110,     DEVHW_MAG3110,      MAG_I2C_BUS_EXT,
 
 /* TIMERS */
 const timerHardware_t timerHardware[] = {
-    DEF_TIM(TIM3,  CH3, PB0,  TIM_USE_MC_MOTOR | TIM_USE_FW_MOTOR,                                  0, 0), // S1_OUT D1_ST7
-    DEF_TIM(TIM3,  CH4, PB1,  TIM_USE_MC_MOTOR | TIM_USE_FW_MOTOR,                                  0, 0), // S2_OUT D1_ST2
-    DEF_TIM(TIM2,  CH4, PA3,  TIM_USE_MC_MOTOR | TIM_USE_FW_SERVO,                                  0, 1), // S3_OUT D1_ST6
-    DEF_TIM(TIM2,  CH3, PA2,  TIM_USE_MC_MOTOR | TIM_USE_FW_SERVO,                                  0, 0), // S4_OUT D1_ST1
-    DEF_TIM(TIM5,  CH2, PA1,  TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_SERVO | TIM_USE_ANY, 0, 0), // S5_OUT / LED
-    DEF_TIM(TIM5,  CH1, PA0,  TIM_USE_MC_MOTOR | TIM_USE_MC_SERVO | TIM_USE_FW_SERVO,               0, 0), // S6_OUT D1_ST2
+    DEF_TIM(TIM3,  CH3, PB0,  0 | TIM_USE_FW_MOTOR,                                  0, 0), // S1_OUT D1_ST7
+    DEF_TIM(TIM3,  CH4, PB1,  0 | TIM_USE_FW_MOTOR,                                  0, 0), // S2_OUT D1_ST2
+    DEF_TIM(TIM2,  CH4, PA3,  0 | TIM_USE_FW_SERVO,                                  0, 1), // S3_OUT D1_ST6
+    DEF_TIM(TIM2,  CH3, PA2,  0 | TIM_USE_FW_SERVO,                                  0, 0), // S4_OUT D1_ST1
+    DEF_TIM(TIM5,  CH2, PA1,  0 | 0 | TIM_USE_FW_SERVO | TIM_USE_ANY, 0, 0), // S5_OUT / LED
+    DEF_TIM(TIM5,  CH1, PA0,  0 | 0 | TIM_USE_FW_SERVO,               0, 0), // S6_OUT D1_ST2
 
     DEF_TIM(TIM12, CH1, PB14, TIM_USE_PWM | TIM_USE_PPM,                                            0, 0), // PPM (5th pin on FlexiIO port)
     DEF_TIM(TIM12, CH2, PB15, TIM_USE_PWM,                                                          0, 0), // S2_IN

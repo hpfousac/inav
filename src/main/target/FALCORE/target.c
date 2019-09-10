@@ -24,14 +24,14 @@
 
 const timerHardware_t timerHardware[] = {
     // MOTOR outputs
-    DEF_TIM(TIM8,  CH1, PC6,  TIM_USE_MC_MOTOR, 1),
-    DEF_TIM(TIM8,  CH2, PC7,  TIM_USE_MC_MOTOR, 1),
-    DEF_TIM(TIM8,  CH3, PC8,  TIM_USE_MC_MOTOR, 1),
-    DEF_TIM(TIM8,  CH4, PC9,  TIM_USE_MC_MOTOR, 1),
+    DEF_TIM(TIM8,  CH1, PC6,  0, 1),
+    DEF_TIM(TIM8,  CH2, PC7,  0, 1),
+    DEF_TIM(TIM8,  CH3, PC8,  0, 1),
+    DEF_TIM(TIM8,  CH4, PC9,  0, 1),
 
     // Additional servo outputs
-    DEF_TIM(TIM3,  CH2, PA4,  TIM_USE_MC_SERVO, 0),
-    DEF_TIM(TIM3,  CH4, PB1,  TIM_USE_MC_SERVO, 0),
+    DEF_TIM(TIM3,  CH2, PA4,  0, 0),
+    DEF_TIM(TIM3,  CH4, PB1,  0, 0),
 
     // PPM PORT - Also USART2 RX (AF5)
     DEF_TIM(TIM2,  CH4, PA3,  TIM_USE_PPM, 0),
