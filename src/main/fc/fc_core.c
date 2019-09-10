@@ -668,7 +668,7 @@ void processRx(timeUs_t currentTimeUs)
 
     DISABLE_FLIGHT_MODE(HEADFREE_MODE); // TODO: Remove this mode
 
-#if defined(USE_AUTOTUNE_FIXED_WING) || defined(USE_AUTOTUNE_MULTIROTOR)
+#if defined(USE_AUTOTUNE_FIXED_WING)
     autotuneUpdateState();
 #endif
 
