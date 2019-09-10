@@ -37,16 +37,6 @@
 #define DSHOT_3D_DEADBAND_LOW  1047
 #define DSHOT_3D_DEADBAND_HIGH 1048
 
-typedef enum {
-    PLATFORM_MULTIROTOR     = 0,
-    PLATFORM_AIRPLANE       = 1,
-    PLATFORM_HELICOPTER     = 2,
-    PLATFORM_TRICOPTER      = 3,
-    PLATFORM_ROVER          = 4,
-    PLATFORM_BOAT           = 5,
-    PLATFORM_OTHER          = 6
-} flyingPlatformType_e;
-
 typedef struct motorAxisCorrectionLimits_s {
     int16_t min;
     int16_t max;
@@ -65,7 +55,6 @@ PG_DECLARE_ARRAY(motorMixer_t, MAX_SUPPORTED_MOTORS, primaryMotorMixer);
 typedef struct mixerConfig_s {
     int8_t yaw_motor_direction;
     uint16_t yaw_jump_prevention_limit;      // make limit configurable (original fixed value was 100)
-    uint8_t platformType;
     bool hasFlaps;
     int16_t appliedMixerPreset;
     uint16_t fwMinThrottleDownPitchAngle;

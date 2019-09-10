@@ -350,6 +350,11 @@ void targetConfiguration(void) ...
 #endif
 ~~~
 
+## LED Strip ##
+
+Driven by DMA see **timerPWMConfigChannelDMA()** it shiuld be used as inspiration for (C)PPM outpupt to the TX
+
+
 # Branch: feature/planeOnly #
 
  Only plane features will be available.
@@ -371,8 +376,28 @@ arm-none-eabi-size ./obj/main/inav_SPRACINGF3.elf
 arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf obj/inav_2.3.0_SPRACINGF3.hex
 ~~~
 
-## LED Strip ##
+### Modification steps ###
 
-Driven by DMA see **timerPWMConfigChannelDMA()** it shiuld be used as inspiration for (C)PPM outpupt to the TX
+ * Removal off **flyingPlatformType_e** *(defined in mixer.h)*- all references and if sections will be removed. 
+ The remaining code parts are as was used only **PLATFORM_AIRPLANE** symbol.
 
+ List of all symbols: PLATFORM_MULTIROTOR, PLATFORM_AIRPLANE, PLATFORM_HELICOPTER, 
+ PLATFORM_TRICOPTER, PLATFORM_ROVER, PLATFORM_BOAT, PLATFORM_OTHER.
 
+ Remove element/field **mixerConfig_t.platformType**
+
+ Remove element/field **servoConfig_t.tri_unarmed_servo**
+
+#### TODO ####
+
+ * Remove all occurences of **TIM_USE_MC_SERVO** *(Multicopter Servo ?)*
+
+ * Remove all ocurences of **USE_AUTOTUNE_MULTIROTOR**
+
+ * Check symbol **FIXED_WING** an remove all other irrelevant STATEs/Options
+
+ * Remove macro/function **isMixerUsingServos();**
+
+#### Notes ####
+
+ Inside function **void servoMixer(float dT);** was a something for head down position for multirotor in 3D.

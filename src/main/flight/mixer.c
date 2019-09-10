@@ -73,7 +73,6 @@ PG_REGISTER_WITH_RESET_TEMPLATE(mixerConfig_t, mixerConfig, PG_MIXER_CONFIG, 1);
 PG_RESET_TEMPLATE(mixerConfig_t, mixerConfig,
     .yaw_motor_direction = 1,
     .yaw_jump_prevention_limit = 200,
-    .platformType = PLATFORM_MULTIROTOR,
     .hasFlaps = false,
     .appliedMixerPreset = -1, //This flag is not available in CLI and used by Configurator only
     .fwMinThrottleDownPitchAngle = 0
@@ -133,13 +132,7 @@ bool mixerIsOutputSaturated(void)
 void mixerUpdateStateFlags(void)
 {
     // set flag that we're on something with wings
-    if (mixerConfig()->platformType == PLATFORM_AIRPLANE) {
-        ENABLE_STATE(FIXED_WING);
-    } else if (mixerConfig()->platformType == PLATFORM_HELICOPTER) {
-        DISABLE_STATE(FIXED_WING);
-    } else {
-        DISABLE_STATE(FIXED_WING);
-    }
+    ENABLE_STATE(FIXED_WING);
 
     if (mixerConfig()->hasFlaps) {
         ENABLE_STATE(FLAPERON_AVAILABLE);

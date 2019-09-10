@@ -213,7 +213,7 @@ static bool checkPwmTimerConflicts(const timerHardware_t *timHw)
     return false;
 }
 
-void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs, bool isMixerUsingServos)
+void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs)
 {
     timOutputs->maxTimMotorCount = 0;
     timOutputs->maxTimServoCount = 0;
@@ -229,23 +229,12 @@ void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs, bool isMixerU
         }
 
         // Determine if timer belongs to motor/servo
-        if (mixerConfig()->platformType == PLATFORM_MULTIROTOR || mixerConfig()->platformType == PLATFORM_TRICOPTER) {
-            // Multicopter
-            // We enable mapping to servos if mixer is actually using them
-            if (isMixerUsingServos && timHw->usageFlags & TIM_USE_MC_SERVO) {
-                type = MAP_TO_SERVO_OUTPUT;
-            }
-            else if (timHw->usageFlags & TIM_USE_MC_MOTOR) {
-                type = MAP_TO_MOTOR_OUTPUT;
-            }
-        } else {
-            // Fixed wing or HELI (one/two motors and a lot of servos
-            if (timHw->usageFlags & TIM_USE_FW_SERVO) {
-                type = MAP_TO_SERVO_OUTPUT;
-            }
-            else if (timHw->usageFlags & TIM_USE_FW_MOTOR) {
-                type = MAP_TO_MOTOR_OUTPUT;
-            }
+        // Fixed wing or HELI (one/two motors and a lot of servos
+        if (timHw->usageFlags & TIM_USE_FW_SERVO) {
+            type = MAP_TO_SERVO_OUTPUT;
+        }
+        else if (timHw->usageFlags & TIM_USE_FW_MOTOR) {
+            type = MAP_TO_MOTOR_OUTPUT;
         }
 
         switch(type) {
@@ -360,7 +349,7 @@ bool pwmMotorAndServoInit(void)
     timMotorServoHardware_t timOutputs;
 
     // Build temporary timer mappings for motor and servo
-    pwmBuildTimerOutputList(&timOutputs, isMixerUsingServos());
+    pwmBuildTimerOutputList(&timOutputs);
 
     // At this point we have built tables of timers suitable for motor and servo mappings
     // Now we can actually initialize them according to motor/servo count from mixer

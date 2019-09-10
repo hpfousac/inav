@@ -438,32 +438,6 @@ void mavlinkSendHUDAndHeartbeat(void)
     if (ARMING_FLAG(ARMED))
         mavModes |= MAV_MODE_FLAG_SAFETY_ARMED;
 
-    uint8_t mavSystemType;
-    switch (mixerConfig()->platformType)
-    {
-        case PLATFORM_MULTIROTOR:
-            mavSystemType = MAV_TYPE_QUADROTOR;
-            break;
-        case PLATFORM_TRICOPTER:
-            mavSystemType = MAV_TYPE_TRICOPTER;
-            break;
-        case PLATFORM_AIRPLANE:
-            mavSystemType = MAV_TYPE_FIXED_WING;
-            break;
-        case PLATFORM_ROVER:
-            mavSystemType = MAV_TYPE_GROUND_ROVER;
-            break;
-        case PLATFORM_BOAT:
-            mavSystemType = MAV_TYPE_SURFACE_BOAT;
-            break;
-        case PLATFORM_HELICOPTER:
-            mavSystemType = MAV_TYPE_HELICOPTER;
-            break;
-        default:
-            mavSystemType = MAV_TYPE_GENERIC;
-            break;
-    }
-
     flightModeForTelemetry_e flm = getFlightModeForTelemetry();
     uint8_t mavCustomMode;
 
@@ -499,7 +473,7 @@ void mavlinkSendHUDAndHeartbeat(void)
 
     mavlink_msg_heartbeat_pack(mavSystemId, mavComponentId, &mavSendMsg,
         // type Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
-        mavSystemType,
+        MAV_TYPE_FIXED_WING, /* removed platform_type */
         // autopilot Autopilot type / class. defined in MAV_AUTOPILOT ENUM
         MAV_AUTOPILOT_GENERIC,
         // base_mode System mode bitfield, see MAV_MODE_FLAGS ENUM in mavlink/include/mavlink_types.h

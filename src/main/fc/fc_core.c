@@ -666,9 +666,7 @@ void processRx(timeUs_t currentTimeUs)
         }
     }
 
-    if (mixerConfig()->platformType == PLATFORM_AIRPLANE) {
-        DISABLE_FLIGHT_MODE(HEADFREE_MODE);
-    }
+    DISABLE_FLIGHT_MODE(HEADFREE_MODE); // TODO: Remove this mode
 
 #if defined(USE_AUTOTUNE_FIXED_WING) || defined(USE_AUTOTUNE_MULTIROTOR)
     autotuneUpdateState();

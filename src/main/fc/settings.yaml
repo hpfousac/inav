@@ -101,9 +101,6 @@ tables:
   - name: smartport_fuel_unit
     values: ["PERCENT", "MAH", "MWH"]
     enum: smartportFuelUnit_e
-  - name: platform_type
-    values: ["MULTIROTOR", "AIRPLANE", "HELICOPTER", "TRICOPTER", "ROVER", "BOAT"]
-    enum: flyingPlatformType_e
   - name: tz_automatic_dst
     values: ["OFF", "EU", "USA"]
     enum: tz_automatic_dst_e
@@ -654,10 +651,6 @@ groups:
       - name: yaw_jump_prevention_limit
         min: YAW_JUMP_PREVENTION_LIMIT_LOW
         max: YAW_JUMP_PREVENTION_LIMIT_HIGH
-      - name: platform_type
-        field: platformType
-        type: uint8_t
-        table: platform_type
       - name: has_flaps
         field: hasFlaps
         type: bool
@@ -705,8 +698,6 @@ groups:
       - name: flaperon_throw_offset
         min: FLAPERON_THROW_MIN
         max: FLAPERON_THROW_MAX
-      - name: tri_unarmed_servo
-        type: bool
 
   - name: PG_CONTROL_RATE_PROFILES
     type: controlRateConfig_t

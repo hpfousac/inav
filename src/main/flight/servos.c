@@ -58,8 +58,7 @@ PG_RESET_TEMPLATE(servoConfig_t, servoConfig,
     .servoCenterPulse = 1500,
     .servoPwmRate = 50,             // Default for analog servos
     .servo_lowpass_freq = 20,       // Default servo update rate is 50Hz, everything above Nyquist frequency (25Hz) is going to fold and cause distortions
-    .flaperon_throw_offset = FLAPERON_THROW_DEFAULT,
-    .tri_unarmed_servo = 1
+    .flaperon_throw_offset = FLAPERON_THROW_DEFAULT
 );
 
 PG_REGISTER_ARRAY_WITH_RESET_FN(servoMixer_t, MAX_SERVO_RULES, customServoMixers, PG_SERVO_MIXER, 1);
@@ -216,13 +215,6 @@ void writeServos(void)
     int servoIndex = 0;
     bool zeroServoValue = false;
 
-    /*
-     * in case of tricopters, there might me a need to zero servo output when unarmed
-     */
-    if (mixerConfig()->platformType == PLATFORM_TRICOPTER && !ARMING_FLAG(ARMED) && !servoConfig()->tri_unarmed_servo) {
-        zeroServoValue = true;
-    }
-
     for (int i = minServoIndex; i <= maxServoIndex; i++) {
         if (zeroServoValue) {
             pwmWriteServo(servoIndex++, 0);
@@ -245,12 +237,6 @@ void servoMixer(float dT)
         input[INPUT_STABILIZED_ROLL] = axisPID[ROLL];
         input[INPUT_STABILIZED_PITCH] = axisPID[PITCH];
         input[INPUT_STABILIZED_YAW] = axisPID[YAW];
-
-        // Reverse yaw servo when inverted in 3D mode only for multirotor and tricopter
-        if (feature(FEATURE_3D) && (rxGetChannelValue(THROTTLE) < PWM_RANGE_MIDDLE) &&
-        (mixerConfig()->platformType == PLATFORM_MULTIROTOR || mixerConfig()->platformType == PLATFORM_TRICOPTER)) {
-            input[INPUT_STABILIZED_YAW] *= -1;
-        }
     }
 
     input[INPUT_STABILIZED_ROLL_PLUS] = constrain(input[INPUT_STABILIZED_ROLL], 0, 1000);
