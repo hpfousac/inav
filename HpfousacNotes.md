@@ -388,11 +388,11 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  Remove element/field **servoConfig_t.tri_unarmed_servo**
 
-#### TODO ####
-
  * Remove all occurences of **TIM_USE_MC_SERVO** *(Multicopter servo output (i.e. TRI))* + TIM_USE_MC_CHNFW + TIM_USE_MC_MOTOR
 
  * Remove all ocurences of **USE_AUTOTUNE_MULTIROTOR**
+
+#### TODO ####
 
  * Check symbol **FIXED_WING** an remove all other irrelevant STATEs/Options
 
