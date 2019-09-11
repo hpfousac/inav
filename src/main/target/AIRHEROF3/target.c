@@ -33,20 +33,20 @@ const timerHardware_t timerHardware[] = {
     DEF_TIM(TIM3,   CH2, PA7,  TIM_USE_PWM,               0),
 
 #if 1
-    DEF_TIM(TIM1,   CH1, PA8,  0 |                    TIM_USE_FW_MOTOR, 0), // DMA1_CH2
-    DEF_TIM(TIM1,   CH4, PA11, 0 |                    TIM_USE_FW_MOTOR, 0), // DMA1_CH4
-    DEF_TIM(TIM8,   CH1, PB6,  0 |                    TIM_USE_FW_SERVO, 0), // DMA2_CH3
-    DEF_TIM(TIM4,   CH2, PB7,  0 | 0 | TIM_USE_FW_SERVO, 0), // DMA1_CH4 - conflict with TIM1_CH4
+    DEF_TIM(TIM1,   CH1, PA8,  TIM_USE_FW_MOTOR, 0), // DMA1_CH2
+    DEF_TIM(TIM1,   CH4, PA11, TIM_USE_FW_MOTOR, 0), // DMA1_CH4
+    DEF_TIM(TIM8,   CH1, PB6,  TIM_USE_FW_SERVO, 0), // DMA2_CH3
+    DEF_TIM(TIM4,   CH2, PB7,  TIM_USE_FW_SERVO, 0), // DMA1_CH4 - conflict with TIM1_CH4
 #else
-    DEF_TIM(TIM1,   CH1, PA8,  0 |                    TIM_USE_FW_MOTOR, 0), // DMA1_CH2
-    DEF_TIM(TIM4,   CH1, PA11, 0 |                    TIM_USE_FW_SERVO, 0), // DMA1_CH1
-    DEF_TIM(TIM8,   CH1, PB6,  0 |                    TIM_USE_FW_SERVO, 0), // DMA2_CH3
-    DEF_TIM(TIM4,   CH2, PB7,  0 |                    TIM_USE_FW_SERVO, 0), // DMA1_CH4
+    DEF_TIM(TIM1,   CH1, PA8,  TIM_USE_FW_MOTOR, 0), // DMA1_CH2
+    DEF_TIM(TIM4,   CH1, PA11, TIM_USE_FW_SERVO, 0), // DMA1_CH1
+    DEF_TIM(TIM8,   CH1, PB6,  TIM_USE_FW_SERVO, 0), // DMA2_CH3
+    DEF_TIM(TIM4,   CH2, PB7,  TIM_USE_FW_SERVO, 0), // DMA1_CH4
 #endif
 
 #if !defined(AIRHEROF3_QUAD)
-    DEF_TIM(TIM8,   CH2, PB8,  0 |                    TIM_USE_FW_SERVO, 0), // DMA2_CH5
-    DEF_TIM(TIM8,   CH3, PB9,  0 |                    TIM_USE_FW_SERVO, 0), // DMA2_CH1
+    DEF_TIM(TIM8,   CH2, PB8,  TIM_USE_FW_SERVO, 0), // DMA2_CH5
+    DEF_TIM(TIM8,   CH3, PB9,  TIM_USE_FW_SERVO, 0), // DMA2_CH1
 #endif
 };
 

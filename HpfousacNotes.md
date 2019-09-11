@@ -378,7 +378,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
 ### Modification steps ###
 
- * Removal off **flyingPlatformType_e** *(defined in mixer.h)*- all references and if sections will be removed. 
+ * Removal of **flyingPlatformType_e** *(defined in mixer.h)*- all references and if sections will be removed. 
  The remaining code parts are as was used only **PLATFORM_AIRPLANE** symbol.
 
  List of all symbols: PLATFORM_MULTIROTOR, PLATFORM_AIRPLANE, PLATFORM_HELICOPTER, 

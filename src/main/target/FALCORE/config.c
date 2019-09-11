@@ -43,7 +43,6 @@
 
 void targetConfiguration(void)
 {
-    mixerConfigMutable()->platformType = PLATFORM_MULTIROTOR;
 
     featureSet(FEATURE_VBAT);
     featureSet(FEATURE_GPS);

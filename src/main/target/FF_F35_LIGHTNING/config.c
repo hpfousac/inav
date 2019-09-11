@@ -50,5 +50,4 @@ void targetConfiguration(void)
     serialConfigMutable()->portConfigs[6].functionMask = FUNCTION_TELEMETRY_SMARTPORT;
     telemetryConfigMutable()->uartUnidirectional = 1;
 
-    mixerConfigMutable()->platformType = PLATFORM_AIRPLANE;
 }

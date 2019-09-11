@@ -26,24 +26,24 @@ const timerHardware_t timerHardware[] = {
     // PPM / UART2 RX
     DEF_TIM(TIM8,  CH1, PA15, TIM_USE_PPM,                       0), // PPM
 
-    DEF_TIM(TIM2,  CH1, PA0,  0 | TIM_USE_FW_MOTOR,                     0), // PWM1 [TIM2_CH1 (D1_CH5)]
-    DEF_TIM(TIM2,  CH2, PA1,  0 | TIM_USE_FW_MOTOR,                     0), // PWM2 [TIM2_CH2 (D1_CH7)] [TIM15_CH1N (D1_CH5)]
-    DEF_TIM(TIM15, CH1, PA2,  0 | TIM_USE_FW_SERVO,                     0), // PWM3 [TIM2_CH3 (D1_CH1)] [TIM15_CH1  (D1_CH5)]
-    DEF_TIM(TIM15, CH2, PA3,  0 | TIM_USE_FW_SERVO,                     0), // PWM4 [TIM2_CH4 (D1_CH7)]
+    DEF_TIM(TIM2,  CH1, PA0,   TIM_USE_FW_MOTOR,                     0), // PWM1 [TIM2_CH1 (D1_CH5)]
+    DEF_TIM(TIM2,  CH2, PA1,   TIM_USE_FW_MOTOR,                     0), // PWM2 [TIM2_CH2 (D1_CH7)] [TIM15_CH1N (D1_CH5)]
+    DEF_TIM(TIM15, CH1, PA2,   TIM_USE_FW_SERVO,                     0), // PWM3 [TIM2_CH3 (D1_CH1)] [TIM15_CH1  (D1_CH5)]
+    DEF_TIM(TIM15, CH2, PA3,   TIM_USE_FW_SERVO,                     0), // PWM4 [TIM2_CH4 (D1_CH7)]
 
 #ifdef SPRACINGF3EVO_1SS
-    DEF_TIM(TIM16, CH1, PA6,  0 | TIM_USE_FW_SERVO,                     0), // PWM5
-    DEF_TIM(TIM17, CH1, PA7,  0 | TIM_USE_FW_SERVO,                     0), // PWM6
+    DEF_TIM(TIM16, CH1, PA6,   TIM_USE_FW_SERVO,                     0), // PWM5
+    DEF_TIM(TIM17, CH1, PA7,   TIM_USE_FW_SERVO,                     0), // PWM6
 #else
-    DEF_TIM(TIM3,  CH1, PA6,  0 | 0 | TIM_USE_FW_SERVO,  0), // PWM5
-    DEF_TIM(TIM3,  CH2, PA7,  0 | 0 | TIM_USE_FW_SERVO,  0), // PWM6
+    DEF_TIM(TIM3,  CH1, PA6,   TIM_USE_FW_SERVO,  0), // PWM5
+    DEF_TIM(TIM3,  CH2, PA7,   TIM_USE_FW_SERVO,  0), // PWM6
 #endif
-    DEF_TIM(TIM3,  CH3, PB0,  0 | 0 | TIM_USE_FW_SERVO,  0), // PWM7
-    DEF_TIM(TIM3,  CH4, PB1,  0 | 0 | TIM_USE_FW_SERVO,  0), // PWM8
+    DEF_TIM(TIM3,  CH3, PB0,   TIM_USE_FW_SERVO,  0), // PWM7
+    DEF_TIM(TIM3,  CH4, PB1,   TIM_USE_FW_SERVO,  0), // PWM8
 
     // UART3 RX/TX
-    DEF_TIM(TIM2,  CH3, PB10, 0 | TIM_USE_FW_SERVO,                     0), // RC_CH4 - PB10 - *TIM2_CH3, UART3_TX (AF7)
-    DEF_TIM(TIM2,  CH4, PB11, 0 | TIM_USE_FW_SERVO,                     0), // RC_CH3 - PB11 - *TIM2_CH4, UART3_RX (AF7)
+    DEF_TIM(TIM2,  CH3, PB10,  TIM_USE_FW_SERVO,                     0), // RC_CH4 - PB10 - *TIM2_CH3, UART3_TX (AF7)
+    DEF_TIM(TIM2,  CH4, PB11,  TIM_USE_FW_SERVO,                     0), // RC_CH3 - PB11 - *TIM2_CH4, UART3_RX (AF7)
 
     // IR / LED Strip Pad
     DEF_TIM(TIM1,  CH1, PA8,  TIM_USE_LED,                                             0), // LED_STRIP / TRANSPONDER

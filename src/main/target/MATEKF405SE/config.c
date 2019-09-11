@@ -32,7 +32,6 @@ void targetConfiguration(void)
 
     //featureSet(FEATURE_PWM_OUTPUT_ENABLE); // enable PWM outputs by default
     //mixerConfigMutable()->mixerMode = MIXER_FLYING_WING; // default mixer to flying wing
-    mixerConfigMutable()->platformType = PLATFORM_AIRPLANE;   // default mixer to Airplane
 
     serialConfigMutable()->portConfigs[7].functionMask = FUNCTION_TELEMETRY_SMARTPORT;
 }

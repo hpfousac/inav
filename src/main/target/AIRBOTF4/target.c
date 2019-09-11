@@ -24,12 +24,12 @@
 #include "drivers/bus.h"
 
 const timerHardware_t timerHardware[] = {
-    DEF_TIM(TIM3,  CH3, PB0,  0 | TIM_USE_FW_MOTOR,                                  0, 0), // S1_OUT D1_ST7
-    DEF_TIM(TIM3,  CH4, PB1,  0 | TIM_USE_FW_MOTOR,                                  0, 0), // S2_OUT D1_ST2
-    DEF_TIM(TIM2,  CH4, PA3,  0 | TIM_USE_FW_SERVO,                                  0, 1), // S3_OUT D1_ST6
-    DEF_TIM(TIM2,  CH3, PA2,  0 | TIM_USE_FW_SERVO,                                  0, 0), // S4_OUT D1_ST1
-    DEF_TIM(TIM5,  CH2, PA1,  0 | 0 | TIM_USE_FW_SERVO | TIM_USE_ANY, 0, 0), // S5_OUT / LED
-    DEF_TIM(TIM1,  CH1, PA8,  0 | 0 | TIM_USE_FW_SERVO,               0, 0), // S6_OUT
+    DEF_TIM(TIM3,  CH3, PB0,  TIM_USE_FW_MOTOR,                                  0, 0), // S1_OUT D1_ST7
+    DEF_TIM(TIM3,  CH4, PB1,  TIM_USE_FW_MOTOR,                                  0, 0), // S2_OUT D1_ST2
+    DEF_TIM(TIM2,  CH4, PA3,  TIM_USE_FW_SERVO,                                  0, 1), // S3_OUT D1_ST6
+    DEF_TIM(TIM2,  CH3, PA2,  TIM_USE_FW_SERVO,                                  0, 0), // S4_OUT D1_ST1
+    DEF_TIM(TIM5,  CH2, PA1,  TIM_USE_FW_SERVO | TIM_USE_ANY, 0, 0), // S5_OUT / LED
+    DEF_TIM(TIM1,  CH1, PA8,  TIM_USE_FW_SERVO,               0, 0), // S6_OUT
     DEF_TIM(TIM4,  CH1, PB6,  TIM_USE_ANY,                                                          0, 0), // LED D1_ST0, n/a on older AIRBOTF4
 
     DEF_TIM(TIM12, CH1, PB14, TIM_USE_PWM | TIM_USE_PPM,                                            0, 0), // PPM (5th pin on FlexiIO port)
