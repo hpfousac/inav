@@ -187,46 +187,39 @@ void initActiveBoxIds(void)
     activeBoxIds[activeBoxIdCount++] = BOXCAMSTAB;
 
 #ifdef USE_GPS
-    if (sensors(SENSOR_BARO) || (STATE(FIXED_WING) && feature(FEATURE_GPS))) {
+    if (sensors(SENSOR_BARO) || (feature(FEATURE_GPS))) {
         activeBoxIds[activeBoxIdCount++] = BOXNAVALTHOLD;
         activeBoxIds[activeBoxIdCount++] = BOXSURFACE;
     }
 
-    const bool navReadyQuads = !STATE(FIXED_WING) && (getHwCompassStatus() != HW_SENSOR_NONE) && sensors(SENSOR_ACC) && feature(FEATURE_GPS);
-    const bool navReadyPlanes = STATE(FIXED_WING) && sensors(SENSOR_ACC) && feature(FEATURE_GPS);
+    const bool navReadyPlanes = sensors(SENSOR_ACC) && feature(FEATURE_GPS);
     const bool navFlowDeadReckoning = sensors(SENSOR_OPFLOW) && sensors(SENSOR_ACC) && positionEstimationConfig()->allow_dead_reckoning;
-    if (navFlowDeadReckoning || navReadyQuads || navReadyPlanes) {
+    if (navFlowDeadReckoning || navReadyPlanes) {
         activeBoxIds[activeBoxIdCount++] = BOXNAVPOSHOLD;
-        if (STATE(FIXED_WING)) {
-            activeBoxIds[activeBoxIdCount++] = BOXLOITERDIRCHN;
-        }
+        activeBoxIds[activeBoxIdCount++] = BOXLOITERDIRCHN;
     }
 
-    if (navReadyQuads || navReadyPlanes) {
+    if (navReadyPlanes) {
         activeBoxIds[activeBoxIdCount++] = BOXNAVRTH;
         activeBoxIds[activeBoxIdCount++] = BOXNAVWP;
         activeBoxIds[activeBoxIdCount++] = BOXHOMERESET;
 
         if (feature(FEATURE_GPS)) {
             activeBoxIds[activeBoxIdCount++] = BOXGCSNAV;
-            if (STATE(FIXED_WING)) {
-                activeBoxIds[activeBoxIdCount++] = BOXNAVCRUISE;
-            }
+            activeBoxIds[activeBoxIdCount++] = BOXNAVCRUISE;
         }
     }
 
 #endif
 
-    if (STATE(FIXED_WING)) {
-        activeBoxIds[activeBoxIdCount++] = BOXMANUAL;
-        if (!feature(FEATURE_FW_LAUNCH)) {
-           activeBoxIds[activeBoxIdCount++] = BOXNAVLAUNCH;
-        }
-        activeBoxIds[activeBoxIdCount++] = BOXAUTOTRIM;
+    activeBoxIds[activeBoxIdCount++] = BOXMANUAL;
+    if (!feature(FEATURE_FW_LAUNCH)) {
+       activeBoxIds[activeBoxIdCount++] = BOXNAVLAUNCH;
+    }
+    activeBoxIds[activeBoxIdCount++] = BOXAUTOTRIM;
 #if defined(USE_AUTOTUNE_FIXED_WING)
-        activeBoxIds[activeBoxIdCount++] = BOXAUTOTUNE;
+    activeBoxIds[activeBoxIdCount++] = BOXAUTOTUNE;
 #endif
-    }
 
     /*
      * FLAPERON mode active only in case of airplane and custom airplane. Activating on

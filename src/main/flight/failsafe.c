@@ -258,18 +258,11 @@ void failsafeApplyControlInput(void)
 {
     // Prepare FAILSAFE_CHANNEL_AUTO values for rcCommand
     int16_t autoRcCommand[4];
-    if (STATE(FIXED_WING)) {
-        autoRcCommand[ROLL] = pidAngleToRcCommand(failsafeConfig()->failsafe_fw_roll_angle, pidProfile()->max_angle_inclination[FD_ROLL]);
-        autoRcCommand[PITCH] = pidAngleToRcCommand(failsafeConfig()->failsafe_fw_pitch_angle, pidProfile()->max_angle_inclination[FD_PITCH]);
-        autoRcCommand[YAW] = -pidRateToRcCommand(failsafeConfig()->failsafe_fw_yaw_rate, currentControlRateProfile->stabilized.rates[FD_YAW]);
-        autoRcCommand[THROTTLE] = failsafeConfig()->failsafe_throttle;
-    }
-    else {
-        for (int i = 0; i < 3; i++) {
-            autoRcCommand[i] = 0;
-        }
-        autoRcCommand[THROTTLE] = failsafeConfig()->failsafe_throttle;
-    }
+
+	autoRcCommand[ROLL] = pidAngleToRcCommand(failsafeConfig()->failsafe_fw_roll_angle, pidProfile()->max_angle_inclination[FD_ROLL]);
+    autoRcCommand[PITCH] = pidAngleToRcCommand(failsafeConfig()->failsafe_fw_pitch_angle, pidProfile()->max_angle_inclination[FD_PITCH]);
+    autoRcCommand[YAW] = -pidRateToRcCommand(failsafeConfig()->failsafe_fw_yaw_rate, currentControlRateProfile->stabilized.rates[FD_YAW]);
+    autoRcCommand[THROTTLE] = failsafeConfig()->failsafe_throttle;
 
     // Apply channel values
     for (int idx = 0; idx < 4; idx++) {

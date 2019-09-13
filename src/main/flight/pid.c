@@ -318,7 +318,7 @@ bool pidInitFilters(void)
 
 void pidResetTPAFilter(void)
 {
-    if (STATE(FIXED_WING) && currentControlRateProfile->throttle.fixedWingTauMs > 0) {
+    if (currentControlRateProfile->throttle.fixedWingTauMs > 0) {
         pt1FilterInitRC(&fixedWingTpaFilter, currentControlRateProfile->throttle.fixedWingTauMs * 1e-3f, getLooptime() * 1e-6f);
         pt1FilterReset(&fixedWingTpaFilter, motorConfig()->minthrottle);
     }
@@ -416,7 +416,7 @@ void FAST_CODE NOINLINE updatePIDCoefficients(float dT)
     STATIC_FASTRAM uint16_t prevThrottle = 0;
 
     // Check if throttle changed. Different logic for fixed wing vs multirotor
-    if (STATE(FIXED_WING) && (currentControlRateProfile->throttle.fixedWingTauMs > 0)) {
+    if ((currentControlRateProfile->throttle.fixedWingTauMs > 0)) {
         uint16_t filteredThrottle = pt1FilterApply3(&fixedWingTpaFilter, rcCommand[THROTTLE], dT);
         if (filteredThrottle != prevThrottle) {
             prevThrottle = filteredThrottle;
@@ -442,33 +442,18 @@ void FAST_CODE NOINLINE updatePIDCoefficients(float dT)
         return;
     }
 
-    const float tpaFactor = STATE(FIXED_WING) ? calculateFixedWingTPAFactor(prevThrottle) : calculateMultirotorTPAFactor();
+    const float tpaFactor = calculateFixedWingTPAFactor(prevThrottle);
+	// TODO: remove calculateMultirotorTPAFactor()
 
     // PID coefficients can be update only with THROTTLE and TPA or inflight PID adjustments
     //TODO: Next step would be to update those only at THROTTLE or inflight adjustments change
     for (int axis = 0; axis < 3; axis++) {
-        if (STATE(FIXED_WING)) {
-            // Airplanes - scale all PIDs according to TPA
-            pidState[axis].kP  = pidBank()->pid[axis].P / FP_PID_RATE_P_MULTIPLIER  * tpaFactor;
-            pidState[axis].kI  = pidBank()->pid[axis].I / FP_PID_RATE_I_MULTIPLIER  * tpaFactor;
-            pidState[axis].kD  = 0.0f;
-            pidState[axis].kFF = pidBank()->pid[axis].FF / FP_PID_RATE_FF_MULTIPLIER * tpaFactor;
-            pidState[axis].kT  = 0.0f;
-        }
-        else {
-            const float axisTPA = (axis == FD_YAW) ? 1.0f : tpaFactor;
-            pidState[axis].kP  = pidBank()->pid[axis].P / FP_PID_RATE_P_MULTIPLIER * axisTPA;
-            pidState[axis].kI  = pidBank()->pid[axis].I / FP_PID_RATE_I_MULTIPLIER;
-            pidState[axis].kD  = pidBank()->pid[axis].D / FP_PID_RATE_D_MULTIPLIER * axisTPA;
-            pidState[axis].kFF = 0.0f;
-
-            // Tracking anti-windup requires P/I/D to be all defined which is only true for MC
-            if ((pidBank()->pid[axis].P != 0) && (pidBank()->pid[axis].I != 0)) {
-                pidState[axis].kT = 2.0f / ((pidState[axis].kP / pidState[axis].kI) + (pidState[axis].kD / pidState[axis].kP));
-            } else {
-                pidState[axis].kT = 0;
-            }
-        }
+        // Airplanes - scale all PIDs according to TPA
+        pidState[axis].kP  = pidBank()->pid[axis].P / FP_PID_RATE_P_MULTIPLIER  * tpaFactor;
+        pidState[axis].kI  = pidBank()->pid[axis].I / FP_PID_RATE_I_MULTIPLIER  * tpaFactor;
+        pidState[axis].kD  = 0.0f;
+        pidState[axis].kFF = pidBank()->pid[axis].FF / FP_PID_RATE_FF_MULTIPLIER * tpaFactor;
+        pidState[axis].kT  = 0.0f;
     }
 
     pidGainsUpdateRequired = false;
@@ -501,7 +486,7 @@ static void pidLevel(pidState_t *pidState, flight_dynamics_index_t axis, float h
     float angleTarget = pidRcCommandToAngle(rcCommand[axis], pidProfile()->max_angle_inclination[axis]);
 
     // Automatically pitch down if the throttle is manually controlled and reduced bellow cruise throttle
-    if ((axis == FD_PITCH) && STATE(FIXED_WING) && FLIGHT_MODE(ANGLE_MODE) && !navigationIsControllingThrottle())
+    if ((axis == FD_PITCH) && FLIGHT_MODE(ANGLE_MODE) && !navigationIsControllingThrottle())
         angleTarget += scaleRange(MAX(0, navConfig()->fw.cruise_throttle - rcCommand[THROTTLE]), 0, navConfig()->fw.cruise_throttle - PWM_RANGE_MIN, 0, mixerConfig()->fwMinThrottleDownPitchAngle);
 
     const float angleErrorDeg = DECIDEGREES_TO_DEGREES(angleTarget - attitude.raw[axis]);
@@ -846,8 +831,7 @@ static void pidTurnAssistant(pidState_t *pidState)
     targetRates.x = 0.0f;
     targetRates.y = 0.0f;
 
-    if (STATE(FIXED_WING)) {
-        if (calculateCosTiltAngle() >= 0.173648f) {
+    if (calculateCosTiltAngle() >= 0.173648f) {
             // Ideal banked turn follow the equations:
             //      forward_vel^2 / radius = Gravity * tan(roll_angle)
             //      yaw_rate = forward_vel / radius
@@ -857,29 +841,25 @@ static void pidTurnAssistant(pidState_t *pidState)
             //      yaw_rate = tan(roll_angle) * Gravity / forward_vel
 
 #if defined(USE_PITOT)
-            float airspeedForCoordinatedTurn = sensors(SENSOR_PITOT) ?
-                    pitot.airSpeed :
-                    pidProfile()->fixedWingReferenceAirspeed;
+        float airspeedForCoordinatedTurn = sensors(SENSOR_PITOT) ?
+                pitot.airSpeed :
+                pidProfile()->fixedWingReferenceAirspeed;
 #else
-            float airspeedForCoordinatedTurn = pidProfile()->fixedWingReferenceAirspeed;
+        float airspeedForCoordinatedTurn = pidProfile()->fixedWingReferenceAirspeed;
 #endif
 
-            // Constrain to somewhat sane limits - 10km/h - 216km/h
-            airspeedForCoordinatedTurn = constrainf(airspeedForCoordinatedTurn, 300, 6000);
+        // Constrain to somewhat sane limits - 10km/h - 216km/h
+        airspeedForCoordinatedTurn = constrainf(airspeedForCoordinatedTurn, 300, 6000);
+				
+        // Calculate rate of turn in Earth frame according to FAA's Pilot's Handbook of Aeronautical Knowledge
+        float bankAngle = DECIDEGREES_TO_RADIANS(attitude.values.roll);
+        float coordinatedTurnRateEarthFrame = GRAVITY_CMSS * tan_approx(-bankAngle) / airspeedForCoordinatedTurn;
 
-            // Calculate rate of turn in Earth frame according to FAA's Pilot's Handbook of Aeronautical Knowledge
-            float bankAngle = DECIDEGREES_TO_RADIANS(attitude.values.roll);
-            float coordinatedTurnRateEarthFrame = GRAVITY_CMSS * tan_approx(-bankAngle) / airspeedForCoordinatedTurn;
-
-            targetRates.z = RADIANS_TO_DEGREES(coordinatedTurnRateEarthFrame);
-        }
-        else {
-            // Don't allow coordinated turn calculation if airplane is in hard bank or steep climb/dive
-            return;
-        }
+        targetRates.z = RADIANS_TO_DEGREES(coordinatedTurnRateEarthFrame);
     }
     else {
-        targetRates.z = pidState[YAW].rateTarget;
+        // Don't allow coordinated turn calculation if airplane is in hard bank or steep climb/dive
+        return;
     }
 
     // Transform calculated rate offsets into body frame and apply
@@ -890,12 +870,7 @@ static void pidTurnAssistant(pidState_t *pidState)
     pidState[PITCH].rateTarget = constrainf(pidState[PITCH].rateTarget + targetRates.y, -currentControlRateProfile->stabilized.rates[PITCH] * 10.0f, currentControlRateProfile->stabilized.rates[PITCH] * 10.0f);
 
     // Replace YAW on quads - add it in on airplanes
-    if (STATE(FIXED_WING)) {
-        pidState[YAW].rateTarget = constrainf(pidState[YAW].rateTarget + targetRates.z * pidProfile()->fixedWingCoordinatedYawGain, -currentControlRateProfile->stabilized.rates[YAW] * 10.0f, currentControlRateProfile->stabilized.rates[YAW] * 10.0f);
-    }
-    else {
-        pidState[YAW].rateTarget = constrainf(targetRates.z, -currentControlRateProfile->stabilized.rates[YAW] * 10.0f, currentControlRateProfile->stabilized.rates[YAW] * 10.0f);
-    }
+    pidState[YAW].rateTarget = constrainf(pidState[YAW].rateTarget + targetRates.z * pidProfile()->fixedWingCoordinatedYawGain, -currentControlRateProfile->stabilized.rates[YAW] * 10.0f, currentControlRateProfile->stabilized.rates[YAW] * 10.0f);
 }
 
 static void pidApplyFpvCameraAngleMix(pidState_t *pidState, uint8_t fpvCameraAngle)
@@ -972,26 +947,21 @@ void FAST_CODE pidController(float dT)
     // Step 4: Run gyro-driven control
     for (int axis = 0; axis < 3; axis++) {
         // Apply PID setpoint controller
-        if (STATE(FIXED_WING)) {
-            pidApplyFixedWingRateController(&pidState[axis], axis, dT);
-        }
-        else {
-            pidApplyMulticopterRateController(&pidState[axis], axis, dT);
-        }
+        pidApplyFixedWingRateController(&pidState[axis], axis, dT);
+// TODO: remove 		pidApplyMulticopterRateController()	
     }
 }
 
 pidType_e pidIndexGetType(pidIndex_e pidIndex)
 {
-    if (STATE(FIXED_WING)) {
-        // FW specific
-        if (pidIndex == PID_ROLL || pidIndex == PID_PITCH || pidIndex == PID_YAW) {
-            return PID_TYPE_PIFF;
-        }
-        if (pidIndex == PID_VEL_XY || pidIndex == PID_VEL_Z) {
-            return PID_TYPE_NONE;
-        }
+    // FW specific
+    if (pidIndex == PID_ROLL || pidIndex == PID_PITCH || pidIndex == PID_YAW) {
+        return PID_TYPE_PIFF;
     }
+    if (pidIndex == PID_VEL_XY || pidIndex == PID_VEL_Z) {
+        return PID_TYPE_NONE;
+    }
+
     // Common
     if (pidIndex == PID_SURFACE) {
         return PID_TYPE_NONE;

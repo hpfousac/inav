@@ -623,14 +623,14 @@ static bool testBlackboxConditionUncached(FlightLogFieldCondition condition)
 
     case FLIGHT_LOG_FIELD_CONDITION_FIXED_WING_NAV:
 #ifdef USE_NAV
-        return STATE(FIXED_WING);
+        return true;
 #else
         return false;
 #endif
 
-    case FLIGHT_LOG_FIELD_CONDITION_MC_NAV:
+    case FLIGHT_LOG_FIELD_CONDITION_MC_NAV: // TODO: Remove this symbol
 #ifdef USE_NAV
-        return !STATE(FIXED_WING);
+        return false;
 #else
         return false;
 #endif
@@ -1367,42 +1367,22 @@ static void loadMainState(timeUs_t currentTimeUs)
 #ifdef USE_MAG
         blackboxCurrent->magADC[i] = mag.magADC[i];
 #endif
-#ifdef USE_NAV
-        if (!STATE(FIXED_WING)) {
-            // log requested velocity in cm/s
-            blackboxCurrent->mcPosAxisP[i] = lrintf(nav_pids->pos[i].output_constrained);
-
-            // log requested acceleration in cm/s^2 and throttle adjustment in µs
-            blackboxCurrent->mcVelAxisPID[0][i] = lrintf(nav_pids->vel[i].proportional);
-            blackboxCurrent->mcVelAxisPID[1][i] = lrintf(nav_pids->vel[i].integral);
-            blackboxCurrent->mcVelAxisPID[2][i] = lrintf(nav_pids->vel[i].derivative);
-            blackboxCurrent->mcVelAxisPID[3][i] = lrintf(nav_pids->vel[i].feedForward);
-            blackboxCurrent->mcVelAxisOutput[i] = lrintf(nav_pids->vel[i].output_constrained);
-        }
-#endif
     }
 
 #ifdef USE_NAV
-    if (STATE(FIXED_WING)) {
 
         // log requested pitch in decidegrees
-        blackboxCurrent->fwAltPID[0] = lrintf(nav_pids->fw_alt.proportional);
-        blackboxCurrent->fwAltPID[1] = lrintf(nav_pids->fw_alt.integral);
-        blackboxCurrent->fwAltPID[2] = lrintf(nav_pids->fw_alt.derivative);
-        blackboxCurrent->fwAltPIDOutput = lrintf(nav_pids->fw_alt.output_constrained);
+    blackboxCurrent->fwAltPID[0] = lrintf(nav_pids->fw_alt.proportional);
+    blackboxCurrent->fwAltPID[1] = lrintf(nav_pids->fw_alt.integral);
+    blackboxCurrent->fwAltPID[2] = lrintf(nav_pids->fw_alt.derivative);
+    blackboxCurrent->fwAltPIDOutput = lrintf(nav_pids->fw_alt.output_constrained);
 
         // log requested roll in decidegrees
-        blackboxCurrent->fwPosPID[0] = lrintf(nav_pids->fw_nav.proportional / 10);
-        blackboxCurrent->fwPosPID[1] = lrintf(nav_pids->fw_nav.integral / 10);
-        blackboxCurrent->fwPosPID[2] = lrintf(nav_pids->fw_nav.derivative / 10);
-        blackboxCurrent->fwPosPIDOutput = lrintf(nav_pids->fw_nav.output_constrained / 10);
+    blackboxCurrent->fwPosPID[0] = lrintf(nav_pids->fw_nav.proportional / 10);
+    blackboxCurrent->fwPosPID[1] = lrintf(nav_pids->fw_nav.integral / 10);
+    blackboxCurrent->fwPosPID[2] = lrintf(nav_pids->fw_nav.derivative / 10);
+    blackboxCurrent->fwPosPIDOutput = lrintf(nav_pids->fw_nav.output_constrained / 10);
 
-    } else {
-        blackboxCurrent->mcSurfacePID[0] = lrintf(nav_pids->surface.proportional / 10);
-        blackboxCurrent->mcSurfacePID[1] = lrintf(nav_pids->surface.integral / 10);
-        blackboxCurrent->mcSurfacePID[2] = lrintf(nav_pids->surface.derivative / 10);
-        blackboxCurrent->mcSurfacePIDOutput = lrintf(nav_pids->surface.output_constrained / 10);
-    }
 #endif
 
     for (int i = 0; i < 4; i++) {

@@ -519,19 +519,6 @@ void processRx(timeUs_t currentTimeUs)
 
     const throttleStatus_e throttleStatus = calculateThrottleStatus();
 
-    // When armed and motors aren't spinning, do beeps periodically
-    if (ARMING_FLAG(ARMED) && feature(FEATURE_MOTOR_STOP) && !STATE(FIXED_WING)) {
-        static bool armedBeeperOn = false;
-
-        if (throttleStatus == THROTTLE_LOW) {
-            beeper(BEEPER_ARMED);
-            armedBeeperOn = true;
-        } else if (armedBeeperOn) {
-            beeperSilence();
-            armedBeeperOn = false;
-        }
-    }
-
     processRcStickPositions(throttleStatus);
     processAirmode();
     updateActivatedModes();
@@ -621,13 +608,11 @@ void processRx(timeUs_t currentTimeUs)
 #endif
 
     // Handle passthrough mode
-    if (STATE(FIXED_WING)) {
-        if ((IS_RC_MODE_ACTIVE(BOXMANUAL) && !navigationRequiresAngleMode() && !failsafeRequiresAngleMode()) ||    // Normal activation of passthrough
-            (!ARMING_FLAG(ARMED) && isCalibrating())){                                                              // Backup - if we are not armed - enforce passthrough while calibrating
-            ENABLE_FLIGHT_MODE(MANUAL_MODE);
-        } else {
-            DISABLE_FLIGHT_MODE(MANUAL_MODE);
-        }
+    if ((IS_RC_MODE_ACTIVE(BOXMANUAL) && !navigationRequiresAngleMode() && !failsafeRequiresAngleMode()) ||    // Normal activation of passthrough
+        (!ARMING_FLAG(ARMED) && isCalibrating())){                                                              // Backup - if we are not armed - enforce passthrough while calibrating
+        ENABLE_FLIGHT_MODE(MANUAL_MODE);
+    } else {
+        DISABLE_FLIGHT_MODE(MANUAL_MODE);
     }
 
     /* In airmode Iterm should be prevented to grow when Low thottle and Roll + Pitch Centered.
@@ -637,16 +622,15 @@ void processRx(timeUs_t currentTimeUs)
         /* In MANUAL mode we reset integrators prevent I-term wind-up (PID output is not used in MANUAL) */
         pidResetErrorAccumulators();
     }
-    else if (STATE(FIXED_WING) || rcControlsConfig()->airmodeHandlingType == STICK_CENTER) {
+    else if (rcControlsConfig()->airmodeHandlingType == STICK_CENTER) {
         if (throttleStatus == THROTTLE_LOW) {
             if (STATE(AIRMODE_ACTIVE) && !failsafeIsActive() && ARMING_FLAG(ARMED)) {
                 rollPitchStatus_e rollPitchStatus = calculateRollPitchCenterStatus();
 
                 // ANTI_WINDUP at centred stick with MOTOR_STOP is needed on MRs and not needed on FWs
-                if ((rollPitchStatus == CENTERED) || (feature(FEATURE_MOTOR_STOP) && !STATE(FIXED_WING))) {
+                if (rollPitchStatus == CENTERED) {
                     ENABLE_STATE(ANTI_WINDUP);
-                }
-                else {
+                } else {
                     DISABLE_STATE(ANTI_WINDUP);
                 }
             }
@@ -724,22 +708,12 @@ void FAST_CODE NOINLINE taskGyro(timeUs_t currentTimeUs) {
 #endif
 }
 
-static float calculateThrottleTiltCompensationFactor(uint8_t throttleTiltCompensationStrength)
-{
-    if (throttleTiltCompensationStrength) {
-        float tiltCompFactor = 1.0f / constrainf(calculateCosTiltAngle(), 0.6f, 1.0f);  // max tilt about 50 deg
-        return 1.0f + (tiltCompFactor - 1.0f) * (throttleTiltCompensationStrength / 100.f);
-    } else {
-        return 1.0f;
-    }
-}
-
 void taskMainPidLoop(timeUs_t currentTimeUs)
 {
     cycleTime = getTaskDeltaTime(TASK_SELF);
     dT = (float)cycleTime * 0.000001f;
 
-    if (ARMING_FLAG(ARMED) && (!STATE(FIXED_WING) || !isNavLaunchEnabled() || (isNavLaunchEnabled() && (isFixedWingLaunchDetected() || isFixedWingLaunchFinishedOrAborted())))) {
+    if (ARMING_FLAG(ARMED) && (!isNavLaunchEnabled() || (isNavLaunchEnabled() && (isFixedWingLaunchDetected() || isFixedWingLaunchFinishedOrAborted())))) {
         flightTime += cycleTime;
         updateAccExtremes();
     }
@@ -766,28 +740,6 @@ void taskMainPidLoop(timeUs_t currentTimeUs)
     updatePositionEstimator();
     applyWaypointNavigationAndAltitudeHold();
 #endif
-
-    // Apply throttle tilt compensation
-    if (!STATE(FIXED_WING)) {
-        int16_t thrTiltCompStrength = 0;
-
-        if (navigationRequiresThrottleTiltCompensation()) {
-            thrTiltCompStrength = 100;
-        }
-        else if (systemConfig()->throttle_tilt_compensation_strength && (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE))) {
-            thrTiltCompStrength = systemConfig()->throttle_tilt_compensation_strength;
-        }
-
-        if (thrTiltCompStrength) {
-            rcCommand[THROTTLE] = constrain(motorConfig()->minthrottle
-                                            + (rcCommand[THROTTLE] - motorConfig()->minthrottle) * calculateThrottleTiltCompensationFactor(thrTiltCompStrength),
-                                            motorConfig()->minthrottle,
-                                            motorConfig()->maxthrottle);
-        }
-    }
-    else {
-        // FIXME: throttle pitch comp for FW
-    }
 
     // Update PID coefficients
     updatePIDCoefficients(dT);

@@ -109,7 +109,6 @@ static uint8_t mavSystemId = 1;
 static uint8_t mavComponentId = MAV_COMP_ID_SYSTEM_CONTROL;
 
 // MANUAL, ACRO, ANGLE, HRZN, ALTHOLD, POSHOLD, RTH, WP, LAUNCH, FAILSAFE
-static uint8_t inavToArduCopterMap[FLM_COUNT] = { 1,  1,  0,  0,  2, 16,  6,  3, 18,  0 };
 static uint8_t inavToArduPlaneMap[FLM_COUNT]  = { 0,  4,  2,  2,  5,  1, 11, 10, 15,  2 };
 
 static int mavlinkStreamTrigger(enum MAV_DATA_STREAM streamNum)
@@ -441,12 +440,7 @@ void mavlinkSendHUDAndHeartbeat(void)
     flightModeForTelemetry_e flm = getFlightModeForTelemetry();
     uint8_t mavCustomMode;
 
-    if (STATE(FIXED_WING)) {
-        mavCustomMode = inavToArduPlaneMap[flm];
-    }
-    else {
-        mavCustomMode = inavToArduCopterMap[flm];
-    }
+    mavCustomMode = inavToArduPlaneMap[flm];
 
     if (flm != FLM_MANUAL) {
         mavModes |= MAV_MODE_FLAG_STABILIZE_ENABLED;

@@ -499,7 +499,7 @@ static float imuCalculateAccelerometerWeight(const float dT)
     // Default - don't apply rate/ignore scaling
     float accWeight_RateIgnore = 1.0f;
 
-    if (ARMING_FLAG(ARMED) && STATE(FIXED_WING) && imuConfig()->acc_ignore_rate) {
+    if (ARMING_FLAG(ARMED) && imuConfig()->acc_ignore_rate) {
         const float rotRateMagnitude = sqrtf(vectorNormSquared(&imuMeasuredRotationBF));
         const float rotRateMagnitudeFiltered = pt1FilterApply4(&rotRateFilter, rotRateMagnitude, IMU_CENTRIFUGAL_LPF, dT);
 
@@ -532,27 +532,25 @@ static void imuCalculateEstimatedAttitude(float dT)
     bool useCOG = false;
 
 #if defined(USE_GPS)
-    if (STATE(FIXED_WING)) {
-        bool canUseCOG = isGPSHeadingValid();
+    bool canUseCOG = isGPSHeadingValid();
 
-        // Prefer compass (if available)
-        if (canUseMAG) {
-            useMag = true;
-            gpsHeadingInitialized = true;   // GPS heading initialised from MAG, continue on GPS if compass fails
+    // Prefer compass (if available)
+    if (canUseMAG) {
+        useMag = true;
+        gpsHeadingInitialized = true;   // GPS heading initialised from MAG, continue on GPS if compass fails
+    }
+    else if (canUseCOG) {
+        if (gpsHeadingInitialized) {
+            courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
+            useCOG = true;
         }
-        else if (canUseCOG) {
-            if (gpsHeadingInitialized) {
-                courseOverGround = DECIDEGREES_TO_RADIANS(gpsSol.groundCourse);
-                useCOG = true;
-            }
-            else {
-                // Re-initialize quaternion from known Roll, Pitch and GPS heading
-                imuComputeQuaternionFromRPY(attitude.values.roll, attitude.values.pitch, gpsSol.groundCourse);
-                gpsHeadingInitialized = true;
+        else {
+            // Re-initialize quaternion from known Roll, Pitch and GPS heading
+            imuComputeQuaternionFromRPY(attitude.values.roll, attitude.values.pitch, gpsSol.groundCourse);
+            gpsHeadingInitialized = true;
 
-                // Force reset of heading hold target
-                resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(attitude.values.yaw));
-            }
+			// Force reset of heading hold target
+            resetHeadingHoldTarget(DECIDEGREES_TO_DEGREES(attitude.values.yaw));
         }
     }
     else {
@@ -670,7 +668,7 @@ bool isImuReady(void)
 
 bool isImuHeadingValid(void)
 {
-    return (sensors(SENSOR_MAG) && STATE(COMPASS_CALIBRATED)) || (STATE(FIXED_WING) && gpsHeadingInitialized);
+    return (sensors(SENSOR_MAG) && STATE(COMPASS_CALIBRATED)) || gpsHeadingInitialized;
 }
 
 float calculateCosTiltAngle(void)

@@ -104,12 +104,10 @@ static void processAirmodeMultirotor(void) {
 
 void processAirmode(void) {
 
-    if (STATE(FIXED_WING)) {
-        processAirmodeAirplane();
-    } else {
-        processAirmodeMultirotor();
-    }
+// TODO: change method by calling
+	processAirmodeAirplane();
 
+// TODO: remove function	processAirmodeMultirotor();
 }
 
 #if defined(USE_NAV)
