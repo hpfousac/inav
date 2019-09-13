@@ -187,7 +187,7 @@ void initActiveBoxIds(void)
     activeBoxIds[activeBoxIdCount++] = BOXCAMSTAB;
 
 #ifdef USE_GPS
-    if (sensors(SENSOR_BARO) || (feature(FEATURE_GPS))) {
+    if (sensors(SENSOR_BARO) || feature(FEATURE_GPS)) {
         activeBoxIds[activeBoxIdCount++] = BOXNAVALTHOLD;
         activeBoxIds[activeBoxIdCount++] = BOXSURFACE;
     }
