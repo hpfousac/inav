@@ -390,22 +390,6 @@ static float calculateFixedWingTPAFactor(uint16_t throttle)
     return tpaFactor;
 }
 
-static float calculateMultirotorTPAFactor(void)
-{
-    float tpaFactor;
-
-    // TPA should be updated only when TPA is actually set
-    if (currentControlRateProfile->throttle.dynPID == 0 || rcCommand[THROTTLE] < currentControlRateProfile->throttle.pa_breakpoint) {
-        tpaFactor = 1.0f;
-    } else if (rcCommand[THROTTLE] < motorConfig()->maxthrottle) {
-        tpaFactor = (100 - (uint16_t)currentControlRateProfile->throttle.dynPID * (rcCommand[THROTTLE] - currentControlRateProfile->throttle.pa_breakpoint) / (float)(motorConfig()->maxthrottle - currentControlRateProfile->throttle.pa_breakpoint)) / 100.0f;
-    } else {
-        tpaFactor = (100 - currentControlRateProfile->throttle.dynPID) / 100.0f;
-    }
-
-    return tpaFactor;
-}
-
 void schedulePidGainsUpdate(void)
 {
     pidGainsUpdateRequired = true;
@@ -443,7 +427,6 @@ void FAST_CODE NOINLINE updatePIDCoefficients(float dT)
     }
 
     const float tpaFactor = calculateFixedWingTPAFactor(prevThrottle);
-	// TODO: remove calculateMultirotorTPAFactor()
 
     // PID coefficients can be update only with THROTTLE and TPA or inflight PID adjustments
     //TODO: Next step would be to update those only at THROTTLE or inflight adjustments change
@@ -582,145 +565,6 @@ static void FAST_CODE pidApplyFixedWingRateController(pidState_t *pidState, flig
 #endif
 }
 
-static void FAST_CODE applyItermRelax(const int axis, const float gyroRate, float currentPidSetpoint, float *itermErrorRate)
-{
-    const float setpointLpf = pt1FilterApply(&windupLpf[axis], currentPidSetpoint);
-    const float setpointHpf = fabsf(currentPidSetpoint - setpointLpf);
-
-    if (itermRelax) {
-        if (axis < FD_YAW || itermRelax == ITERM_RELAX_RPY) {
-
-            const float itermRelaxFactor = MAX(0, 1 - setpointHpf / itermRelaxSetpointThreshold);
-
-            if (itermRelaxType == ITERM_RELAX_SETPOINT) {
-                *itermErrorRate *= itermRelaxFactor;
-            } else if (itermRelaxType == ITERM_RELAX_GYRO ) {
-                *itermErrorRate = fapplyDeadbandf(setpointLpf - gyroRate, setpointHpf);
-            } else {
-                *itermErrorRate = 0.0f;
-            }
-
-            if (axis == FD_ROLL) {
-                DEBUG_SET(DEBUG_ITERM_RELAX, 0, lrintf(setpointHpf));
-                DEBUG_SET(DEBUG_ITERM_RELAX, 1, lrintf(itermRelaxFactor * 100.0f));
-                DEBUG_SET(DEBUG_ITERM_RELAX, 2, lrintf(*itermErrorRate));
-            }
-        }
-    }
-}
-#ifdef USE_D_BOOST
-static float FAST_CODE applyDBoost(pidState_t *pidState, flight_dynamics_index_t axis, float dT) {
-    
-    float dBoost = 1.0f;
-    
-    if (dBoostFactor > 1) {
-        const float dBoostGyroDelta = (pidState->gyroRate - pidState->previousRateGyro) / dT;
-        const float dBoostGyroAcceleration = fabsf(biquadFilterApply(&pidState->dBoostGyroLpf, dBoostGyroDelta));
-        const float dBoostRateAcceleration = fabsf((pidState->rateTarget - pidState->previousRateTarget) / dT);
-        
-        const float acceleration = MAX(dBoostGyroAcceleration, dBoostRateAcceleration);
-        dBoost = scaleRangef(acceleration, 0.0f, dBoostMaxAtAlleceleration, 1.0f, dBoostFactor);
-        dBoost = pt1FilterApply4(&pidState->dBoostLpf, dBoost, D_BOOST_LPF_HZ, dT);
-        dBoost = constrainf(dBoost, 1.0f, dBoostFactor);
-
-        if (axis == FD_ROLL) {
-            DEBUG_SET(DEBUG_D_BOOST, 0, dBoostGyroAcceleration);
-            DEBUG_SET(DEBUG_D_BOOST, 1, dBoostRateAcceleration);
-            DEBUG_SET(DEBUG_D_BOOST, 2, dBoost * 100);
-        } else if (axis == FD_PITCH) {
-            DEBUG_SET(DEBUG_D_BOOST, 3, dBoost * 100);
-        }
-
-        pidState->previousRateTarget = pidState->rateTarget;
-        pidState->previousRateGyro = pidState->gyroRate;
-    } 
-
-    return dBoost;
-}
-#else 
-static float applyDBoost(pidState_t *pidState, flight_dynamics_index_t axis, float dT) {
-    UNUSED(pidState);
-    UNUSED(axis);
-    UNUSED(dT);
-    return 1.0f;
-}
-#endif
-
-static void FAST_CODE pidApplyMulticopterRateController(pidState_t *pidState, flight_dynamics_index_t axis, float dT)
-{
-    const float rateError = pidState->rateTarget - pidState->gyroRate;
-
-    // Calculate new P-term
-    float newPTerm = rateError * pidState->kP;
-    // Constrain YAW by yaw_p_limit value if not servo driven (in that case servo limits apply)
-    if (axis == FD_YAW && (getMotorCount() >= 4 && pidProfile()->yaw_p_limit)) {
-        newPTerm = constrain(newPTerm, -pidProfile()->yaw_p_limit, pidProfile()->yaw_p_limit);
-    }
-
-    // Additional P-term LPF on YAW axis
-    if (axis == FD_YAW && pidProfile()->yaw_lpf_hz) {
-        newPTerm = pt1FilterApply4(&pidState->ptermLpfState, newPTerm, pidProfile()->yaw_lpf_hz, dT);
-    }
-
-    // Calculate new D-term
-    float newDTerm;
-    if (pidBank()->pid[axis].D == 0) {
-        // optimisation for when D8 is zero, often used by YAW axis
-        newDTerm = 0;
-    } else {
-        // Calculate delta for Dterm calculation. Apply filters before derivative to minimize effects of dterm kick
-        float deltaFiltered = pidProfile()->dterm_setpoint_weight * pidState->rateTarget - pidState->gyroRate;
-
-#ifdef USE_DTERM_NOTCH
-        // Apply D-term notch
-        deltaFiltered = notchFilterApplyFn(&pidState->deltaNotchFilter, deltaFiltered);
-#endif
-
-        // Apply additional lowpass
-        if (pidProfile()->dterm_lpf_hz) {
-            deltaFiltered = biquadFilterApply(&pidState->deltaLpfState, deltaFiltered);
-        }
-
-        firFilterUpdate(&pidState->gyroRateFilter, deltaFiltered);
-        newDTerm = firFilterApply(&pidState->gyroRateFilter);
-
-        // Calculate derivative
-        newDTerm =  newDTerm * (pidState->kD / dT) * applyDBoost(pidState, axis, dT);
-
-        // Additionally constrain D
-        newDTerm = constrainf(newDTerm, -300.0f, 300.0f);
-    }
-
-    // TODO: Get feedback from mixer on available correction range for each axis
-    const float newOutput = newPTerm + newDTerm + pidState->errorGyroIf;
-    const float newOutputLimited = constrainf(newOutput, -pidProfile()->pidSumLimit, +pidProfile()->pidSumLimit);
-
-    // Prevent strong Iterm accumulation during stick inputs
-    const float motorItermWindupPoint = 1.0f - (pidProfile()->itermWindupPointPercent / 100.0f);
-    const float antiWindupScaler = constrainf((1.0f - getMotorMixRange()) / motorItermWindupPoint, 0.0f, 1.0f);
-
-    float itermErrorRate = rateError;
-    applyItermRelax(axis, pidState->gyroRate, pidState->rateTarget, &itermErrorRate);
-
-    pidState->errorGyroIf += (itermErrorRate * pidState->kI * antiWindupScaler * dT)
-                             + ((newOutputLimited - newOutput) * pidState->kT * antiWindupScaler * dT);
-
-    // Don't grow I-term if motors are at their limit
-    if (STATE(ANTI_WINDUP) || mixerIsOutputSaturated()) {
-        pidState->errorGyroIf = constrainf(pidState->errorGyroIf, -pidState->errorGyroIfLimit, pidState->errorGyroIfLimit);
-    } else {
-        pidState->errorGyroIfLimit = fabsf(pidState->errorGyroIf);
-    }
-
-    axisPID[axis] = newOutputLimited;
-
-#ifdef USE_BLACKBOX
-    axisPID_P[axis] = newPTerm;
-    axisPID_I[axis] = pidState->errorGyroIf;
-    axisPID_D[axis] = newDTerm;
-    axisPID_Setpoint[axis] = pidState->rateTarget;
-#endif
-}
 
 void updateHeadingHoldTarget(int16_t heading)
 {
@@ -948,7 +792,6 @@ void FAST_CODE pidController(float dT)
     for (int axis = 0; axis < 3; axis++) {
         // Apply PID setpoint controller
         pidApplyFixedWingRateController(&pidState[axis], axis, dT);
-// TODO: remove 		pidApplyMulticopterRateController()	
     }
 }
 
