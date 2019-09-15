@@ -420,8 +420,6 @@ void resetMulticopterLandingDetector(void);
 bool isMulticopterLandingDetected(void);
 bool isFixedWingLandingDetected(void);
 
-void calculateMulticopterInitialHoldPosition(fpVector3_t * pos);
-
 /* Fixed-wing specific functions */
 void setupFixedWingAltitudeController(void);
 

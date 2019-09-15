@@ -2240,7 +2240,6 @@ void calculateInitialHoldPosition(fpVector3_t * pos)
 	// TODO: Change function content by content of referenced func
     calculateFixedWingInitialHoldPosition(pos);
 	
-	// TODO: remove function: calculateMulticopterInitialHoldPosition() 		
 }
 
 /*-----------------------------------------------------------

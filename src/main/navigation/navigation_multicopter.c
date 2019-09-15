@@ -622,14 +622,6 @@ static void applyMulticopterEmergencyLandingController(timeUs_t currentTimeUs)
 /*-----------------------------------------------------------
  * Calculate loiter target based on current position and velocity
  *-----------------------------------------------------------*/
-void calculateMulticopterInitialHoldPosition(fpVector3_t * pos)
-{
-    const float stoppingDistanceX = navGetCurrentActualPositionAndVelocity()->vel.x * posControl.posDecelerationTime;
-    const float stoppingDistanceY = navGetCurrentActualPositionAndVelocity()->vel.y * posControl.posDecelerationTime;
-
-    pos->x = navGetCurrentActualPositionAndVelocity()->pos.x + stoppingDistanceX;
-    pos->y = navGetCurrentActualPositionAndVelocity()->pos.y + stoppingDistanceY;
-}
 
 void resetMulticopterHeadingController(void)
 {
