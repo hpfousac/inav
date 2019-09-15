@@ -2400,7 +2400,6 @@ static bool adjustPositionFromRCInput(void)
 	// TODO: Change function content by content of referenced func
     return adjustFixedWingPositionFromRCInput();
 	
-	// TODO: remove function: adjustMulticopterPositionFromRCInput() 		
 }
 
 /*-----------------------------------------------------------
