@@ -216,7 +216,7 @@ include $(ROOT)/make/tools.mk
 CROSS_CC    = $(ARM_SDK_PREFIX)gcc
 OBJCOPY     = $(ARM_SDK_PREFIX)objcopy
 SIZE        = $(ARM_SDK_PREFIX)size
-
+OBJDUMP     = $(ARM_SDK_PREFIX)objdump
 #
 # Tool options.
 #
@@ -299,6 +299,7 @@ TARGET_HEX	= $(TARGET_BIN:.bin=.hex)
 
 TARGET_OBJ_DIR  = $(OBJECT_DIR)/$(TARGET)
 TARGET_ELF      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).elf
+TARGET_UASM      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).uasm
 TARGET_OBJS     = $(addsuffix .o,$(addprefix $(TARGET_OBJ_DIR)/,$(basename $(TARGET_SRC))))
 TARGET_DEPS     = $(addsuffix .d,$(addprefix $(TARGET_OBJ_DIR)/,$(basename $(TARGET_SRC))))
 TARGET_MAP      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).map
@@ -306,7 +307,7 @@ TARGET_MAP      = $(OBJECT_DIR)/$(FORKNAME)_$(TARGET).map
 
 CLEAN_ARTIFACTS := $(TARGET_BIN)
 CLEAN_ARTIFACTS += $(TARGET_HEX)
-CLEAN_ARTIFACTS += $(TARGET_ELF) $(TARGET_OBJS) $(TARGET_MAP)
+CLEAN_ARTIFACTS += $(TARGET_ELF) $(TARGET_UASM) $(TARGET_OBJS) $(TARGET_MAP)
 
 # Make sure build date and revision is updated on every incremental build
 $(TARGET_OBJ_DIR)/build/version.o : $(TARGET_SRC)
@@ -355,6 +356,9 @@ $(TARGET_HEX): $(TARGET_ELF)
 
 $(TARGET_BIN): $(TARGET_ELF)
 	$(V0) $(OBJCOPY) -O binary $< $@
+
+$(TARGET_UASM): $(TARGET_ELF)
+	$(V0) $(OBJDUMP) -d $(TARGET_ELF) > $@
 
 $(TARGET_ELF): $(TARGET_OBJS)
 	$(V1) echo Linking $(TARGET)
