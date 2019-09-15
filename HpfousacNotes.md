@@ -7,7 +7,7 @@
 
  * related compile time symbol: **USE_RX_PPM**
 
- `featureMask()`, 
+ `featureMask()`,
 
  from cli: `<`featureClear(mask);`, `featureSet(mask);` -- tady jsem zatim skoncil --
 
@@ -38,7 +38,7 @@
 ~~~~
 
   found message **MSP_SERVO_CONFIGURATIONS** and **MSP_SET_SERVO_CONFIGURATION**
-  
+
  ~~~~
  case MSP_SERVO_CONFIGURATIONS:
         for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
@@ -68,7 +68,7 @@ bit array containig rew stages.
 
 ### IO Port map ###
 
- Defined type: `ioRec_t` array with size **DEFIO_IO_USED_COUNT** defined in 
+ Defined type: `ioRec_t` array with size **DEFIO_IO_USED_COUNT** defined in
  `src/main/drivers/io.c`. Size of array is derived form ports specified as **TARGET_IO_PORTx** is
  particular `target.c` file.
  The array is named **ioRecs**. It is not configured it is initialized in `void IOInitGlobal(void);`.
@@ -110,7 +110,7 @@ bit array containig rew stages.
    - here was found 2 interesting symbols:
 
    * DEFAULT_FEATURES *investigate*
- 
+
    * DEFAULT_RX_TYPE *investigate*
 
  some code was commented out in Makefile, but this is not a good way how to do.
@@ -258,7 +258,7 @@ Some of them are defined somewhere else from *TARGET*, `Makefile` and `target.mk
 
 `typedef struct timerHardware_s`
 
- move conditionally added fields to the end of list. Obey this can result in strange behaviour after 
+ move conditionally added fields to the end of list. Obey this can result in strange behaviour after
  sucessfull compilation and linking based on wrong combination of parameters/attributes.
 
 # Subsystems #
@@ -378,10 +378,10 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
 ### Modification steps ###
 
- * Removal of **flyingPlatformType_e** *(defined in mixer.h)*- all references and if sections will be removed. 
+ * Removal of **flyingPlatformType_e** *(defined in mixer.h)*- all references and if sections will be removed.
  The remaining code parts are as was used only **PLATFORM_AIRPLANE** symbol.
 
- List of all symbols: PLATFORM_MULTIROTOR, PLATFORM_AIRPLANE, PLATFORM_HELICOPTER, 
+ List of all symbols: PLATFORM_MULTIROTOR, PLATFORM_AIRPLANE, PLATFORM_HELICOPTER,
  PLATFORM_TRICOPTER, PLATFORM_ROVER, PLATFORM_BOAT, PLATFORM_OTHER.
 
  Remove element/field **mixerConfig_t.platformType**
@@ -392,9 +392,9 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove all ocurences of **USE_AUTOTUNE_MULTIROTOR**
 
-#### TODO ####
-
  * Check symbol **FIXED_WING** an remove all other irrelevant STATEs/Options
+
+#### TODO ####
 
  * Remove symbol **MR_RTH_CLIMB_MARGIN_PERCENT** - MR means multirotor (it is going together with FIXED_WING)
 
@@ -408,6 +408,16 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove macro/function **isMixerUsingServos();**
 
+ * Remove all multicopter settings (for instance: **nav_mc_pos_z_p**)
+
 #### Notes ####
 
  Inside function **void servoMixer(float dT);** was a something for head down position for multirotor in 3D.
+
+# SPRACINGF3 #
+
+## CLI SETUP ##
+
+~~~
+feature PWM_OUTPUT_ENABLE
+~~~
