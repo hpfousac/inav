@@ -54,60 +54,12 @@ boxBitmask_t rcModeActivationMask; // one bit per mode defined in boxId_e
 PG_REGISTER_ARRAY(modeActivationCondition_t, MAX_MODE_ACTIVATION_CONDITION_COUNT, modeActivationConditions, PG_MODE_ACTIVATION_PROFILE, 0);
 PG_REGISTER(modeActivationOperatorConfig_t, modeActivationOperatorConfig, PG_MODE_ACTIVATION_OPERATOR_CONFIG, 0);
 
-static void processAirmodeAirplane(void) {
+void processAirmode(void) {
     if (feature(FEATURE_AIRMODE) || IS_RC_MODE_ACTIVE(BOXAIRMODE)) {
         ENABLE_STATE(AIRMODE_ACTIVE);
     } else {
         DISABLE_STATE(AIRMODE_ACTIVE);
     }
-}
-
-static void processAirmodeMultirotor(void) {
-    if (rcControlsConfig()->airmodeHandlingType == STICK_CENTER) {
-        if (feature(FEATURE_AIRMODE) || IS_RC_MODE_ACTIVE(BOXAIRMODE)) {
-            ENABLE_STATE(AIRMODE_ACTIVE);
-        } else {
-            DISABLE_STATE(AIRMODE_ACTIVE);
-        }
-    } else if (rcControlsConfig()->airmodeHandlingType == THROTTLE_THRESHOLD) {
-
-        if (!ARMING_FLAG(ARMED)) {
-            /*
-             * Disarm disables airmode immediately
-             */
-            DISABLE_STATE(AIRMODE_ACTIVE);
-        } else if (
-            !STATE(AIRMODE_ACTIVE) && 
-            rcCommand[THROTTLE] > rcControlsConfig()->airmodeThrottleThreshold &&
-            (feature(FEATURE_AIRMODE) || IS_RC_MODE_ACTIVE(BOXAIRMODE))
-        ) {
-            /*
-             * Airmode is allowed to be active only after ARMED and then THROTTLE goes above
-             * activation threshold
-             */
-            ENABLE_STATE(AIRMODE_ACTIVE);
-        } else if (
-            STATE(AIRMODE_ACTIVE) &&
-            !feature(FEATURE_AIRMODE) &&
-            !IS_RC_MODE_ACTIVE(BOXAIRMODE)
-        ) {
-            /*
-             *  When user disables BOXAIRMODE, turn airmode off as well
-             */
-            DISABLE_STATE(AIRMODE_ACTIVE);
-        }
-
-    } else {
-        DISABLE_STATE(AIRMODE_ACTIVE);
-    }
-}
-
-void processAirmode(void) {
-
-// TODO: change method by calling
-	processAirmodeAirplane();
-
-// TODO: remove function	processAirmodeMultirotor();
 }
 
 #if defined(USE_NAV)
