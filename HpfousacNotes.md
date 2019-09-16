@@ -408,7 +408,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove **nav_mc_vel_xy_dterm_lpf_hz** (commit bcab059cc)
 
- * Remove macro/function **isMixerUsingServos();**, **FLIGHT_LOG_FIELD_CONDITION_SERVOS** (replaced by TRUE, where appropriate)
+ * Remove macro/function **isMixerUsingServos();**, **FLIGHT_LOG_FIELD_CONDITION_SERVOS** (replaced by TRUE, where appropriate) (commit 161dffe9c)
 
 #### TODO ####
 
