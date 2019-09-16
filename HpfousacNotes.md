@@ -404,9 +404,9 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
  
  * Remove parameter **rth_tail_first** which is related to the multirotor. (commit 595b8d535)
 
-#### TODO ####
+ * Remove **navConfig()->mc.posDecelerationTime** (commit d6bdd1231)
 
- * Remove **navConfig()->mc.posDecelerationTime**
+#### TODO ####
 
  * Remove **nav_mc_vel_xy_dterm_lpf_hz**
 
