@@ -1332,11 +1332,6 @@ groups:
         condition: USE_MR_BRAKING_MODE
         min: 15
         max: 60
-      - name: nav_mc_pos_deceleration_time
-        field: mc.posDecelerationTime
-        condition: USE_NAV
-        min: 0
-        max: 255
       - name: nav_mc_pos_expo
         field: mc.posResponseExpo
         condition: USE_NAV

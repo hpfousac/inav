@@ -323,7 +323,6 @@ typedef struct {
 
     /* Navigation PID controllers + pre-computed flight parameters */
     navigationPIDControllers_t  pids;
-    float                       posDecelerationTime;
     float                       posResponseExpo;
 
     /* Local system state, both actual (estimated) and desired (target setpoint)*/

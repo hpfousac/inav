@@ -124,7 +124,6 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
         .braking_boost_speed_threshold = 150,   // Boost can happen only above 1.5m/s
         .braking_boost_disengage_speed = 100,   // Disable boost at 1m/s
         .braking_bank_angle = 40,               // Max braking angle     
-        .posDecelerationTime = 120,             // posDecelerationTime * 100
         .posResponseExpo = 10,                  // posResponseExpo * 100
     },
 
@@ -2985,8 +2984,6 @@ void updateWaypointsAndNavigationMode(void)
 void navigationUsePIDs(void)
 {
     /** Multicopter PIDs */
-    // Brake time parameter
-    posControl.posDecelerationTime = (float)navConfig()->mc.posDecelerationTime / 100.0f;
 
     // Position controller expo (taret vel expo for MC)
     posControl.posResponseExpo = constrainf((float)navConfig()->mc.posResponseExpo / 100.0f, 0.0f, 1.0f);
