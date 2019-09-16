@@ -394,21 +394,19 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Check symbol **FIXED_WING** an remove all other irrelevant STATEs/Options
 
-#### TODO ####
-
  * Remove symbol **MR_RTH_CLIMB_MARGIN_PERCENT** - MR means multirotor (it is going together with FIXED_WING)
+
+#### TODO ####
 
  * Remove symbol **MC_NAV**
 
- * Remove symbol **&pidProfile()->bank_mc**
+ * Remove symbol **&pidProfile()->bank_mc**, Remove all multicopter settings (for instance: **nav_mc_pos_z_p**)
 
  * **MR_RTH_CLIMB_OVERSHOOT_CM**
 
  * Remove parameter **rth_tail_first** which is related to the multirotor.
 
  * Remove macro/function **isMixerUsingServos();**
-
- * Remove all multicopter settings (for instance: **nav_mc_pos_z_p**)
 
 #### Notes ####
 
