@@ -406,11 +406,12 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove **navConfig()->mc.posDecelerationTime** (commit d6bdd1231)
 
+ * Remove **nav_mc_vel_xy_dterm_lpf_hz** (commit bcab059cc)
+
+ * Remove macro/function **isMixerUsingServos();**, **FLIGHT_LOG_FIELD_CONDITION_SERVOS** (replaced by TRUE, where appropriate)
+
 #### TODO ####
 
- * Remove **nav_mc_vel_xy_dterm_lpf_hz**
-
- * Remove macro/function **isMixerUsingServos();**
 
 #### Notes ####
 

@@ -302,11 +302,6 @@ static void pwmInitServos(timMotorServoHardware_t * timOutputs)
 {
     const int servoCount = getServoCount();
 
-    if (!isMixerUsingServos()) {
-        LOG_I(PWM, "Mixer does not use servos");
-        return;
-    }
-
     // Check if too many servos
     if (servoCount > MAX_SERVOS) {
         pwmInitError = PWM_INIT_ERROR_TOO_MANY_SERVOS;
