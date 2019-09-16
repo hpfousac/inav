@@ -398,7 +398,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove symbol **MC_NAV** (commit 58d0284a0)
 
- * Remove symbol **&pidProfile()->bank_mc**, Remove all multicopter settings (for instance: **nav_mc_pos_z_p**)
+ * Remove symbol **&pidProfile()->bank_mc**, Remove all multicopter settings (for instance: **nav_mc_pos_z_p**) (commit 46b437e8e
 
 #### TODO ####
 
