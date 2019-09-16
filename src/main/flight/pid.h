@@ -99,7 +99,6 @@ typedef enum {
 
 typedef struct pidProfile_s {
     pidBank_t bank_fw;
-    pidBank_t bank_mc;
 
     uint16_t dterm_soft_notch_hz;           // Dterm Notch frequency
     uint16_t dterm_soft_notch_cutoff;       // Dterm Notch Cutoff frequency
@@ -151,7 +150,7 @@ typedef struct pidAutotuneConfig_s {
 PG_DECLARE_PROFILE(pidProfile_t, pidProfile);
 PG_DECLARE(pidAutotuneConfig_t, pidAutotuneConfig);
 
-static inline const pidBank_t * pidBank(void) { return &pidProfile()->bank_fw; } // TODO: remove symbol ->bank_mc or change all references of pidBank(void) and pidBankMutable(void) 
+static inline const pidBank_t * pidBank(void) { return &pidProfile()->bank_fw; }
 static inline pidBank_t * pidBankMutable(void) { return &pidProfileMutable()->bank_fw; }
 
 extern int16_t axisPID[];

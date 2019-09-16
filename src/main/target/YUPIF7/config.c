@@ -46,17 +46,5 @@ void targetConfiguration(void)
 {
     /* Specific PID values for YupiF7 */
     setConfigProfile(0);
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].P = 30;
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].I = 45;
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].D = 20;
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].P = 30;
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].I = 50;
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].D = 20;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].P = 40;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].I = 50;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].D = 0;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].P = 20;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].I = 10;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].D = 75;
 
 }

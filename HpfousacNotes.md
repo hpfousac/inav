@@ -398,13 +398,17 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove symbol **MC_NAV** (commit 58d0284a0)
 
-#### TODO ####
-
  * Remove symbol **&pidProfile()->bank_mc**, Remove all multicopter settings (for instance: **nav_mc_pos_z_p**)
+
+#### TODO ####
 
  * **MR_RTH_CLIMB_OVERSHOOT_CM**
 
  * Remove parameter **rth_tail_first** which is related to the multirotor.
+
+ * Remove **navConfig()->mc.posDecelerationTime**
+
+ * Remove **nav_mc_vel_xy_dterm_lpf_hz**
 
  * Remove macro/function **isMixerUsingServos();**
 

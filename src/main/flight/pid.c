@@ -132,45 +132,6 @@ static EXTENDED_FASTRAM float dBoostMaxAtAlleceleration;
 PG_REGISTER_PROFILE_WITH_RESET_TEMPLATE(pidProfile_t, pidProfile, PG_PID_PROFILE, 9);
 
 PG_RESET_TEMPLATE(pidProfile_t, pidProfile,
-        .bank_mc = {
-            .pid = {
-                [PID_ROLL] =    { 40, 30, 23, 0 },
-                [PID_PITCH] =   { 40, 30, 23, 0 },
-                [PID_YAW] =     { 85, 45, 0, 0 },
-                [PID_LEVEL] = {
-                    .P = 20,    // Self-level strength
-                    .I = 15,    // Self-leveing low-pass frequency (0 - disabled)
-                    .D = 75,    // 75% horizon strength
-                    .FF = 0,
-                },
-                [PID_HEADING] = { 60, 0, 0, 0 },
-                [PID_POS_XY] = {
-                    .P = 65,   // NAV_POS_XY_P * 100
-                    .I = 0,
-                    .D = 0,
-                    .FF = 0,
-                },
-                [PID_VEL_XY] = {
-                    .P = 40,   // NAV_VEL_XY_P * 20
-                    .I = 15,   // NAV_VEL_XY_I * 100
-                    .D = 100,  // NAV_VEL_XY_D * 100
-                    .FF = 40,  // NAV_VEL_XY_D * 100
-                },
-                [PID_POS_Z] = {
-                    .P = 50,    // NAV_POS_Z_P * 100
-                    .I = 0,     // not used
-                    .D = 0,     // not used
-                    .FF = 0,
-                },
-                [PID_VEL_Z] = {
-                    .P = 100,   // NAV_VEL_Z_P * 66.7
-                    .I = 50,    // NAV_VEL_Z_I * 20
-                    .D = 10,    // NAV_VEL_Z_D * 100
-                    .FF = 0,
-                }
-            }
-        },
-
         .bank_fw = {
             .pid = {
                 [PID_ROLL] =    { 5, 7, 0, 50 },

@@ -75,15 +75,6 @@ void targetConfiguration(void)
         featureConfigMutable()->enabledFeatures |= (FEATURE_TX_PROF_SEL | FEATURE_CURRENT_METER | FEATURE_VBAT | FEATURE_TELEMETRY);
     }
 
-    pidProfileMutable()->bank_mc.pid[ROLL].P = 53;
-    pidProfileMutable()->bank_mc.pid[ROLL].I = 45;
-    pidProfileMutable()->bank_mc.pid[ROLL].D = 52;
-    pidProfileMutable()->bank_mc.pid[PITCH].P = 53;
-    pidProfileMutable()->bank_mc.pid[PITCH].I = 45;
-    pidProfileMutable()->bank_mc.pid[PITCH].D = 52;
-    pidProfileMutable()->bank_mc.pid[YAW].P = 64;
-    pidProfileMutable()->bank_mc.pid[YAW].D = 18;
-
     *primaryMotorMixerMutable(0) = (motorMixer_t){ 1.0f, -0.414178f,  1.0f, -1.0f };    // REAR_R
     *primaryMotorMixerMutable(1) = (motorMixer_t){ 1.0f, -0.414178f, -1.0f,  1.0f };    // FRONT_R
     *primaryMotorMixerMutable(2) = (motorMixer_t){ 1.0f,  0.414178f,  1.0f,  1.0f };    // REAR_L

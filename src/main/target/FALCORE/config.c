@@ -152,18 +152,6 @@ void targetConfiguration(void)
 
     // Rates and PIDs
     setConfigProfile(0);
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].P = 65;
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].I = 50;
-    pidProfileMutable()->bank_mc.pid[PID_PITCH].D = 28;
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].P = 45;
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].I = 40;
-    pidProfileMutable()->bank_mc.pid[PID_ROLL].D = 25;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].P = 90;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].I = 45;
-    pidProfileMutable()->bank_mc.pid[PID_YAW].D = 0;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].P = 20;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].I = 10;
-    pidProfileMutable()->bank_mc.pid[PID_LEVEL].D = 75;
 
     pidProfileMutable()->max_angle_inclination[FD_ROLL] = 300;
     pidProfileMutable()->max_angle_inclination[FD_PITCH] = 300;
@@ -177,18 +165,6 @@ void targetConfiguration(void)
     pidProfileMutable()->axisAccelerationLimitRollPitch = 0;
     pidProfileMutable()->axisAccelerationLimitYaw = 10000;
 
-    pidProfileMutable()->bank_mc.pid[PID_POS_Z].P = 50;
-    pidProfileMutable()->bank_mc.pid[PID_POS_Z].I = 0;
-    pidProfileMutable()->bank_mc.pid[PID_POS_Z].D = 0;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_Z].P = 100;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_Z].I = 50;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_Z].D = 10;
-    pidProfileMutable()->bank_mc.pid[PID_POS_XY].P = 50;
-    pidProfileMutable()->bank_mc.pid[PID_POS_XY].I = 100;
-    pidProfileMutable()->bank_mc.pid[PID_POS_XY].D = 10;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_XY].P = 150;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_XY].I = 20;
-    pidProfileMutable()->bank_mc.pid[PID_VEL_XY].D = 70;
 
     ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcExpo8 = 60;
     ((controlRateConfig_t*)currentControlRateProfile)->stabilized.rcYawExpo8 = 35;

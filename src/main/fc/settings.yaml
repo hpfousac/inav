@@ -891,54 +891,6 @@ groups:
     headers: ["flight/pid.h"]
     value_type: PROFILE_VALUE
     members:
-      - name: mc_p_pitch
-        field: bank_mc.pid[PID_PITCH].P
-        min: 0
-        max: 200
-      - name: mc_i_pitch
-        field: bank_mc.pid[PID_PITCH].I
-        min: 0
-        max: 200
-      - name: mc_d_pitch
-        field: bank_mc.pid[PID_PITCH].D
-        min: 0
-        max: 200
-      - name: mc_p_roll
-        field: bank_mc.pid[PID_ROLL].P
-        min: 0
-        max: 200
-      - name: mc_i_roll
-        field: bank_mc.pid[PID_ROLL].I
-        min: 0
-        max: 200
-      - name: mc_d_roll
-        field: bank_mc.pid[PID_ROLL].D
-        min: 0
-        max: 200
-      - name: mc_p_yaw
-        field: bank_mc.pid[PID_YAW].P
-        min: 0
-        max: 200
-      - name: mc_i_yaw
-        field: bank_mc.pid[PID_YAW].I
-        min: 0
-        max: 200
-      - name: mc_d_yaw
-        field: bank_mc.pid[PID_YAW].D
-        min: 0
-        max: 200
-      - name: mc_p_level
-        field: bank_mc.pid[PID_LEVEL].P
-        min: 0
-        max: 200
-      - name: mc_i_level
-        field: bank_mc.pid[PID_LEVEL].I
-        min: 0
-        max: 200
-      - name: mc_d_level
-        field: bank_mc.pid[PID_LEVEL].D
-        min: 0
-        max: 200
       - name: fw_p_pitch
         field: bank_fw.pid[PID_PITCH].P
         min: 0
@@ -1058,56 +1010,6 @@ groups:
         min: HEADING_HOLD_RATE_LIMIT_MIN
         max: HEADING_HOLD_RATE_LIMIT_MAX
 
-      - name: nav_mc_pos_z_p
-        field: bank_mc.pid[PID_POS_Z].P
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_z_p
-        field: bank_mc.pid[PID_VEL_Z].P
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_z_i
-        field: bank_mc.pid[PID_VEL_Z].I
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_z_d
-        field: bank_mc.pid[PID_VEL_Z].D
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_pos_xy_p
-        field: bank_mc.pid[PID_POS_XY].P
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_xy_p
-        field: bank_mc.pid[PID_VEL_XY].P
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_xy_i
-        field: bank_mc.pid[PID_VEL_XY].I
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_xy_d
-        field: bank_mc.pid[PID_VEL_XY].D
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_vel_xy_ff
-        field: bank_mc.pid[PID_VEL_XY].FF
-        condition: USE_NAV
-        min: 0
-        max: 255
-      - name: nav_mc_heading_p
-        field: bank_mc.pid[PID_HEADING].P
-        condition: USE_NAV
-        min: 0
-        max: 255
       - name: nav_mc_vel_xy_dterm_lpf_hz
         field: navVelXyDTermLpfHz
         min: 0
