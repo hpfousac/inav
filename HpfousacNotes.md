@@ -394,7 +394,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Check symbol **FIXED_WING** an remove all other irrelevant STATEs/Options
 
- * Remove symbol **MR_RTH_CLIMB_MARGIN_PERCENT** - MR means multirotor (it is going together with FIXED_WING)
+ * Remove symbol **MR_RTH_CLIMB_MARGIN_PERCENT** - MR means multirotor (it is going together with FIXED_WING) (commit fcc1265c920e2ecc339dcdf393919f1437b65c8e)
 
 #### TODO ####
 

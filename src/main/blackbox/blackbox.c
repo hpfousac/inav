@@ -206,28 +206,6 @@ static const blackboxDeltaFieldDefinition_t blackboxMainFields[] = {
     {"fwPosD",     -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(FIXED_WING_NAV)},
     {"fwPosOut",   -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(FIXED_WING_NAV)},
 
-    {"mcPosAxisP",  0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcPosAxisP",  1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcPosAxisP",  2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisP",  0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisP",  1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisP",  2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisI",  0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisI",  1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisI",  2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisD",  0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisD",  1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisD",  2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisFF", 0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisFF", 1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisFF", 2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisOut",0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisOut",1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcVelAxisOut",2, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcSurfaceP", -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcSurfaceI", -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcSurfaceD", -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
-    {"mcSurfaceOut",-1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(SIGNED_VB), CONDITION(MC_NAV)},
 
     /* rcData are encoded together as a group: */
     {"rcData",      0, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(TAG8_4S16), CONDITION(ALWAYS)},
@@ -628,13 +606,6 @@ static bool testBlackboxConditionUncached(FlightLogFieldCondition condition)
         return false;
 #endif
 
-    case FLIGHT_LOG_FIELD_CONDITION_MC_NAV: // TODO: Remove this symbol
-#ifdef USE_NAV
-        return false;
-#else
-        return false;
-#endif
-
     case FLIGHT_LOG_FIELD_CONDITION_RSSI:
         // Assumes blackboxStart() is called after rxInit(), which should be true since
         // logging can't be started until after all the arming checks take place
@@ -730,19 +701,6 @@ static void writeIntraframe(void)
         blackboxWriteSignedVB(blackboxCurrent->fwPosPIDOutput);
     }
 
-    if (testBlackboxCondition(CONDITION(MC_NAV))) {
-
-        blackboxWriteSignedVBArray(blackboxCurrent->mcPosAxisP, XYZ_AXIS_COUNT);
-
-        for (int i = 0; i < 4; i++) {
-            blackboxWriteSignedVBArray(blackboxCurrent->mcVelAxisPID[i], XYZ_AXIS_COUNT);
-        }
-
-        blackboxWriteSignedVBArray(blackboxCurrent->mcVelAxisOutput, XYZ_AXIS_COUNT);
-
-        blackboxWriteSignedVBArray(blackboxCurrent->mcSurfacePID, 3);
-        blackboxWriteSignedVB(blackboxCurrent->mcSurfacePIDOutput);
-    }
 
     // Write raw stick positions
     blackboxWriteSigned16VBArray(blackboxCurrent->rcData, 4);
@@ -932,24 +890,7 @@ static void writeInterframe(void)
 
     }
 
-    if (testBlackboxCondition(CONDITION(MC_NAV))) {
-        arraySubInt32(deltas, blackboxCurrent->mcPosAxisP, blackboxLast->mcPosAxisP, XYZ_AXIS_COUNT);
-        blackboxWriteSignedVBArray(deltas, XYZ_AXIS_COUNT);
-
-        for (int i = 0; i < 4; i++) {
-            arraySubInt32(deltas, blackboxCurrent->mcVelAxisPID[i], blackboxLast->mcVelAxisPID[i], XYZ_AXIS_COUNT);
-            blackboxWriteSignedVBArray(deltas, XYZ_AXIS_COUNT);
-        }
-
-        arraySubInt32(deltas, blackboxCurrent->mcVelAxisOutput, blackboxLast->mcVelAxisOutput, XYZ_AXIS_COUNT);
-        blackboxWriteSignedVBArray(deltas, XYZ_AXIS_COUNT);
-
-        arraySubInt32(deltas, blackboxCurrent->mcSurfacePID, blackboxLast->mcSurfacePID, 3);
-        blackboxWriteSignedVBArray(deltas, 3);
-
-        blackboxWriteSignedVB(blackboxCurrent->mcSurfacePIDOutput - blackboxLast->mcSurfacePIDOutput);
-    }
-
+    
     /*
      * RC tends to stay the same or fairly small for many frames at a time, so use an encoding that
      * can pack multiple values per byte:
