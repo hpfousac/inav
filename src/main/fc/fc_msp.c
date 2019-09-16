@@ -1201,7 +1201,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
         sbufWriteU16(dst, navConfig()->general.min_rth_distance);
         sbufWriteU8(dst, navConfig()->general.flags.rth_climb_first);
         sbufWriteU8(dst, navConfig()->general.flags.rth_climb_ignore_emerg);
-        sbufWriteU8(dst, navConfig()->general.flags.rth_tail_first);
+        sbufWriteU8(dst, 0);
         sbufWriteU8(dst, navConfig()->general.flags.rth_allow_landing);
         sbufWriteU8(dst, navConfig()->general.flags.rth_alt_control_mode);
         sbufWriteU16(dst, navConfig()->general.rth_abort_threshold);
@@ -2119,7 +2119,7 @@ static mspResult_e mspFcProcessInCommand(uint16_t cmdMSP, sbuf_t *src)
             navConfigMutable()->general.min_rth_distance = sbufReadU16(src);
             navConfigMutable()->general.flags.rth_climb_first = sbufReadU8(src);
             navConfigMutable()->general.flags.rth_climb_ignore_emerg = sbufReadU8(src);
-            navConfigMutable()->general.flags.rth_tail_first = sbufReadU8(src);
+            /*navConfigMutable()->general.flags.rth_tail_first = */sbufReadU8(src);
             navConfigMutable()->general.flags.rth_allow_landing = sbufReadU8(src);
             navConfigMutable()->general.flags.rth_alt_control_mode = sbufReadU8(src);
             navConfigMutable()->general.rth_abort_threshold = sbufReadU16(src);

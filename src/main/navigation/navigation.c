@@ -87,7 +87,6 @@ PG_RESET_TEMPLATE(navConfig_t, navConfig,
             .rth_alt_control_mode = NAV_RTH_AT_LEAST_ALT,
             .rth_climb_first = 1,               // Climb first, turn after reaching safe altitude
             .rth_climb_ignore_emerg = 0,        // Ignore GPS loss on initial climb
-            .rth_tail_first = 0,
             .disarm_on_landing = 0,
             .rth_allow_landing = NAV_RTH_ALLOW_LANDING_ALWAYS,
             .auto_overrides_motor_stop = 1,

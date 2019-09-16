@@ -148,7 +148,6 @@ typedef struct navConfig_s {
             uint8_t user_control_mode;          // NAV_GPS_ATTI or NAV_GPS_CRUISE
             uint8_t rth_alt_control_mode;       // Controls the logic for choosing the RTH altitude
             uint8_t rth_climb_first;            // Controls the logic for initial RTH climbout
-            uint8_t rth_tail_first;             // Return to home tail first
             uint8_t disarm_on_landing;          //
             uint8_t rth_allow_landing;          // Enable landing as last stage of RTH. Use constants in navRTHAllowLanding_e.
             uint8_t rth_climb_ignore_emerg;     // Option to ignore GPS loss on initial climb stage of RTH

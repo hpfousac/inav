@@ -400,11 +400,11 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * Remove symbol **&pidProfile()->bank_mc**, Remove all multicopter settings (for instance: **nav_mc_pos_z_p**) (commit 46b437e8e
 
-#### TODO ####
-
- * **MR_RTH_CLIMB_OVERSHOOT_CM**
-
+ * **MR_RTH_CLIMB_OVERSHOOT_CM** (not found)
+ 
  * Remove parameter **rth_tail_first** which is related to the multirotor.
+
+#### TODO ####
 
  * Remove **navConfig()->mc.posDecelerationTime**
 
