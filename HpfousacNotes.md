@@ -402,7 +402,7 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 
  * **MR_RTH_CLIMB_OVERSHOOT_CM** (not found)
  
- * Remove parameter **rth_tail_first** which is related to the multirotor.
+ * Remove parameter **rth_tail_first** which is related to the multirotor. (commit 595b8d535)
 
 #### TODO ####
 
