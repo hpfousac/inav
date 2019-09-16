@@ -128,7 +128,6 @@ typedef struct pidProfile_s {
     float       fixedWingItermLimitOnStickPosition;   //Do not allow Iterm to grow when stick position is above this point
 
     uint8_t     loiter_direction;               // Direction of loitering center point on right wing (clockwise - as before), or center point on left wing (counterclockwise)
-    float       navVelXyDTermLpfHz;
 
     uint8_t iterm_relax_type;               // Specifies type of relax algorithm
     uint8_t iterm_relax_cutoff;             // This cutoff frequency specifies a low pass filter which predicts average response of the quad to setpoint

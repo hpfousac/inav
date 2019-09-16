@@ -185,7 +185,6 @@ PG_RESET_TEMPLATE(pidProfile_t, pidProfile,
         .fixedWingItermLimitOnStickPosition = 0.5f,
 
         .loiter_direction = NAV_LOITER_RIGHT,
-        .navVelXyDTermLpfHz = NAV_ACCEL_CUTOFF_FREQUENCY_HZ,
         .iterm_relax_type = ITERM_RELAX_SETPOINT,
         .iterm_relax_cutoff = MC_ITERM_RELAX_CUTOFF_DEFAULT,
         .iterm_relax = ITERM_RELAX_OFF,
