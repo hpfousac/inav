@@ -2842,6 +2842,45 @@ static void cliMemory(char *cmdline)
     }
 }
 
+
+static void cliPwmMap(char *cmdline)
+{
+    cliPrintLinef("*DEBUG* pwmmap %s", cmdline);
+    
+    while(*cmdline == ' ') ++cmdline; // ignore spaces
+
+    if (sl_strncasecmp(cmdline, "list", strlen (cmdline)) == 0) {
+        for (unsigned i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        char *type = "Missing Type";
+            switch (*timerUsageMapMutable(i)) {
+            
+            case TIM_USE_PPM:
+                type = "PPM-in";
+                break;
+            case TIM_USE_PWM:
+                type = "PWM-in";
+                break;
+            case TIM_USE_FW_MOTOR:
+                type = "MOTOR";
+                break;
+            case TIM_USE_FW_SERVO:
+                type = "SERVO";
+                break;
+            case TIM_USE_LED:
+                type = "LED";
+                break;
+            case TIM_USE_BEEPER:
+                type = "BEEPER";
+                break;
+            case TIM_USE_ANY:
+                type = "ANY";
+                break;
+            }
+            cliPrintLinef("pwmmap %d %s", i, type);
+        }
+    }
+}
+
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
 static void cliResource(char *cmdline)
 {
@@ -3136,6 +3175,7 @@ const clicmd_t cmdTable[] = {
         "[<index>]", cliProfile),
     CLI_COMMAND_DEF("battery_profile", "change battery profile",
         "[<index>]", cliBatteryProfile),
+    CLI_COMMAND_DEF("pwmmap", NULL, "list | <ndx> <pin> <usage>\r\n", cliPwmMap),
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
     CLI_COMMAND_DEF("resource", "view currently used resources", NULL, cliResource),
 #endif
