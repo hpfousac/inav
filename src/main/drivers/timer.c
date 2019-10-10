@@ -28,6 +28,8 @@
 #include "common/memory.h"
 #include "common/utils.h"
 
+#include "config/parameter_group_ids.h"
+
 #include "drivers/io.h"
 #include "drivers/rcc.h"
 #include "drivers/time.h"
@@ -35,6 +37,9 @@
 
 #include "drivers/timer.h"
 #include "drivers/timer_impl.h"
+
+
+PG_REGISTER_ARRAY(timerUsageFlag_e, MAX_PWM_OUTPUT_PORTS, timerUsageMap, PG_PWMMAP_SETTINGS, 0);
 
 timHardwareContext_t * timerCtx[HARDWARE_TIMER_DEFINITION_COUNT];
 
