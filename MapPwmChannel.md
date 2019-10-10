@@ -77,6 +77,8 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  * PG_FOREACH
 
+ * PG_DECLARE
+
 - save config - **config_eeprom.c: writeSettingsToEEPROM()**
 
 Check usage of **FEATURE_PWM_SERVO_DRIVER** - external driver (one if enought)

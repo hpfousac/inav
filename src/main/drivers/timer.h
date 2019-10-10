@@ -25,6 +25,8 @@
 #include "drivers/rcc_types.h"
 #include "drivers/timer_def.h"
 
+#include "config/parameter_group.h"
+
 #define CC_CHANNELS_PER_TIMER       4   // TIM_Channel_1..4
 
 typedef uint16_t captureCompare_t;        // 16 bit on both 103 and 303, just register access must be 32bit sometimes (use timCCR_t)
@@ -164,6 +166,9 @@ typedef enum {
     TYPE_SERIAL_RXTX,
     TYPE_TIMER
 } channelType_t;
+
+
+PG_DECLARE_ARRAY(timerUsageFlag_e, MAX_PWM_OUTPUT_PORTS, timerUsageMap);
 
 uint8_t timerClockDivisor(TIM_TypeDef *tim);
 uint32_t timerGetBaseClockHW(const timerHardware_t * timHw);
