@@ -81,6 +81,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
 - save config - **config_eeprom.c: writeSettingsToEEPROM()**
 
-Check usage of **FEATURE_PWM_SERVO_DRIVER** - external driver (one if enought)
+ Check usage of **FEATURE_PWM_SERVO_DRIVER** - external driver (one if enought)
+ **USE_PWM_DRIVER_PCA9685**
 
-The symbol **PG_INAV_END** has to be redefined/adjusted due to new ID **PG_PWMMAP_SETTINGS**
+ The symbol **PG_INAV_END** has to be redefined/adjusted due to new ID **PG_PWMMAP_SETTINGS**

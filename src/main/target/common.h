@@ -39,9 +39,9 @@
 #if defined(STM32F3)
 #define USE_UNDERCLOCK
 //save flash for F3 targets
-#define CLI_MINIMAL_VERBOSITY
-#define SKIP_CLI_COMMAND_HELP
-#define SKIP_CLI_RESOURCES
+// #define CLI_MINIMAL_VERBOSITY
+// #define SKIP_CLI_COMMAND_HELP
+// #define SKIP_CLI_RESOURCES
 #endif
 
 #define USE_ADC_AVERAGING
@@ -61,6 +61,10 @@
 #define SCHEDULER_DELAY_LIMIT           10
 #else
 #define SCHEDULER_DELAY_LIMIT           100
+#endif
+
+#if (FLASH_SIZE > 250)
+#define USE_PWM_DRIVER_PCA9685
 #endif
 
 #if (FLASH_SIZE > 256)
@@ -96,7 +100,6 @@
 #define DASHBOARD_ARMED_BITMAP
 #define USE_OLED_UG2864
 
-#define USE_PWM_DRIVER_PCA9685
 
 #define USE_TELEMETRY_SIM
 
