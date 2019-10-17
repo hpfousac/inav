@@ -85,3 +85,22 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
  **USE_PWM_DRIVER_PCA9685**
 
  The symbol **PG_INAV_END** has to be redefined/adjusted due to new ID **PG_PWMMAP_SETTINGS**
+
+
+
+
+---
+# probably bug found:
+## lowlevel function fastA2I(const char *s) has no indication when non-number is passed in
+
+## Current Behavior
+fastA2I("2"); returns 2; it's OK
+fastA2I("20"); returns 21; it's OK
+fastA2I("2O"); returns 2; it's probably not OK especially for CLI
+
+## Steps to Reproduce
+Try in CLI
+1.  serial 
+2.
+3.
+4.

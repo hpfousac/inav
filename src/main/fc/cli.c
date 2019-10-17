@@ -2843,42 +2843,77 @@ static void cliMemory(char *cmdline)
 }
 
 
+static inline void cliPwmMapList (void)
+{
+    for (unsigned i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+    char *type = "Missing Type";
+        switch (*timerUsageMapMutable(i)) {
+            
+        case TIM_USE_PPM:
+            type = "PPM-in";
+            break;
+        case TIM_USE_PWM:
+            type = "PWM-in";
+            break;
+        case TIM_USE_FW_MOTOR:
+            type = "MOTOR";
+            break;
+        case TIM_USE_FW_SERVO:
+            type = "SERVO";
+            break;
+        case TIM_USE_LED:
+            type = "LED";
+            break;
+        case TIM_USE_BEEPER:
+            type = "BEEPER";
+            break;
+        case TIM_USE_ANY:
+            type = "ANY";
+            break;
+        }
+        cliPrintLinef("pwmmap %d %s", i, type);
+    }
+}
+
 static void cliPwmMap(char *cmdline)
 {
     cliPrintLinef("*DEBUG* pwmmap %s", cmdline);
     
-    while(*cmdline == ' ') ++cmdline; // ignore spaces
+    uint32_t len = strlen(cmdline);
 
-    if (sl_strncasecmp(cmdline, "list", strlen (cmdline)) == 0) {
-        for (unsigned i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
-        char *type = "Missing Type";
-            switch (*timerUsageMapMutable(i)) {
-            
-            case TIM_USE_PPM:
-                type = "PPM-in";
-                break;
-            case TIM_USE_PWM:
-                type = "PWM-in";
-                break;
-            case TIM_USE_FW_MOTOR:
-                type = "MOTOR";
-                break;
-            case TIM_USE_FW_SERVO:
-                type = "SERVO";
-                break;
-            case TIM_USE_LED:
-                type = "LED";
-                break;
-            case TIM_USE_BEEPER:
-                type = "BEEPER";
-                break;
-            case TIM_USE_ANY:
-                type = "ANY";
-                break;
-            }
-            cliPrintLinef("pwmmap %d %s", i, type);
-        }
+    if (len == 0) {
+        cliPrint("Missing parameter");
+        cliPrintLinefeed();
+    } else if (sl_strncasecmp(cmdline, "list", len) == 0) {
+        cliPwmMapList ();
+        return;
+    } else {
+        char 
+            *c, 
+            *pwmtarget,
+            *pwmtargetindex,
+            *pwmindex = nextArg (cmdline);
+
+        c = pwmindex;
+        while (!isblank (*c)) {++c;}
+        cmdline = c + 1;
+        *c = '\0';
+
+        c = pwmtarget = nextArg (cmdline);
+        while (!isblank (*c)) {++c;}
+        cmdline = c + 1;
+        *c = '\0';
+        
+        c = pwmtargetindex = nextArg (cmdline);
+        while (!isblank (*c)) {++c;}
+        cmdline = c + 1;
+        *c = '\0';
+
+        cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%s pwmtarget=%s pwmtargetindex=%s", pwmindex, pwmtarget, pwmtargetindex);
+
+
     }
+
 }
 
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
