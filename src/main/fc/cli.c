@@ -522,8 +522,11 @@ static void cliShowArgumentRangeError(char *name, int min, int max)
 
 static int isNumStr (const char *s)
 {
-    while (!white_space(*s)) {
-        if (!(*s >= '0' && *s <= '9')) {
+    cliPrintLinef("*DEBUG* isNumStr (%s);", s);
+
+    while (!(white_space(*s) || ('\0' == *s))) { // white_space(); - keep this function intact
+        if (!((*s >= '0') && (*s <= '9'))) {
+            cliPrintLinef("*DEBUG* isNumStr (); %s is not number", s);
             return -1;
         }
         ++s;
@@ -2931,7 +2934,7 @@ int
     pwmindex = -1,
     pwmtargetindex = -1;
 
-    cliPrintLinef ("*DEBUG* pwmmap %s\n", cmdline);
+    cliPrintLinef ("*DEBUG* pwmmap %s\n", ptr);
     
     if (0 != isNumStr (ptr)) {
         cliPrintLinef ("*ERROR* pwmindex should be a number\n");
@@ -2951,7 +2954,7 @@ int
     ptr = nextArg(ptr);
     if (NULL != ptr) {
         if (0 != isNumStr (ptr)) {
-            cliPrintLinef ("*ERROR* pwmindex should be a number\n");
+            cliPrintLinef ("*ERROR* pwmtargetindex should be a number\n");
             return;
         }
         if (ptr) {
@@ -2975,10 +2978,10 @@ int
         cliPwmMapSetBeeper (pwmindex);
 
     } else {
-        cliPrintLinef("*ERROR* (unknown terget pwmtarget=%s\n", pwmtarget);
+        cliPrintLinef("*ERROR* (unknown terget pwmtarget=%s", pwmtarget);
     }
 
-    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d\n", pwmindex, pwmtarget, pwmtargetindex);
+    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d", pwmindex, pwmtarget, pwmtargetindex);
 }
 
 static void cliPwmMap(char *cmdline)
@@ -2990,7 +2993,15 @@ static void cliPwmMap(char *cmdline)
     if (len == 0) {
         cliPrint("Missing parameter");
         cliPrintLinefeed();
-    } else if (sl_strncasecmp(cmdline, "list", len) == 0) {
+        return;
+    }
+    
+    while (white_space(*cmdline)) { // ltrim ()
+        ++cmdline;
+    }
+
+
+    if (sl_strncasecmp(cmdline, "list", len) == 0) {
         cliPwmMapList ();
         return;
     } else {
