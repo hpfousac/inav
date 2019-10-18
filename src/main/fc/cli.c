@@ -520,6 +520,17 @@ static void cliShowArgumentRangeError(char *name, int min, int max)
     cliPrintLinef("%s must be between %d and %d", name, min, max);
 }
 
+static int isNumStr (const char *s)
+{
+    while (!white_space(*s)) {
+        if (!(*s >= '0' && *s <= '9')) {
+            return -1;
+        }
+        ++s;
+    }
+    return 0;
+}
+
 static const char *nextArg(const char *currentArg)
 {
     const char *ptr = strchr(currentArg, ' ');
@@ -2875,6 +2886,103 @@ static inline void cliPwmMapList (void)
     }
 }
 
+inline static void cliPwmMapSetPpm (int pwmindex)
+{
+    UNUSED (pwmindex);
+}
+
+inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
+{
+    UNUSED (pwmindex);
+    UNUSED (pwmtargetindex);
+
+}
+
+inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
+{
+    UNUSED (pwmindex);
+    UNUSED (pwmtargetindex);
+
+}
+
+inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
+{
+    UNUSED (pwmindex);
+    UNUSED (pwmtargetindex);
+
+}
+
+inline static void cliPwmMapSetLed (int pwmindex)
+{
+    UNUSED (pwmindex);
+
+}
+
+inline static void cliPwmMapSetBeeper (int pwmindex)
+{
+    UNUSED (pwmindex);
+    
+}
+
+static void cliPwmMapSet(char *cmdline)
+{
+const char 
+    *ptr = cmdline, 
+    *pwmtarget = NULL;
+int 
+    pwmindex = -1,
+    pwmtargetindex = -1;
+
+    cliPrintLinef ("*DEBUG* pwmmap %s\n", cmdline);
+    
+    if (0 != isNumStr (ptr)) {
+        cliPrintLinef ("*ERROR* pwmindex should be a number\n");
+        return;
+    }
+    pwmindex = fastA2I(ptr);
+    if (pwmindex > MAX_PWM_OUTPUT_PORTS) {
+        // printf ("*ERROR* pwmindex must not be higer than %d\n", MAX_PWM_OUTPUT_PORTS);
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+    }
+
+    ptr = nextArg(ptr);
+    if (ptr) {
+        pwmtarget = ptr;
+    }
+
+    ptr = nextArg(ptr);
+    if (NULL != ptr) {
+        if (0 != isNumStr (ptr)) {
+            cliPrintLinef ("*ERROR* pwmindex should be a number\n");
+            return;
+        }
+        if (ptr) {
+            pwmtargetindex = fastA2I(ptr);
+        }
+    } else {
+        pwmtargetindex = -1;
+    }
+
+    if (!sl_strncasecmp(pwmtarget, "ppm", 3)) {
+        cliPwmMapSetPpm (pwmindex);
+    } else if (!sl_strncasecmp(pwmtarget, "pwm", 3)) {
+        cliPwmMapSetPwm (pwmindex, pwmtargetindex);
+    } else if (!sl_strncasecmp(pwmtarget, "servo", 5)) {
+        cliPwmMapSetServo (pwmindex, pwmtargetindex);
+    } else if (!sl_strncasecmp(pwmtarget, "motor", 5)) {
+        cliPwmMapSetMotor (pwmindex, pwmtargetindex);
+    } else if (!sl_strncasecmp(pwmtarget, "led", 3)) {
+        cliPwmMapSetLed (pwmindex);
+    } else if (!sl_strncasecmp(pwmtarget, "beeper", 6)) {
+        cliPwmMapSetBeeper (pwmindex);
+
+    } else {
+        cliPrintLinef("*ERROR* (unknown terget pwmtarget=%s\n", pwmtarget);
+    }
+
+    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d\n", pwmindex, pwmtarget, pwmtargetindex);
+}
+
 static void cliPwmMap(char *cmdline)
 {
     cliPrintLinef("*DEBUG* pwmmap %s", cmdline);
@@ -2888,32 +2996,8 @@ static void cliPwmMap(char *cmdline)
         cliPwmMapList ();
         return;
     } else {
-        char 
-            *c, 
-            *pwmtarget,
-            *pwmtargetindex,
-            *pwmindex = nextArg (cmdline);
-
-        c = pwmindex;
-        while (!isblank (*c)) {++c;}
-        cmdline = c + 1;
-        *c = '\0';
-
-        c = pwmtarget = nextArg (cmdline);
-        while (!isblank (*c)) {++c;}
-        cmdline = c + 1;
-        *c = '\0';
-        
-        c = pwmtargetindex = nextArg (cmdline);
-        while (!isblank (*c)) {++c;}
-        cmdline = c + 1;
-        *c = '\0';
-
-        cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%s pwmtarget=%s pwmtargetindex=%s", pwmindex, pwmtarget, pwmtargetindex);
-
-
+        cliPwmMapSet (cmdline);
     }
-
 }
 
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)

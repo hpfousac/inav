@@ -32,3 +32,6 @@ int fastA2I(const char *s);
 #ifndef HAVE_ITOA_FUNCTION
 char *itoa(int i, char *a, int r);
 #endif
+
+#define white_space(c) ((c) == ' ' || (c) == '\t')
+#define valid_digit(c) ((c) >= '0' && (c) <= '9')

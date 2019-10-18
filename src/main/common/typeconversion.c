@@ -21,6 +21,8 @@
 
 #include "maths.h"
 
+#include "typeconversion.h"
+
 #ifdef REQUIRE_PRINTF_LONG_SUPPORT
 
 void uli2a(unsigned long int num, unsigned int base, int uc, char *bf)
@@ -202,8 +204,7 @@ char *ftoa(float x, char *floatString)
 // - Follows atof() precedent of essentially no error checking.
 //
 // 09-May-2009 Tom Van Baak (tvb) www.LeapSecond.com
-#define white_space(c) ((c) == ' ' || (c) == '\t')
-#define valid_digit(c) ((c) >= '0' && (c) <= '9')
+
 float fastA2F(const char *p)
 {
     int frac = 0;
