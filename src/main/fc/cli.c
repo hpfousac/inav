@@ -2888,40 +2888,38 @@ static inline void cliPwmMapList (void)
 
 inline static void cliPwmMapSetPpm (int pwmindex)
 {
-    UNUSED (pwmindex);
+    *timerUsageMapMutable(pwmindex) = TIM_USE_PPM;
 }
 
 inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmindex);
     UNUSED (pwmtargetindex);
 
+    *timerUsageMapMutable(pwmindex) = TIM_USE_PWM;
 }
 
 inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmindex);
     UNUSED (pwmtargetindex);
 
+    *timerUsageMapMutable(pwmindex) = TIM_USE_FW_SERVO;
 }
 
 inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmindex);
     UNUSED (pwmtargetindex);
 
+    *timerUsageMapMutable(pwmindex) = TIM_USE_FW_MOTOR;
 }
 
 inline static void cliPwmMapSetLed (int pwmindex)
 {
-    UNUSED (pwmindex);
-
+    *timerUsageMapMutable(pwmindex) = TIM_USE_LED;
 }
 
 inline static void cliPwmMapSetBeeper (int pwmindex)
 {
-    UNUSED (pwmindex);
-    
+    *timerUsageMapMutable(pwmindex) = TIM_USE_BEEPER;
 }
 
 static void cliPwmMapSet(char *cmdline)
