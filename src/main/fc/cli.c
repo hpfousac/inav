@@ -2904,6 +2904,12 @@ inline static void cliPwmMapSetPpm (int pwmindex)
         return;
     }
     // check if feature is not used
+    for (int i = 0; i < timerHardwareCount; ++i) {
+        if ((i != pwmindex) && (TIM_USE_PPM == timerUsageMapMutable(i)->flag)) {
+            cliPrintLinef("pwmmap PPM is set on pos %d", i + 1);
+        }
+    }
+
     timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PPM;
 }
 
