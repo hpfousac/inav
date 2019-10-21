@@ -2987,7 +2987,7 @@ inline static void cliPwmMapSetBeeper (int pwmindex)
     // check if feature is not used
     for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
         if ((i != pwmindex) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
-            cliPrintLinef("pwmmap LED is set on pos %d", i + 1);
+            cliPrintLinef("pwmmap BEEPER is set on pos %d", i + 1);
         }
     }
 
