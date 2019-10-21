@@ -2885,7 +2885,7 @@ static inline void cliPwmMapList (void)
             type = "ANY";
             break;
         }
-        cliPrintLinef("pwmmap %d %s", i, type);
+        cliPrintLinef("pwmmap %d %s %d", i, type, timerUsageMapMutable(i)->devndx);
     }
 }
 

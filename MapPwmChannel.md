@@ -86,7 +86,21 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  The symbol **PG_INAV_END** has to be redefined/adjusted due to new ID **PG_PWMMAP_SETTINGS**
 
+#### final structure
 
+ The **timer.h** file contains definition of structure **timerUsageMap_t** and array **timerUsageMap**.
+
+ Ongoing test: will show if settings is persistent over reboots.
+
+
+### Modify PWM pins initialization
+
+
+ First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated)
+
+ First test will be focused to moving PPM input over input channels.
+
+ **timer_init ()** **pwmMotorAndServoInit ()**
 
 
 ---
