@@ -2934,7 +2934,12 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
 
 inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmtargetindex);
+    // index check
+    if ((pwmindex < 1) || (MAX_PWM_OUTPUT_PORTS < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        return;
+    }
+
 
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_SERVO;
     timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
