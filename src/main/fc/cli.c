@@ -2940,6 +2940,12 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
         return;
     }
 
+    // check if feature is not used
+    for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        if ((i != pwmindex) && (TIM_USE_FW_SERVO == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+            cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+        }
+    }
 
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_SERVO;
     timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
