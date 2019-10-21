@@ -2915,7 +2915,18 @@ inline static void cliPwmMapSetPpm (int pwmindex)
 
 inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmtargetindex);
+    // index check
+    if ((pwmindex < 1) || (timerHardwareCount < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, timerHardwareCount);
+        return;
+    }
+
+    // check if feature is not used
+    for (int i = 0; i < timerHardwareCount; ++i) {
+        if ((i != pwmindex) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+            cliPrintLinef("pwmmap PWM %d is set on pos %d", pwmtargetindex, i + 1);
+        }
+    }
 
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_PWM;
     timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
