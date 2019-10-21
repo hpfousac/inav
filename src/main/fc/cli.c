@@ -2953,7 +2953,18 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
 
 inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
 {
-    UNUSED (pwmtargetindex);
+    // index check
+    if ((pwmindex < 1) || (MAX_PWM_OUTPUT_PORTS < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        return;
+    }
+
+    // check if feature is not used
+    for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        if ((i != pwmindex) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+            cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+        }
+    }
 
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_MOTOR;
     timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
@@ -2961,11 +2972,25 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
 
 inline static void cliPwmMapSetLed (int pwmindex)
 {
+    // check if feature is not used
+    for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        if ((i != pwmindex) && (TIM_USE_LED == timerUsageMapMutable(i)->flag)) {
+            cliPrintLinef("pwmmap LED is set on pos %d", i + 1);
+        }
+    }
+
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_LED;
 }
 
 inline static void cliPwmMapSetBeeper (int pwmindex)
 {
+    // check if feature is not used
+    for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        if ((i != pwmindex) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
+            cliPrintLinef("pwmmap LED is set on pos %d", i + 1);
+        }
+    }
+
     timerUsageMapMutable(pwmindex)->flag = TIM_USE_BEEPER;
 }
 
