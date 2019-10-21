@@ -38,7 +38,7 @@
 #include "drivers/timer.h"
 #include "drivers/timer_impl.h"
 
-PG_REGISTER_ARRAY(timerUsageFlag_e, MAX_PWM_OUTPUT_PORTS, timerUsageMap, PG_PWMMAP_SETTINGS, 0);
+PG_REGISTER_ARRAY(timerUsageMap_t, MAX_PWM_OUTPUT_PORTS, timerUsageMap, PG_PWMMAP_SETTINGS, 0);
 
 timHardwareContext_t * timerCtx[HARDWARE_TIMER_DEFINITION_COUNT];
 

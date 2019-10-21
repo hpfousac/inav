@@ -167,8 +167,13 @@ typedef enum {
     TYPE_TIMER
 } channelType_t;
 
+// feature/MapPwmChannel - new structure and config array
+typedef struct TUM_s {
+    timerUsageFlag_e   flag;    // flag defines particular usage (enum)
+    int                 devndx; // some users needs index of 
+} timerUsageMap_t;
 
-PG_DECLARE_ARRAY(timerUsageFlag_e, MAX_PWM_OUTPUT_PORTS, timerUsageMap);
+PG_DECLARE_ARRAY(timerUsageMap_t, MAX_PWM_OUTPUT_PORTS, timerUsageMap);
 
 uint8_t timerClockDivisor(TIM_TypeDef *tim);
 uint32_t timerGetBaseClockHW(const timerHardware_t * timHw);

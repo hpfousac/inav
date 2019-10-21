@@ -2861,7 +2861,7 @@ static inline void cliPwmMapList (void)
 {
     for (unsigned i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
     char *type = "Missing Type";
-        switch (*timerUsageMapMutable(i)) {
+        switch (timerUsageMapMutable(i)->flag) {
             
         case TIM_USE_PPM:
             type = "PPM-in";
@@ -2891,38 +2891,41 @@ static inline void cliPwmMapList (void)
 
 inline static void cliPwmMapSetPpm (int pwmindex)
 {
-    *timerUsageMapMutable(pwmindex) = TIM_USE_PPM;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_PPM;
 }
 
 inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
 {
     UNUSED (pwmtargetindex);
 
-    *timerUsageMapMutable(pwmindex) = TIM_USE_PWM;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_PWM;
+    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
 {
     UNUSED (pwmtargetindex);
 
-    *timerUsageMapMutable(pwmindex) = TIM_USE_FW_SERVO;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_SERVO;
+    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
 {
     UNUSED (pwmtargetindex);
 
-    *timerUsageMapMutable(pwmindex) = TIM_USE_FW_MOTOR;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_MOTOR;
+    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetLed (int pwmindex)
 {
-    *timerUsageMapMutable(pwmindex) = TIM_USE_LED;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_LED;
 }
 
 inline static void cliPwmMapSetBeeper (int pwmindex)
 {
-    *timerUsageMapMutable(pwmindex) = TIM_USE_BEEPER;
+    timerUsageMapMutable(pwmindex)->flag = TIM_USE_BEEPER;
 }
 
 static void cliPwmMapSet(char *cmdline)
