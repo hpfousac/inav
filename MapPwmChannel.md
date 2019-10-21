@@ -36,6 +36,8 @@ pwmmap <ch/pin> <function> <index>
 
 #### CLI real example
 
+ *note* first channel has index **1** on cli, evei internal index is **0**
+
 ~~~
 pwmmap 1 cppm 0 # in case of CPPM only 0 is allowed
 

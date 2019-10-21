@@ -2856,6 +2856,13 @@ static void cliMemory(char *cmdline)
     }
 }
 
+static inline void cliPwmMapReset (void)
+{
+    for (unsigned i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
+        timerUsageMapMutable(i)->flag = TIM_USE_ANY;
+        timerUsageMapMutable(i)->devndx = 0;
+    }
+}
 
 static inline void cliPwmMapList (void)
 {
@@ -2891,7 +2898,13 @@ static inline void cliPwmMapList (void)
 
 inline static void cliPwmMapSetPpm (int pwmindex)
 {
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_PPM;
+    // index check
+    if ((pwmindex < 1) || (timerHardwareCount < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, timerHardwareCount);
+        return;
+    }
+    // check if feature is not used
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PPM;
 }
 
 inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
@@ -2984,7 +2997,7 @@ int
         cliPrintLinef("*ERROR* (unknown terget pwmtarget=%s", pwmtarget);
     }
 
-    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d", pwmindex, pwmtarget, pwmtargetindex);
+    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d", pwmindex + 1, pwmtarget, pwmtargetindex);
 }
 
 static void cliPwmMap(char *cmdline)
@@ -3007,8 +3020,12 @@ static void cliPwmMap(char *cmdline)
     if (sl_strncasecmp(cmdline, "list", len) == 0) {
         cliPwmMapList ();
         return;
+    } else if (sl_strncasecmp(cmdline, "reset", len) == 0) {
+        cliPwmMapReset ();
+        return;
     } else {
         cliPwmMapSet (cmdline);
+        return;
     }
 }
 
