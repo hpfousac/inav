@@ -96,7 +96,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 ### Modify PWM pins initialization
 
 
- First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated)
+ First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated), log is directed to specific port
 
  First test will be focused to moving PPM input over input channels.
 
