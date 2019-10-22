@@ -474,6 +474,7 @@ st-flash: $(TARGET_BIN)
 
 binary: $(TARGET_BIN)
 hex:    $(TARGET_HEX)
+uasm:   ${TARGET_UASM}
 
 unbrick_$(TARGET): $(TARGET_HEX)
 	$(V0) stty -F $(SERIAL_DEVICE) raw speed 115200 -crtscts cs8 -parenb -cstopb -ixon
