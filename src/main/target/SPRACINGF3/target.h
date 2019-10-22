@@ -122,7 +122,7 @@
 // Number of available PWM outputs
 
 #ifdef USE_PWM_DRIVER_PCA9685
-# define MAX_PWM_OUTPUT_PORTS    12 + 16
+# define MAX_PWM_OUTPUT_PORTS    (12 + 16)
 #else
 # define MAX_PWM_OUTPUT_PORTS    12
 #endif

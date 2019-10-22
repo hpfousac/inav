@@ -522,11 +522,11 @@ static void cliShowArgumentRangeError(char *name, int min, int max)
 
 static int isNumStr (const char *s)
 {
-    cliPrintLinef("*DEBUG* isNumStr (%s);", s);
+    // cliPrintLinef("*DEBUG* isNumStr (%s);", s);
 
     while (!(white_space(*s) || ('\0' == *s))) { // white_space(); - keep this function intact
         if (!((*s >= '0') && (*s <= '9'))) {
-            cliPrintLinef("*DEBUG* isNumStr (); %s is not number", s);
+            // cliPrintLinef("*DEBUG* isNumStr (); %s is not number", s);
             return -1;
         }
         ++s;
@@ -2892,7 +2892,7 @@ static inline void cliPwmMapList (void)
             type = "ANY";
             break;
         }
-        cliPrintLinef("pwmmap %d %s %d", i, type, timerUsageMapMutable(i)->devndx);
+        cliPrintLinef("pwmmap %d %s %d", i + 1, type, timerUsageMapMutable(i)->devndx);
     }
 }
 
@@ -2907,6 +2907,7 @@ inline static void cliPwmMapSetPpm (int pwmindex)
     for (int i = 0; i < timerHardwareCount; ++i) {
         if ((i != pwmindex) && (TIM_USE_PPM == timerUsageMapMutable(i)->flag)) {
             cliPrintLinef("pwmmap PPM is set on pos %d", i + 1);
+            return;
         }
     }
 
@@ -2923,13 +2924,14 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
 
     // check if feature is not used
     for (int i = 0; i < timerHardwareCount; ++i) {
-        if ((i != pwmindex) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+        if ((i != (pwmindex - 1)) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
             cliPrintLinef("pwmmap PWM %d is set on pos %d", pwmtargetindex, i + 1);
+            return;
         }
     }
 
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_PWM;
-    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PWM;
+    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
@@ -2942,13 +2944,14 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex)
 
     // check if feature is not used
     for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
-        if ((i != pwmindex) && (TIM_USE_FW_SERVO == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+        if ((i != (pwmindex - 1)) && (TIM_USE_FW_SERVO == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
             cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+            return;
         }
     }
 
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_SERVO;
-    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_SERVO;
+    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
@@ -2961,37 +2964,63 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex)
 
     // check if feature is not used
     for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
-        if ((i != pwmindex) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(pwmindex)->devndx)) {
+        if ((i != (pwmindex - 1)) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
             cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+            return;
         }
     }
 
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_FW_MOTOR;
-    timerUsageMapMutable(pwmindex)->devndx = pwmtargetindex;
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_MOTOR;
+    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
 }
 
 inline static void cliPwmMapSetLed (int pwmindex)
 {
+    // index check
+    if ((pwmindex < 1) || (MAX_PWM_OUTPUT_PORTS < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        return;
+    }
+
     // check if feature is not used
     for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
-        if ((i != pwmindex) && (TIM_USE_LED == timerUsageMapMutable(i)->flag)) {
+        if ((i != (pwmindex - 1)) && (TIM_USE_LED == timerUsageMapMutable(i)->flag)) {
             cliPrintLinef("pwmmap LED is set on pos %d", i + 1);
+            return;
         }
     }
 
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_LED;
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_LED;
 }
 
 inline static void cliPwmMapSetBeeper (int pwmindex)
 {
+    // index check
+    if ((pwmindex < 1) || (MAX_PWM_OUTPUT_PORTS < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        return;
+    }
+
     // check if feature is not used
     for (int i = 0; i < MAX_PWM_OUTPUT_PORTS; ++i) {
-        if ((i != pwmindex) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
+        if ((i != (pwmindex - 1)) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
             cliPrintLinef("pwmmap BEEPER is set on pos %d", i + 1);
+            return;
         }
     }
 
-    timerUsageMapMutable(pwmindex)->flag = TIM_USE_BEEPER;
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_BEEPER;
+}
+
+inline static void cliPwmMapSetReset (int pwmindex)
+{
+    // index check
+    if ((pwmindex < 1) || (MAX_PWM_OUTPUT_PORTS < pwmindex)) {
+        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        return;
+    }
+
+    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_ANY;
 }
 
 static void cliPwmMapSet(char *cmdline)
@@ -3003,7 +3032,7 @@ int
     pwmindex = -1,
     pwmtargetindex = -1;
 
-    cliPrintLinef ("*DEBUG* pwmmap %s\n", ptr);
+    // cliPrintLinef ("*DEBUG* pwmmap %s\n", ptr);
     
     if (0 != isNumStr (ptr)) {
         cliPrintLinef ("*ERROR* pwmindex should be a number\n");
@@ -3045,17 +3074,18 @@ int
         cliPwmMapSetLed (pwmindex);
     } else if (!sl_strncasecmp(pwmtarget, "beeper", 6)) {
         cliPwmMapSetBeeper (pwmindex);
-
+    } else if (!sl_strncasecmp(pwmtarget, "reset", 6)) { // i/e/ clear
+        cliPwmMapSetReset (pwmindex);
     } else {
-        cliPrintLinef("*ERROR* (unknown terget pwmtarget=%s", pwmtarget);
+        cliPrintLinef("*ERROR* unknown target pwmtarget=%s", pwmtarget);
     }
 
-    cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d", pwmindex + 1, pwmtarget, pwmtargetindex);
+    // cliPrintLinef("*DEBUG* (2)pwmmap pwmindex=%d pwmtarget=%s pwmtargetindex=%d", pwmindex + 1, pwmtarget, pwmtargetindex);
 }
 
 static void cliPwmMap(char *cmdline)
 {
-    cliPrintLinef("*DEBUG* pwmmap %s", cmdline);
+    // cliPrintLinef("*DEBUG* pwmmap %s", cmdline);
     
     uint32_t len = strlen(cmdline);
 
@@ -3376,7 +3406,7 @@ const clicmd_t cmdTable[] = {
         "[<index>]", cliProfile),
     CLI_COMMAND_DEF("battery_profile", "change battery profile",
         "[<index>]", cliBatteryProfile),
-    CLI_COMMAND_DEF("pwmmap", NULL, "list | <ndx> <pin> <usage>\r\n", cliPwmMap),
+    CLI_COMMAND_DEF("pwmmap", NULL, "list | reset | <ndx> <pin> <usage>\r\n", cliPwmMap),
 #if !defined(SKIP_TASK_STATISTICS) && !defined(SKIP_CLI_RESOURCES)
     CLI_COMMAND_DEF("resource", "view currently used resources", NULL, cliResource),
 #endif

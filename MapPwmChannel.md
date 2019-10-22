@@ -42,6 +42,38 @@ pwmmap <ch/pin> <function> <index>
 pwmmap 1 cppm 0 # in case of CPPM only 0 is allowed
 
 pwmmap 2 servo 1
+
+
+pwmmap 1 PPM 0
+pwmmap 2 SERVO 1
+pwmmap 3 SERVO 2
+pwmmap 4 SERVO 3
+pwmmap 5 SERVO 4
+pwmmap 6 SERVO 5
+pwmmap 7 SERVO 6
+pwmmap 8 SERVO 7
+pwmmap 9 SERVO 8
+pwmmap 10 SERVO 9
+pwmmap 11 SERVO 10
+pwmmap 12 SERVO 11
+pwmmap 13 SERVO 12
+pwmmap 14 SERVO 13
+pwmmap 15 SERVO 14
+pwmmap 16 SERVO 15
+pwmmap 17 SERVO 16
+pwmmap 18 motor 1
+pwmmap 19 motor 2
+pwmmap 20 motor 3
+pwmmap 21 motor 4
+pwmmap 22 motor 5
+pwmmap 23 motor 6
+pwmmap 24 motor 7
+pwmmap 25 motor 8
+pwmmap 26 ANY 0
+pwmmap 27 beeper
+pwmmap 28 led
+
+pwmmap list
 ~~~
 
 Following list is based on enumeration **timerUsageFlag_e**
