@@ -200,7 +200,10 @@ const timerHardware_t * timerGetByTag(ioTag_t tag, timerUsageFlag_e flag)
 const timerHardware_t * timerGetByUsageFlag(timerUsageFlag_e flag)
 {
     for (int i = 0; i < timerHardwareCount; i++) {
-        if (timerHardware[i].usageFlags & flag) {
+        // if (timerHardware[i].usageFlags & flag) {
+        //     return &timerHardware[i];
+        // }
+        if (flag == timerUsageMapMutable(i)->flag) {
             return &timerHardware[i];
         }
     }

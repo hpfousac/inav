@@ -150,6 +150,16 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  **ppmInConfig ()** - tady jsem skoncil a tedy je potreba sahnout do kodu.
 
+ **timer.c:timerGetByUsageFlag ()** - modifikovat toto
+
+~~~
+set receiver_type = PPM
+pwmmap 1 ppm
+
+save
+~~~
+
+
 
 # Other
 
