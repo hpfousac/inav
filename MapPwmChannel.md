@@ -135,12 +135,23 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 ### Modify PWM pins initialization
 
 
- First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated), log is directed to specific port
+ First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated), log is directed to specific port.
+
+ TODO: Check pwmmap PPM-IN and **rxConfig()->receiverType** **USE_RX_PPM** vs. **RX_TYPE_PWM**
+
+ ? how to set/check/list receiver type ?
+
+ ? check if it is in conflicts ? ppm pins against pwm and receiver type
 
  First test will be focused to moving PPM input over input channels.
 
  **timer_init ()** **pwmMotorAndServoInit ()**
 
+
+ **ppmInConfig ()** - tady jsem skoncil a tedy je potreba sahnout do kodu.
+
+
+# Other
 
 ---
 # probably bug found:
