@@ -154,7 +154,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
 ~~~
 set receiver_type = PPM
-pwmmap 1 ppm
+pwmmap 10 ppm
 
 save
 ~~~
