@@ -96,7 +96,7 @@ static timeUs_t needRxSignalBefore = 0;
 static timeUs_t suspendRxSignalUntil = 0;
 static uint8_t skipRxSamples = 0;
 
-static rcChannel_t rcChannels[MAX_SUPPORTED_RC_CHANNEL_COUNT];
+/*static*/ rcChannel_t rcChannels[MAX_SUPPORTED_RC_CHANNEL_COUNT];
 
 #define SKIP_RC_ON_SUSPEND_PERIOD 1500000           // 1.5 second period in usec (call frequency independent)
 #define SKIP_RC_SAMPLES_ON_RESUME  2                // flush 2 samples to drop wrong measurements (timing independent)

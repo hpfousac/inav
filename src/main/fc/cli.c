@@ -3321,6 +3321,19 @@ static void cliDiff(char *cmdline)
     printConfig(cmdline, true);
 }
 
+static void cliRxIn(char *cmdline)
+{
+    UNUSED (cmdline);
+
+    for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
+        cliPrintLinef(" rxin %d, rcData=%d", 
+            (int) i, 
+            (int) rcChannels[i].data
+        );
+    }
+}
+
+
 typedef struct {
     const char *name;
 #ifndef SKIP_CLI_COMMAND_HELP
@@ -3443,6 +3456,8 @@ const clicmd_t cmdTable[] = {
 #ifdef USE_OSD
     CLI_COMMAND_DEF("osd_layout", "get or set the layout of OSD items", "[<layout> [<item> [<col> <row> [<visible>]]]]", cliOsdLayout),
 #endif
+
+    CLI_COMMAND_DEF("rxin", "show received values", NULL, cliRxIn),
 };
 
 static void cliHelp(char *cmdline)

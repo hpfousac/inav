@@ -163,6 +163,8 @@ typedef struct rcChannel_s {
     timeMs_t expiresAt; // Time when this value becomes too old and it's discarded
 } rcChannel_t;
 
+extern rcChannel_t rcChannels[];
+
 typedef enum {
     RSSI_SOURCE_NONE = 0,
     RSSI_SOURCE_AUTO,

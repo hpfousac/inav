@@ -19,7 +19,7 @@
 TARGET    ?= SPRACINGF3
 
 # Compile-time options
-OPTIONS   ?=
+OPTIONS   ?= USE_FLASH_TOOLS
 
 # Debugger optons, must be empty or GDB
 DEBUG     ?=
