@@ -134,7 +134,6 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
 ### Modify PWM pins initialization
 
-
  First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated), log is directed to specific port.
 
  TODO: Check pwmmap PPM-IN and **rxConfig()->receiverType** **USE_RX_PPM** vs. **RX_TYPE_PWM**
@@ -147,10 +146,11 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  **timer_init ()** **pwmMotorAndServoInit ()**
 
+ **ppmInConfig ()** - there is starting point of investigation what has to be modified
 
- **ppmInConfig ()** - tady jsem skoncil a tedy je potreba sahnout do kodu.
+ **timer.c:timerGetByUsageFlag ()** - function was modified to select timer-channel based on pwmmap configuration
 
- **timer.c:timerGetByUsageFlag ()** - modifikovat toto
+### Modify settings with feature 
 
 ~~~
 set receiver_type = PPM
@@ -178,3 +178,19 @@ Try in CLI
 2.
 3.
 4.
+
+
+# cli commands and configuration consistency
+
+ During work on **pwmmap** feature I realised that commands allows inconsistent configuration.
+ There is probably no checks if one set parameter is consistent with another one.
+
+# default behaviour of FEATURE_PWM_SERVO_DRIVER
+
+ See **void pwmServoPreconfigure(void)**, the internal timers is used of external driver.
+ The original code does not allows extend internal timers with external driver it is one or second.
+
+ * **pwmServoWriteStandard ();**
+
+ * **pwmServoWriteExternalDriver ();**
+
