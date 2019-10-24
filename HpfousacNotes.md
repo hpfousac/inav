@@ -75,6 +75,13 @@ bit array containig rew stages.
 
  *How program work with this array should be investigated.*
 
+~~~
+ // claim IO pin, set owner and resources
+void IOInit(IO_t io, resourceOwner_e owner, resourceType_e resource, uint8_t index);
+~~~
+
+ function **IOGetOwner();** has to be used for usage determination
+
 ### Configuration and Parameters ###
 
  The code is comming from Cleanflight project and definitions are in `parameter_group.h`.

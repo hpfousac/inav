@@ -203,8 +203,13 @@ const timerHardware_t * timerGetByUsageFlag(timerUsageFlag_e flag)
         // if (timerHardware[i].usageFlags & flag) {
         //     return &timerHardware[i];
         // }
+
         if (flag == timerUsageMapMutable(i)->flag) {
-            return &timerHardware[i];
+            IO_t ppmio = IOGetByTag(timerHardware[i].tag);
+
+            if (OWNER_FREE == IOGetOwner(ppmio)) { // check if pin is free/unasigned
+                return &timerHardware[i];
+            }
         }
     }
     return NULL;

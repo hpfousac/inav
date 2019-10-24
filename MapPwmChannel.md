@@ -161,7 +161,6 @@ save
 
 ### Modify PWM pins initialization (individual rx servo channels)
 
-
 ### modify servos + motors initialization
  - **pwmBuildTimerOutputList** this method has to be modified
 
@@ -183,7 +182,6 @@ Try in CLI
 3.
 4.
 
-
 # cli commands and configuration consistency
 
  During work on **pwmmap** feature I realised that commands allows inconsistent configuration.
@@ -197,4 +195,3 @@ Try in CLI
  * **pwmServoWriteStandard ();**
 
  * **pwmServoWriteExternalDriver ();**
-
