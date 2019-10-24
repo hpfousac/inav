@@ -132,7 +132,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  the commands are added in line with structure creation
 
-### Modify PWM pins initialization
+### Modify (c)PPM pins initialization
 
  First of all enable LOG and its reading, then the records can be stored (and debugged/evaluated), log is directed to specific port.
 
@@ -150,7 +150,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  **timer.c:timerGetByUsageFlag ()** - function was modified to select timer-channel based on pwmmap configuration
 
-### Modify settings with feature 
+#### Modify settings with feature 
 
 ~~~
 set receiver_type = PPM
@@ -159,7 +159,11 @@ pwmmap 10 ppm
 save
 ~~~
 
+### Modify PWM pins initialization (individual rx servo channels)
 
+
+### modify servos + motors initialization
+ - **pwmBuildTimerOutputList** this method has to be modified
 
 # Other
 
