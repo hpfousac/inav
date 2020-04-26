@@ -1,6 +1,6 @@
 # branch: feature/MapPwmChannel #
 
-Idea: The PWM pins (in/out) will bve allocated by settings.
+Idea: The PWM pins (in/out) will be allocated by settings.
 
 The reasoning is based on not enought output channels, 
 Some of the pins are not used if (C-)PPM or Serial RX is attached.
@@ -195,3 +195,5 @@ Try in CLI
  * **pwmServoWriteStandard ();**
 
  * **pwmServoWriteExternalDriver ();**
+
+

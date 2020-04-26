@@ -3319,6 +3319,33 @@ static void cliRxIn(char *cmdline)
 {
     UNUSED (cmdline);
 
+    switch (rxConfig()->receiverType) {
+    case RX_TYPE_NONE:
+        cliPrintHashLine ("rxin: RX_TYPE_NONE");
+        break;
+    case RX_TYPE_PWM:
+        cliPrintHashLine ("rxin: RX_TYPE_PWM");
+        break;
+    case RX_TYPE_PPM:
+        cliPrintHashLine ("rxin: RX_TYPE_PPM");
+        break;
+    case RX_TYPE_SERIAL:
+        cliPrintHashLine ("rxin: RX_TYPE_SERIAL");
+        break;
+    case RX_TYPE_MSP:
+        cliPrintHashLine ("rxin: RX_TYPE_MSP");
+        break;
+    case RX_TYPE_SPI:
+        cliPrintHashLine ("rxin: RX_TYPE_SPI");
+        break;
+    case RX_TYPE_UIB:
+        cliPrintHashLine ("rxin: RX_TYPE_UIB");
+        break;
+    default:
+        cliPrintHashLine ("rxin: <unknown>");
+        break;
+    }    
+
     for (unsigned i = 0; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
         cliPrintLinef(" rxin %d, rcData=%d", 
             (int) i, 
