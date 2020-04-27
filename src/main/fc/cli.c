@@ -2906,12 +2906,16 @@ inline static void cliPwmMapSetPpm (int pwmindex)
     // check if feature is not used
     for (int i = 0; i < timerHardwareCount; ++i) {
         if ((i != pwmindex) && (TIM_USE_PPM == timerUsageMapMutable(i)->flag)) {
-            cliPrintLinef("pwmmap PPM is set on pos %d", i + 1);
+            cliPrintLinef("pwmmap PPM is already set on pos %d", i + 1);
             return;
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PPM;
+    if (TIM_USE_PPM & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PPM;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as PPM in", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
@@ -2927,8 +2931,12 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PWM;
-    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    if (TIM_USE_PWM & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PWM;
+        timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as PWM in", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex, int pwmchlimit)
@@ -2944,8 +2952,12 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex, int pwmc
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_SERVO;
-    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    if (TIM_USE_FW_SERVO & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_SERVO;
+        timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as SERVO out", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex, int pwmchlimit)
@@ -2956,13 +2968,17 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex, int pwmc
     // check if feature is not used
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
-            cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+            cliPrintLinef("pwmmap MOTOR %d is set on pos %d", pwmtargetindex, i + 1);
             return;
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_MOTOR;
-    timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    if (TIM_USE_FW_MOTOR & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_FW_MOTOR;
+        timerUsageMapMutable(pwmindex - 1)->devndx = pwmtargetindex;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as MOTOR out", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetLed (int pwmindex, int pwmchlimit)
@@ -2978,7 +2994,11 @@ inline static void cliPwmMapSetLed (int pwmindex, int pwmchlimit)
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_LED;
+    if (TIM_USE_LED & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_LED;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as LED", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetBeeper (int pwmindex, int pwmchlimit)
@@ -2994,7 +3014,11 @@ inline static void cliPwmMapSetBeeper (int pwmindex, int pwmchlimit)
         }
     }
 
-    timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_BEEPER;
+    if (TIM_USE_BEEPER & timerHardware[pwmindex - 1].usageFlags) {
+        timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_BEEPER;
+    } else {
+        cliPrintLinef("pwmmap pin %d can't be set as BEEPER", pwmindex);
+    }
 }
 
 inline static void cliPwmMapSetReset (int pwmindex)

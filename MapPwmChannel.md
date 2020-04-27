@@ -90,6 +90,16 @@ Following list is based on enumeration **timerUsageFlag_e**
 
  * **beeper**
 
+#### Automatic/Default assigment
+
+**Not implemented yet**
+
+~~~
+pwmmap auto
+~~~
+
+The **PPM** or **PWM** will be used if appropriate receiver is configured. 
+The SERVO will have the priority over MOTOR.
 
 ## Code modification
 
@@ -125,8 +135,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  The **timer.h** file contains definition of structure **timerUsageMap_t** and array **timerUsageMap**.
 
- Ongoing test: will show if settings is persistent over reboots.
-
+ Ongoing test: will show if settings is persistent over reboots. **OK**
 
 ### Add CLI commands
 
@@ -145,6 +154,8 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
  First test will be focused to moving PPM input over input channels.
 
  **timer_init ()** **pwmMotorAndServoInit ()**
+
+ **rxPpmInit(rxRuntimeConfig_t)** selects by **timerGetByUsageFlag(TIM_USE_PPM)** approprate port/pin
 
  **ppmInConfig ()** - there is starting point of investigation what has to be modified
 
@@ -196,4 +207,19 @@ Try in CLI
 
  * **pwmServoWriteExternalDriver ();**
 
+# Tests
 
+ It is intended to proof of configuration option is working as expected.
+
+## configuration persistence
+
+ * set some confguration and save it
+
+ * show configuration after device reboot
+
+## pwmmap PPM in
+
+# Work status
+
+ - rozpracovane nastaveni PPM in kanalu, otestovat na povolenych pinech
+ 

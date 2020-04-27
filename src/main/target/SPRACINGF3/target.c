@@ -25,8 +25,8 @@
 #include "drivers/bus.h"
 
 const timerHardware_t timerHardware[] = {    
-    DEF_TIM(TIM16,  CH1,    PA6,  TIM_USE_FW_MOTOR,     0),  // PWM1
-    DEF_TIM(TIM17,  CH1,    PA7,  TIM_USE_FW_MOTOR,     0), // PWM2
+    DEF_TIM(TIM16,  CH1,    PA6,  TIM_USE_FW_MOTOR | TIM_USE_FW_SERVO | TIM_USE_PPM,     0),  // PWM1
+    DEF_TIM(TIM17,  CH1,    PA7,  TIM_USE_FW_MOTOR | TIM_USE_FW_SERVO | TIM_USE_PPM,     0), // PWM2
     DEF_TIM(TIM4,   CH1,    PA11, TIM_USE_FW_SERVO,     0), // PWM3
     DEF_TIM(TIM4,   CH2,    PA12, TIM_USE_FW_SERVO,     0), // PWM4
     DEF_TIM(TIM4,   CH3,    PB8,  TIM_USE_FW_SERVO,     0), // PWM5
@@ -37,7 +37,7 @@ const timerHardware_t timerHardware[] = {
     DEF_TIM(TIM1,   CH1,    PA8,  TIM_USE_LED,                                                0), // GPIO_TIMER / LED_STRIP
 
     DEF_TIM(TIM2,   CH1,    PA0,  TIM_USE_PWM | TIM_USE_PPM,                                  0), // RC_CH1
-    DEF_TIM(TIM2,   CH2,    PA1,  TIM_USE_PWM,                                                0), // RC_CH2
+    DEF_TIM(TIM2,   CH2,    PA1,  TIM_USE_PWM | TIM_USE_PPM,                                  0), // RC_CH2
     DEF_TIM(TIM2,   CH4,    PB11, TIM_USE_PWM,                                                0), // RC_CH3
     DEF_TIM(TIM2,   CH3,    PB10, TIM_USE_PWM,                                                0), // RC_CH4
     DEF_TIM(TIM3,   CH1,    PB4,  TIM_USE_PWM,                             0), // RC_CH5
