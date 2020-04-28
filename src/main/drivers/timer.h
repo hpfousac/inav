@@ -170,7 +170,7 @@ typedef enum {
 // feature/MapPwmChannel - new structure and config array
 typedef struct TUM_s {
     timerUsageFlag_e   flag;    // flag defines particular usage (enum)
-    int                 devndx; // some users needs index of 
+    int                 devndx; // some users needs index of. The first valid index is 1
 } timerUsageMap_t;
 
 PG_DECLARE_ARRAY(timerUsageMap_t, MAX_PWM_OUTPUT_PORTS, timerUsageMap);

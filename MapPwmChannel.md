@@ -76,7 +76,7 @@ pwmmap 28 led
 pwmmap list
 ~~~
 
-Following list is based on enumeration **timerUsageFlag_e**
+Following list is based on **newly created** enumeration **timerUsageFlag_e**
 
  * cppm/**ppm**(-in)
 
@@ -89,6 +89,8 @@ Following list is based on enumeration **timerUsageFlag_e**
  * **led**(_strip)
 
  * **beeper**
+
+
 
 #### Automatic/Default assigment
 
@@ -168,6 +170,8 @@ set receiver_type = PPM
 pwmmap 10 ppm
 
 save
+
+pwmmap list
 ~~~
 
 ### Modify PWM pins initialization (individual rx servo channels)
@@ -198,6 +202,20 @@ Try in CLI
  During work on **pwmmap** feature I realised that commands allows inconsistent configuration.
  There is probably no checks if one set parameter is consistent with another one.
 
+## not to assign same channel twice
+
+ It is checked during CLI setting.
+
+ The PPM LED and BEEPER channel can be assingned only once.
+
+  The PWM, SERVO and MOTOR are checked for assignment and index.
+
+ The 
+
+## not to assign servo & motor channels without "holes"
+
+ The hole in used indexes (field: **devndx**) can cause HW/SW crash.
+
 # default behaviour of FEATURE_PWM_SERVO_DRIVER
 
  See **void pwmServoPreconfigure(void)**, the internal timers is used of external driver.
@@ -217,9 +235,67 @@ Try in CLI
 
  * show configuration after device reboot
 
-## pwmmap PPM in
+## pwmmap servo motor assignment
+
+~~~
+map TAER
+
+feature PWM_OUTPUT_ENABLE
+feature -VBAT
+
+set receiver_type = PPM
+pwmmap 10 ppm
+
+pwmmap 1 servo 2
+
+pwmmap 1 servo 1
+pwmmap 2 servo 1
+pwmmap 2 servo 2
+pwmmap 3 servo 3
+pwmmap 4 servo 4
+
+pwmmap 5 servo 5
+pwmmap 6 servo 6
+pwmmap 7 servo 7
+pwmmap 8 servo 8
+
+pwmmap 9 servo 0
+pwmmap 1 servo 0
+
+pwmmap list
+
+smix 0 0 1 100 100 0 # THRO@#
+
+smix 1 0 4 100 100 # L-AILE - unstabilised
+smix 2 3 4 100 100 # R-AILE - unstabilised
+
+smix 3 1 9 100 50 # elev
+smix 4 2 9 100 50 # R-FLAP
+smix reverse 4 9 r # ? (25.2. not working as expected)
+
+smix 5 4 5 50 100 # L-Y
+smix 6 4 6 50 100 # L-Y
+
+smix 7 5 5 50 100 # R-Y
+smix reverse 7 5 r # tady reverzovani na vyskovku funguje
+
+smix 8 6 6 100 100 # RUDD
+
+save
+
+#
+pwmmap list
+
+~~~
 
 # Work status
 
- - rozpracovane nastaveni PPM in kanalu, otestovat na povolenych pinech
+ - rozpracovane nastaveni PPM in kanalu, otestovat na povolenych pinech, **otestovano na pin 1 a 10**, podle kodu soudim ze to bude fungovat i jinde
+
+ - podivat se na vystupni piny "pwmmap pinNo servo Ch"
+
+ pwmMotorAndServoInit () -> pwmBuildTimerOutputList()
+
+  pro explicitni mapping asi bude nutne prepsat tuto funkci:
+  (pwm_mapping.c) pwmBuildTimerOutputList()
  

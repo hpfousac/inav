@@ -218,9 +218,8 @@ void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs)
     timOutputs->maxTimMotorCount = 0;
     timOutputs->maxTimServoCount = 0;
 
-    for (int idx = 0; idx < timerHardwareCount; idx++) {
+    for (int idx = 0; idx < timerHardwareCount; ++idx) {
         const timerHardware_t *timHw = &timerHardware[idx];
-        int type = MAP_TO_NONE;
 
         // Check for known conflicts (i.e. UART, LEDSTRIP, Rangefinder and ADC)
         if (checkPwmTimerConflicts(timHw)) {
@@ -228,26 +227,54 @@ void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs)
             continue;
         }
 
-        // Determine if timer belongs to motor/servo
-        // Fixed wing or HELI (one/two motors and a lot of servos
-        if (timHw->usageFlags & TIM_USE_FW_SERVO) {
-            type = MAP_TO_SERVO_OUTPUT;
-        }
-        else if (timHw->usageFlags & TIM_USE_FW_MOTOR) {
-            type = MAP_TO_MOTOR_OUTPUT;
-        }
-
-        switch(type) {
-            case MAP_TO_MOTOR_OUTPUT:
-                timOutputs->timMotors[timOutputs->maxTimMotorCount++] = timHw;
-                break;
-            case MAP_TO_SERVO_OUTPUT:
-                timOutputs->timServos[timOutputs->maxTimServoCount++] = timHw;
-                break;
-            default:
-                break;
+        switch (timerUsageMapMutable(idx)->flag) {
+        case TIM_USE_FW_MOTOR:
+            timOutputs->timMotors[timerUsageMapMutable(idx)->devndx - 1] = timHw;
+            if (timerUsageMapMutable(idx)->devndx > timOutputs->maxTimMotorCount) {
+                timOutputs->maxTimMotorCount = timerUsageMapMutable(idx)->devndx;
+            }
+            break;
+        case TIM_USE_FW_SERVO:
+            timOutputs->timServos[timerUsageMapMutable(idx)->devndx - 1] = timHw;
+            if (timerUsageMapMutable(idx)->devndx > timOutputs->maxTimServoCount) {
+                timOutputs->maxTimServoCount = timerUsageMapMutable(idx)->devndx;
+            }
+            break;
+        default:
+            break;
         }
     }
+
+    // for (int idx = 0; idx < timerHardwareCount; idx++) {
+    //     const timerHardware_t *timHw = &timerHardware[idx];
+    //     int type = MAP_TO_NONE;
+
+    //     // Check for known conflicts (i.e. UART, LEDSTRIP, Rangefinder and ADC)
+    //     if (checkPwmTimerConflicts(timHw)) {
+    //         LOG_W(PWM, "Timer output %d skipped", idx);
+    //         continue;
+    //     }
+
+    //     // Determine if timer belongs to motor/servo
+    //     // Fixed wing or HELI (one/two motors and a lot of servos
+    //     if (timHw->usageFlags & TIM_USE_FW_SERVO) {
+    //         type = MAP_TO_SERVO_OUTPUT;
+    //     }
+    //     else if (timHw->usageFlags & TIM_USE_FW_MOTOR) {
+    //         type = MAP_TO_MOTOR_OUTPUT;
+    //     }
+
+    //     switch(type) {
+    //         case MAP_TO_MOTOR_OUTPUT:
+    //             timOutputs->timMotors[timOutputs->maxTimMotorCount++] = timHw;
+    //             break;
+    //         case MAP_TO_SERVO_OUTPUT:
+    //             timOutputs->timServos[timOutputs->maxTimServoCount++] = timHw;
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
 }
 
 static bool motorsUseHardwareTimers(void)

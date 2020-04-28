@@ -3080,7 +3080,7 @@ int
     }
     pwmindex = fastA2I(ptr);
     if ((pwmindex < 1) || (pwmindex > pwmchlimit)) {
-        cliShowArgumentRangeError("pwmindex", 1, MAX_PWM_OUTPUT_PORTS);
+        cliShowArgumentRangeError("pwmindex", 1, pwmchlimit);
     }
 
     ptr = nextArg(ptr);
@@ -3096,6 +3096,10 @@ int
         }
         if (ptr) {
             pwmtargetindex = fastA2I(ptr);
+            if ((pwmtargetindex < 1) || (pwmtargetindex > pwmchlimit)) {
+                cliShowArgumentRangeError("pwmtargetindex", 1, pwmchlimit);
+                return;
+            }
         }
     } else {
         pwmtargetindex = -1;
