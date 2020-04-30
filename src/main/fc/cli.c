@@ -2868,6 +2868,9 @@ static inline void cliPwmMapList (void)
 {
 unsigned pwmchlimit = feature(FEATURE_PWM_SERVO_DRIVER) ? MAX_PWM_OUTPUT_PORTS : timerHardwareCount;
 
+    // cliPrintLinef("# maxTimMotorCount %d", (int) timOutputs->maxTimMotorCount);
+    // cliPrintLinef("# maxTimServoCount %d", (int) timOutputs->maxTimServoCount);
+
     for (unsigned i = 0; i < pwmchlimit; ++i) {
     char *type = "Missing Type";
         switch (timerUsageMapMutable(i)->flag) {
@@ -3415,6 +3418,12 @@ static void cliRxIn(char *cmdline)
     }
 }
 
+#ifdef USE_LOG
+static void cliShowLog(char *cmdline)
+{
+    UNUSED (cmdline);
+}
+#endif
 
 typedef struct {
     const char *name;
@@ -3540,6 +3549,10 @@ const clicmd_t cmdTable[] = {
 #endif
 
     CLI_COMMAND_DEF("rxin", "show received values", NULL, cliRxIn),
+
+#ifdef USE_LOG
+    CLI_COMMAND_DEF("log", "shows logged events", NULL, cliShowLog),
+#endif
 };
 
 static void cliHelp(char *cmdline)

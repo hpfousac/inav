@@ -46,9 +46,11 @@ bool sensorsAutodetect(void)
 {
     bool eepromUpdatePending = false;
 
+#ifdef USE_GYRO
     if (!gyroInit()) {
         return false;
     }
+#endif
 
     accInit(getLooptime());
 

@@ -284,6 +284,7 @@ smix 8 6 6 100 100 # RUDD
 save
 
 #
+resource
 pwmmap list
 
 ~~~
@@ -299,3 +300,8 @@ pwmmap list
   pro explicitni mapping asi bude nutne prepsat tuto funkci:
   (pwm_mapping.c) pwmBuildTimerOutputList()
  
+- stav: Chova se to divne
+- kdyz je pwmmap jen jedno servo, resources neukazuje nic a na pinu neni signal
+- kdyz je pwmmap servo 1-8 tak resources ukazuji motor 1-7 (proverit co to znamena) a na pinech je signal tajy jen 1-7.
+- pwmmap 1-6 no res
+- pwmmap 7 servo - motor 1-6, signal 1-7

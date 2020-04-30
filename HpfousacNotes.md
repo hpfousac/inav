@@ -431,3 +431,36 @@ arm-none-eabi-objcopy -O ihex --set-start 0x8000000 obj/main/inav_SPRACINGF3.elf
 ~~~
 feature PWM_OUTPUT_ENABLE
 ~~~
+
+
+## Code analysis
+
+### Initialisation phase and variables
+
+#### Flow
+
+ * Chip/Controller initialisation (clock and so)
+
+ * Check and Read EEPROM config
+
+~~~
+#ifdef USE_EXTI
+    EXTIInit();
+#endif
+
+#ifdef USE_SPEKTRUM_BIND
+    if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
+...
+                spektrumBind(rxConfigMutable());
+...                
+    }
+#endif
+~~~
+
+ * USB Init
+
+ * Timer Init
+
+ * MSP & LOG Serial init
+
+ * Servos init
