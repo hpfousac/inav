@@ -52,7 +52,9 @@
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
 
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
@@ -60,9 +62,9 @@
 #define USE_UART1
 #define USE_UART2
 #define USE_UART3
-// #define USE_SOFTSERIAL1
-// #define USE_SOFTSERIAL2
-#define SERIAL_PORT_COUNT       3
+#define USE_SOFTSERIAL1
+#define USE_SOFTSERIAL2
+#define SERIAL_PORT_COUNT       5
 
 #define UART1_TX_PIN            PA9
 #define UART1_RX_PIN            PA10
@@ -73,10 +75,10 @@
 #define UART3_TX_PIN            PB10 // PB10 (AF7)
 #define UART3_RX_PIN            PB11 // PB11 (AF7)
 
-// #define SOFTSERIAL_1_RX_PIN     PB4
-// #define SOFTSERIAL_1_TX_PIN     PB5
-// #define SOFTSERIAL_2_RX_PIN     PB0
-// #define SOFTSERIAL_2_TX_PIN     PB1
+#define SOFTSERIAL_1_RX_PIN     PB4
+#define SOFTSERIAL_1_TX_PIN     PB5
+#define SOFTSERIAL_2_RX_PIN     PB0
+#define SOFTSERIAL_2_TX_PIN     PB1
 
 #define USE_I2C
 #define USE_I2C_DEVICE_1
@@ -97,30 +99,25 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_2
 #define RSSI_ADC_CHANNEL                ADC_CHN_3
 
-// #define USE_LED_STRIP
-// #define WS2811_PIN                      PA8
-// #define WS2811_DMA_STREAM               DMA1_Channel2
-// #define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
+#define USE_LED_STRIP
+#define WS2811_PIN                      PA8
 
-// #define USE_RANGEFINDER
-// #define USE_RANGEFINDER_HCSR04
-// #define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
-// #define RANGEFINDER_HCSR04_ECHO_PIN          PB1
-// #define USE_RANGEFINDER_HCSR04_I2C
-// #define RANGEFINDER_I2C_BUS             BUS_I2C1
+#define USE_RANGEFINDER
+#define USE_RANGEFINDER_HCSR04
+#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB0
+#define RANGEFINDER_HCSR04_ECHO_PIN          PB1
+#define USE_RANGEFINDER_HCSR04_I2C
+#define RANGEFINDER_I2C_BUS             BUS_I2C1
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
-#define USE_SERIALRX_SPEKTRUM
-#define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_PWM_OUTPUT_ENABLE)
-#define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
-#define SERIALRX_UART           SERIAL_PORT_USART3
-#define SERIALRX_PROVIDER       SERIALRX_SPEKTRUM1024
+#define DEFAULT_FEATURES        (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT)
+#define DEFAULT_RX_TYPE         RX_TYPE_PPM
 
 #define USE_SPEKTRUM_BIND
 #define BIND_PIN                PB11 // UART3
 
-// #define USE_SERIAL_4WAY_BLHELI_INTERFACE
+#define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
 // Number of available PWM outputs
 #define MAX_PWM_OUTPUT_PORTS    12
@@ -130,6 +127,3 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         (BIT(13)|BIT(14)|BIT(15))
 #define TARGET_IO_PORTF         (BIT(0)|BIT(1)|BIT(3)|BIT(4))
-
-#define USABLE_TIMER_CHANNEL_COUNT 17
-#define USED_TIMERS             ( TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(15) | TIM_N(16) | TIM_N(17) )

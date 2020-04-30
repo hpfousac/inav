@@ -26,15 +26,13 @@
 // alternative defaults settings for MATEKF405SE targets
 void targetConfiguration(void)
 {
-    motorConfigMutable()->minthrottle = 1050;
-    motorConfigMutable()->maxthrottle = 1950;
-
+    
     serialConfigMutable()->portConfigs[1].functionMask = FUNCTION_MSP;
     serialConfigMutable()->portConfigs[1].msp_baudrateIndex = BAUD_57600;
 
     //featureSet(FEATURE_PWM_OUTPUT_ENABLE); // enable PWM outputs by default
     //mixerConfigMutable()->mixerMode = MIXER_FLYING_WING; // default mixer to flying wing
-    mixerConfigMutable()->mixerMode = MIXER_AIRPLANE;   // default mixer to Airplane
+    mixerConfigMutable()->platformType = PLATFORM_AIRPLANE;   // default mixer to Airplane
 
     serialConfigMutable()->portConfigs[7].functionMask = FUNCTION_TELEMETRY_SMARTPORT;
 }

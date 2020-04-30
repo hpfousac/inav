@@ -27,18 +27,22 @@
 
 #include "platform.h"
 
-#include "build/debug.h"
+#include "common/log.h"
 #include "common/memory.h"
+
+#include "drivers/resource.h"
+
 #include "fc/runtime_config.h"
 
 #if !defined(DYNAMIC_HEAP_SIZE)
-#define DYNAMIC_HEAP_SIZE   (1024)
+#define DYNAMIC_HEAP_SIZE   (2048)
 #endif
 
 static uint32_t dynHeap[DYNAMIC_HEAP_SIZE / sizeof(uint32_t)];
 static uint32_t dynHeapFreeWord = 0;
+static size_t dynHeapUsage[OWNER_TOTAL_COUNT];
 
-void * memAllocate(size_t wantedSize)
+void * memAllocate(size_t wantedSize, resourceOwner_e owner)
 {
     void * retPointer = NULL;
     const size_t wantedWords = (wantedSize + sizeof(uint32_t) - 1) / sizeof(uint32_t);
@@ -47,15 +51,21 @@ void * memAllocate(size_t wantedSize)
         // Success
         retPointer = &dynHeap[dynHeapFreeWord];
         dynHeapFreeWord += wantedWords;
-        DEBUG_TRACE("Memory allocated. Free memory = %d", memGetAvailableBytes());
+        dynHeapUsage[owner] += wantedWords * sizeof(uint32_t);
+        LOG_D(SYSTEM, "Memory allocated. Free memory = %d", memGetAvailableBytes());
     }
     else {
         // OOM
-        DEBUG_TRACE("Out of memory");
+        LOG_E(SYSTEM, "Out of memory");
         ENABLE_ARMING_FLAG(ARMING_DISABLED_OOM);
     }
 
     return retPointer;
+}
+
+size_t memGetUsedBytesByOwner(resourceOwner_e owner)
+{
+    return (owner == OWNER_FREE) ? memGetAvailableBytes() : dynHeapUsage[owner];
 }
 
 size_t memGetAvailableBytes(void)

@@ -29,11 +29,8 @@
 #include "drivers/time.h"
 #include "drivers/exti.h"
 #include "drivers/io.h"
-#include "drivers/gpio.h"
 #include "drivers/nvic.h"
 #include "drivers/rcc.h"
-
-#include "drivers/logging.h"
 
 #include "drivers/rangefinder/rangefinder.h"
 #include "drivers/rangefinder/rangefinder_hcsr04.h"
@@ -154,11 +151,6 @@ bool hcsr04Detect(rangefinderDev_t *dev, const rangefinderHardwarePins_t * range
 {
     bool detected = false;
 
-#ifdef STM32F10X
-    // enable AFIO for EXTI support
-    RCC_ClockCmd(RCC_APB2(AFIO), ENABLE);
-#endif
-
 #if defined(STM32F3) || defined(STM32F4)
     RCC_ClockCmd(RCC_APB2(SYSCFG), ENABLE);
 #endif
@@ -167,12 +159,10 @@ bool hcsr04Detect(rangefinderDev_t *dev, const rangefinderHardwarePins_t * range
     echoIO = IOGetByTag(rangefinderHardwarePins->echoTag);
 
     if (IOGetOwner(triggerIO) != OWNER_FREE) {
-        addBootlogEvent4(BOOT_EVENT_HARDWARE_IO_CONFLICT, BOOT_EVENT_FLAGS_WARNING, IOGetOwner(triggerIO), OWNER_RANGEFINDER);
         return false;
     }
 
     if (IOGetOwner(echoIO) != OWNER_FREE) {
-        addBootlogEvent4(BOOT_EVENT_HARDWARE_IO_CONFLICT, BOOT_EVENT_FLAGS_WARNING, IOGetOwner(echoIO), OWNER_RANGEFINDER);
         return false;
     }
 

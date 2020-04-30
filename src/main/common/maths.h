@@ -55,6 +55,10 @@
 #define RADIANS_TO_CENTIDEGREES(angle) (((angle) * 100.0f) / RAD)
 #define CENTIDEGREES_TO_RADIANS(angle) (((angle) / 100.0f) * RAD)
 
+#define CENTIMETERS_TO_CENTIFEET(cm)            (cm * (328 / 100.0))
+#define CENTIMETERS_TO_FEET(cm)                 (cm * (328 / 10000.0))
+#define CENTIMETERS_TO_METERS(cm)               (cm / 100)
+
 // copied from https://code.google.com/p/cxutil/source/browse/include/cxutil/utility.h#70
 #define _CHOOSE2(binoper, lexpr, lvar, rexpr, rvar)         \
     ( __extension__ ({                                      \
@@ -123,6 +127,7 @@ void sensorCalibrationSolveForScale(sensorCalibrationState_t * state, float resu
 
 int gcd(int num, int denom);
 int32_t applyDeadband(int32_t value, int32_t deadband);
+float fapplyDeadbandf(float value, float deadband);
 
 int constrain(int amt, int low, int high);
 float constrainf(float amt, float low, float high);
@@ -153,7 +158,9 @@ float cos_approx(float x);
 float atan2_approx(float y, float x);
 float acos_approx(float x);
 #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+#define asin_approx(x)      (M_PIf / 2 - acos_approx(x))
 #else
+#define asin_approx(x)      asinf(x)
 #define sin_approx(x)       sinf(x)
 #define cos_approx(x)       cosf(x)
 #define atan2_approx(y,x)   atan2f(y,x)

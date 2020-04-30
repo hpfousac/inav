@@ -61,20 +61,16 @@
 
 // *************** SD Card **************************
 #define USE_SDCARD
-#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
+#define USE_SDCARD_SPI
+#define SDCARD_SPI_BUS          BUS_SPI3
+#define SDCARD_CS_PIN           PC1
 
 #define USE_SPI_DEVICE_3
 #define SPI3_SCK_PIN            PB3
 #define SPI3_MISO_PIN   	    PB4
 #define SPI3_MOSI_PIN   	    PB5
 
-#define SDCARD_SPI_INSTANCE     SPI3
-#define SDCARD_SPI_CS_PIN       PC1
-
-#define SDCARD_DMA_CHANNEL_TX               	DMA1_Stream7
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG 	DMA_FLAG_TCIF7
-#define SDCARD_DMA_CLK                      	RCC_AHB1Periph_DMA1
-#define SDCARD_DMA_CHANNEL                  	DMA_Channel_0
+#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
 // *************** M25P256 flash ********************
 #define USE_FLASHFS
@@ -122,7 +118,11 @@
 #define SOFTSERIAL_1_RX_PIN      PA1  //RX4
 #define SOFTSERIAL_1_TX_PIN      PA0  //TX4
 
-#define SERIAL_PORT_COUNT       7
+#define USE_SOFTSERIAL2
+#define SOFTSERIAL_2_RX_PIN      PA2  //TX2
+#define SOFTSERIAL_2_TX_PIN      PA2  //TX2
+
+#define SERIAL_PORT_COUNT       8
 
 #define DEFAULT_RX_TYPE         RX_TYPE_SERIAL
 #define SERIALRX_PROVIDER       SERIALRX_SBUS
@@ -150,7 +150,6 @@
     #define DEFAULT_I2C_BUS         BUS_I2C1
 #endif
 
-
 #define USE_BARO
 #define BARO_I2C_BUS                DEFAULT_I2C_BUS
 #define USE_BARO_BMP280
@@ -159,16 +158,22 @@
 
 #define USE_MAG
 #define MAG_I2C_BUS                 DEFAULT_I2C_BUS
+#define USE_MAG_AK8963
+#define USE_MAG_AK8975
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
+
+#define TEMPERATURE_I2C_BUS         DEFAULT_I2C_BUS
 
 #define USE_RANGEFINDER
+#define USE_RANGEFINDER_MSP
 #define USE_RANGEFINDER_HCSR04_I2C
 #define RANGEFINDER_I2C_BUS     DEFAULT_I2C_BUS
 
-#define USE_PITOT_MS4525
 #define PITOT_I2C_BUS               DEFAULT_I2C_BUS
 
 // *************** ADC *****************************
@@ -187,9 +192,6 @@
 
 #define USE_LED_STRIP
 #define WS2811_PIN                      PA15 // S5 pad for iNav
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST5_HANDLER
-#define WS2811_DMA_STREAM               DMA1_Stream5
-#define WS2811_DMA_CHANNEL              DMA_Channel_3 
 
 #define USE_SPEKTRUM_BIND
 #define BIND_PIN                PA3 //  RX2
@@ -201,6 +203,10 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         (BIT(2))
 
-#define USABLE_TIMER_CHANNEL_COUNT 11
+#define USE_DSHOT
+#define USE_ESC_SENSOR
+#define USE_SERIALSHOT
+
 #define MAX_PWM_OUTPUT_PORTS       6
-#define USED_TIMERS             (TIM_N(1)|TIM_N(2)|TIM_N(3)|TIM_N(4)|TIM_N(5)|TIM_N(8)|TIM_N(9))
+
+#define PCA9685_I2C_BUS             DEFAULT_I2C_BUS

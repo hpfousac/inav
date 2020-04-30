@@ -55,6 +55,7 @@
 // #define USE_MAG_QMC5883
 // #define USE_MAG_IST8310
 // #define USE_MAG_MAG3110
+// #define USE_MAG_LIS3MDL
 
 #define USE_BARO
 
@@ -151,19 +152,16 @@
 #undef USE_RX_PWM
 #undef USE_RX_PPM
 
-// Pitot not supported
-#undef USE_PITOT
-
 // Set default UARTs
 #define TELEMETRY_UART                  SERIAL_PORT_SOFTSERIAL1
 #define SERIALRX_UART                   SERIAL_PORT_USART1
 #define SMARTAUDIO_UART                 SERIAL_PORT_USART2
 
-#define TARGET_CONFIG
-
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
 // Number of available PWM outputs
+#define USE_DSHOT
+#define USE_ESC_SENSOR
 #define MAX_PWM_OUTPUT_PORTS    4
 #define TARGET_MOTOR_COUNT      4
 
@@ -172,6 +170,6 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
 
-#define USABLE_TIMER_CHANNEL_COUNT 5
-
-#define USED_TIMERS             ( TIM_N(1) | TIM_N(3) | TIM_N(4) | TIM_N(8) )
+#define PITOT_I2C_BUS           BUS_I2C2
+#define PCA9685_I2C_BUS         BUS_I2C2
+#define TEMPERATURE_I2C_BUS     BUS_I2C2

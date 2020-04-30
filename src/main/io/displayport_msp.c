@@ -40,20 +40,16 @@
 
 static displayPort_t mspDisplayPort;
 
-#ifdef USE_CLI
 extern uint8_t cliMode;
-#endif
 
 static int output(displayPort_t *displayPort, uint8_t cmd, uint8_t *buf, int len)
 {
     UNUSED(displayPort);
 
-#ifdef USE_CLI
     // FIXME There should be no dependency on the CLI but mspSerialPush doesn't check for cli mode, and can't because it also shouldn't have a dependency on the CLI.
     if (cliMode) {
         return 0;
     }
-#endif
     return mspSerialPush(cmd, buf, len);
 }
 
@@ -117,7 +113,7 @@ static int writeString(displayPort_t *displayPort, uint8_t col, uint8_t row, con
     return output(displayPort, MSP_DISPLAYPORT, buf, len + 4);
 }
 
-static int writeChar(displayPort_t *displayPort, uint8_t col, uint8_t row, uint8_t c, textAttributes_t attr)
+static int writeChar(displayPort_t *displayPort, uint8_t col, uint8_t row, uint16_t c, textAttributes_t attr)
 {
     char buf[2];
 
@@ -152,6 +148,7 @@ static const displayPortVTable_t mspDisplayPortVTable = {
     .screenSize = screenSize,
     .writeString = writeString,
     .writeChar = writeChar,
+    .readChar = NULL,
     .isTransferInProgress = isTransferInProgress,
     .heartbeat = heartbeat,
     .resync = resync,

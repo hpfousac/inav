@@ -30,11 +30,22 @@ typedef struct vtxChannelActivationCondition_s {
 
 typedef struct vtxConfig_s {
     vtxChannelActivationCondition_t vtxChannelActivationConditions[MAX_CHANNEL_ACTIVATION_CONDITION_COUNT];
+    uint8_t halfDuplex;
 } vtxConfig_t;
+
+typedef struct vtxRunState_s {
+    int pitMode;
+    int band;
+    int channel;
+    int frequency;
+    int powerIndex;
+    int powerMilliwatt;
+} vtxRunState_t;
 
 PG_DECLARE(vtxConfig_t, vtxConfig);
 
 void vtxControlInit(void);
+void vtxControlInputPoll(void);
 
 void vtxIncrementBand(void);
 void vtxDecrementBand(void);

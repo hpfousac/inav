@@ -48,6 +48,7 @@
 #define ACC_MPU6500_ALIGN       CW180_DEG_FLIP
 #define GYRO_MPU9250_ALIGN      CW180_DEG_FLIP
 #define ACC_MPU9250_ALIGN       CW180_DEG_FLIP
+#define MAG_MPU9250_ALIGN       CW90_DEG
 
 #define USE_DUAL_GYRO
 
@@ -70,26 +71,22 @@
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C1
 
 #define USE_BARO
 #define USE_BARO_MS5611
 #define MS5611_CS_PIN           PD7
 #define MS5611_SPI_BUS          BUS_SPI2
 
-/*
 #define USE_SDCARD
-
-#define SDCARD_SPI_INSTANCE                 SPI3
-#define SDCARD_SPI_CS_PIN                   PD2
-
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Stream5
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA_FLAG_TCIF5
-#define SDCARD_DMA_CLK                      RCC_AHB1Periph_DMA1
-#define SDCARD_DMA_CHANNEL                  DMA_Channel_0
-*/
-
-#define USABLE_TIMER_CHANNEL_COUNT 7
+#define USE_SDCARD_SDIO
+#define SDCARD_SDIO_DMA         DMA_TAG(2,3,4)
+#define SDCARD_SDIO_4BIT
+#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
 // MPU9250 interrupt
 #define USE_MPU_DATA_READY_SIGNAL
@@ -178,5 +175,3 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
 #define TARGET_IO_PORTE         0xffff
-
-#define USED_TIMERS             ( TIM_N(1) | TIM_N(3) | TIM_N(4))

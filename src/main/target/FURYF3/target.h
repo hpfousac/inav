@@ -60,6 +60,7 @@
 #define USE_MAG_HMC5883
 #define USE_MAG_MAG3110
 #define USE_MAG_QMC5883
+#define USE_MAG_LIS3MDL
 
 #define USE_BARO
 #define BARO_I2C_BUS             BUS_I2C1
@@ -90,23 +91,12 @@
 #endif
 
 #ifdef USE_SDCARD
-#define USE_SDCARD_SPI2
+#define USE_SDCARD_SPI
 
 #define SDCARD_DETECT_INVERTED
-
-#define SDCARD_DETECT_PIN                   PB2
-#define SDCARD_DETECT_EXTI_LINE             EXTI_Line2
-#define SDCARD_DETECT_EXTI_PIN_SOURCE       EXTI_PinSource2
-#define SDCARD_DETECT_EXTI_PORT_SOURCE      EXTI_PortSourceGPIOB
-#define SDCARD_DETECT_EXTI_IRQn             EXTI15_10_IRQn
-
-#define SDCARD_SPI_INSTANCE                 SPI2
-#define SDCARD_SPI_CS_GPIO                  SPI2_GPIO
-#define SDCARD_SPI_CS_PIN                   SPI2_NSS_PIN
-
-// Note, this is the same DMA channel as UART1_RX. Luckily we don't use DMA for USART Rx.
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Channel5
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA1_FLAG_TC5
+#define SDCARD_DETECT_PIN       PB2
+#define SDCARD_SPI_BUS          BUS_SPI2
+#define SDCARD_CS_PIN           SPI2_NSS_PIN
 #endif
 
 #define USE_VCP
@@ -145,13 +135,7 @@
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_3
 
 #define USE_LED_STRIP
-#define USE_LED_STRIP_ON_DMA1_CHANNEL2
 #define WS2811_PIN                      PA8
-#define WS2811_TIMER                    TIM1
-#define WS2811_DMA_STREAM               DMA1_Channel2
-#define WS2811_IRQ                      DMA1_Channel2_IRQn
-#define WS2811_DMA_TC_FLAG              DMA1_FLAG_TC2
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
 
 #define USE_RANGEFINDER
 #define USE_RANGEFINDER_HCSR04
@@ -176,6 +160,3 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
 #define TARGET_IO_PORTF         (BIT(4))
-
-#define USABLE_TIMER_CHANNEL_COUNT 8
-#define USED_TIMERS             (TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(16) |TIM_N(17))

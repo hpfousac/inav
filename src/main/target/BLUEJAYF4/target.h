@@ -17,7 +17,6 @@
 
 #pragma once
 #define TARGET_BOARD_IDENTIFIER "BJF4"
-#define TARGET_CONFIG
 
 #define USBD_PRODUCT_STRING     "BlueJayF4"
 
@@ -34,9 +33,6 @@
 #define BEEPER                  PC1
 #define BEEPER_OPT              PB7
 #define BEEPER_INVERTED
-
-#define INVERTER_PIN_UART6      PB15
-//#define INVERTER_PIN_UART1     PC9
 
 // MPU6500 interrupt
 #define USE_MPU_DATA_READY_SIGNAL
@@ -57,7 +53,11 @@
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C1
 
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
@@ -66,20 +66,11 @@
 #define USE_BARO_MS5611
 
 #define USE_SDCARD
-
+#define USE_SDCARD_SPI
 #define SDCARD_DETECT_INVERTED
-
-#define SDCARD_DETECT_PIN                   PD2
-#define SDCARD_SPI_INSTANCE                 SPI3
-#define SDCARD_SPI_CS_PIN                   PA15
-
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Stream5
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA_FLAG_TCIF5
-#define SDCARD_DMA_CLK                      RCC_AHB1Periph_DMA1
-#define SDCARD_DMA_CHANNEL                  DMA_Channel_0
-
-// Performance logging for SD card operations:
-// #define AFATFS_USE_INTROSPECTIVE_LOGGING
+#define SDCARD_DETECT_PIN       PD2
+#define SDCARD_SPI_BUS          BUS_SPI3
+#define SDCARD_CS_PIN           PA15
 
 #define M25P16_CS_PIN           PB7
 #define M25P16_SPI_BUS          BUS_SPI3
@@ -91,9 +82,12 @@
 //#define VBUS_SENSING_PIN PA8
 //#define VBUS_SENSING_ENABLED
 
+#define USE_UART_INVERTER
+
 #define USE_UART1
 #define UART1_RX_PIN            PA10
 #define UART1_TX_PIN            PA9
+//#define INVERTER_PIN_UART1_TX     PC9
 
 #define USE_UART3
 #define UART3_RX_PIN            PB11
@@ -102,6 +96,7 @@
 #define USE_UART6
 #define UART6_RX_PIN            PC7
 #define UART6_TX_PIN            PC6
+#define INVERTER_PIN_UART6_RX   PB15
 
 #define USE_SOFTSERIAL1
 #define SERIAL_PORT_COUNT       5
@@ -136,17 +131,7 @@
 #define VBAT_ADC_CHANNEL                ADC_CHN_1
 
 #define USE_LED_STRIP
-// LED Strip can run off Pin 6 (PB1) of the ESC outputs.
 #define WS2811_PIN                      PB1
-#define WS2811_TIMER                    TIM3
-#define WS2811_TIMER_CHANNEL            TIM_Channel_4
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST2_HANDLER
-#define WS2811_DMA_STREAM               DMA1_Stream2
-#define WS2811_DMA_FLAG                 DMA_FLAG_TCIF2
-#define WS2811_DMA_IT                   DMA_IT_TCIF2
-#define WS2811_DMA_CHANNEL              DMA_Channel_5
-#define WS2811_DMA_IRQ                  DMA1_Stream2_IRQn
-
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
@@ -165,7 +150,3 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         (BIT(2))
-
-#define USABLE_TIMER_CHANNEL_COUNT 7
-#define USED_TIMERS             ( TIM_N(2) | TIM_N(3) | TIM_N(5) | TIM_N(8) | TIM_N(9))
-

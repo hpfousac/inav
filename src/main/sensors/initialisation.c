@@ -24,8 +24,6 @@
 
 #include "config/config_eeprom.h"
 
-#include "drivers/logging.h"
-
 #include "fc/config.h"
 #include "fc/runtime_config.h"
 
@@ -37,6 +35,7 @@
 #include "sensors/compass.h"
 #include "sensors/rangefinder.h"
 #include "sensors/opflow.h"
+#include "sensors/temperature.h"
 #include "sensors/initialisation.h"
 
 uint8_t requestedSensors[SENSOR_INDEX_COUNT] = { GYRO_AUTODETECT, ACC_NONE, BARO_NONE, MAG_NONE, RANGEFINDER_NONE, PITOT_NONE, OPFLOW_NONE };
@@ -51,7 +50,7 @@ bool sensorsAutodetect(void)
         return false;
     }
 
-    accInit(getAccUpdateRate());
+    accInit(getLooptime());
 
 #ifdef USE_BARO
     baroInit();
@@ -65,11 +64,15 @@ bool sensorsAutodetect(void)
     compassInit();
 #endif
 
+#ifdef USE_TEMPERATURE_SENSOR
+    temperatureInit();
+#endif
+
 #ifdef USE_RANGEFINDER
     rangefinderInit();
 #endif
 
-#ifdef USE_OPTICAL_FLOW
+#ifdef USE_OPFLOW
     opflowInit();
 #endif
 

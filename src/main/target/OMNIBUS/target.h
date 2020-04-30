@@ -51,24 +51,18 @@
 #define BMP280_SPI_BUS          BUS_SPI1
 #define BMP280_CS_PIN           PA13
 
-#define BARO_I2C_BUS             BUS_I2C1
-#define USE_BARO_BMP085 // External
-#define USE_BARO_BMP180 // External
-#define USE_BARO_MS5611 // External
-
 #define USE_MAG
 #define MAG_I2C_BUS             BUS_I2C1
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
-#define USE_MAG_MAG3110
+#define USE_MAG_IST8308
+// #define USE_MAG_MAG3110
+// #define USE_MAG_LIS3MDL
+// #define USE_MAG_AK8975
 
-#define USE_RANGEFINDER
-#define USE_RANGEFINDER_HCSR04
-#define RANGEFINDER_HCSR04_ECHO_PIN          PB2  // Has 1K series resistor
-#define RANGEFINDER_HCSR04_TRIGGER_PIN       PB4  // FT
-#define USE_RANGEFINDER_HCSR04_I2C
-#define RANGEFINDER_I2C_BUS                  BUS_I2C1
+// Disable certain features to save flash space
+#undef USE_GPS_PROTO_MTK
 
 #define USB_CABLE_DETECTION
 #define USB_DETECT_PIN          PB5
@@ -93,7 +87,6 @@
 #define USE_I2C_DEVICE_1 // PB6/SCL(PWM8), PB7/SDA(PWM7)
 #define USE_I2C_PULLUP
 
-#define USE_PITOT_MS4525
 #define PITOT_I2C_BUS           BUS_I2C1
 
 #define USE_SPI
@@ -109,20 +102,11 @@
 #define RX_NSS_PIN PB3
 
 #define USE_SDCARD
-#define USE_SDCARD_SPI2
-
+#define USE_SDCARD_SPI
 #define SDCARD_DETECT_INVERTED
-
-#define SDCARD_DETECT_PIN                   PC14
-#define SDCARD_SPI_INSTANCE                 SPI2
-#define SDCARD_SPI_CS_PIN                   SPI2_NSS_PIN
-
-// Note, this is the same DMA channel as UART1_RX. Luckily we don't use DMA for USART Rx.
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Channel5
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA1_FLAG_TC5
-
-// Performance logging for SD card operations:
-// #define AFATFS_USE_INTROSPECTIVE_LOGGING
+#define SDCARD_DETECT_PIN       PC14
+#define SDCARD_SPI_BUS          BUS_SPI2
+#define SDCARD_CS_PIN           SPI2_NSS_PIN
 
 #define USE_OSD
 #define USE_MAX7456
@@ -142,8 +126,6 @@
 
 #define USE_LED_STRIP
 #define WS2811_PIN                      PA8
-#define WS2811_DMA_STREAM               DMA1_Channel2
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_CH2_HANDLER
 
 //#define ENABLE_BLACKBOX_LOGGING_ON_SDCARD_BY_DEFAULT
 
@@ -172,7 +154,3 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         (BIT(13)|BIT(14)|BIT(15))
 #define TARGET_IO_PORTF         (BIT(0)|BIT(1)|BIT(4))
-
-#define USABLE_TIMER_CHANNEL_COUNT  8
-
-#define USED_TIMERS             (TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(15))

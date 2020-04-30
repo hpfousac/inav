@@ -32,16 +32,31 @@
 #define AIRCR_VECTKEY_MASK    ((uint32_t)0x05FA0000)
 void SetSysClock(void);
 
+inline static void NVIC_DisableAllIRQs(void)
+{
+    // We access CMSIS NVIC registers directly here
+    for (int x = 0; x < 8; x++) {
+        // Mask all IRQs controlled by a ICERx
+        NVIC->ICER[x] = 0xFFFFFFFF;
+        // Clear all pending IRQs controlled by a ICPRx
+        NVIC->ICPR[x] = 0xFFFFFFFF;
+    }
+}
+
 void systemReset(void)
 {
     __disable_irq();
+    NVIC_DisableAllIRQs();
     NVIC_SystemReset();
 }
 
 void systemResetToBootloader(void)
 {
-    *((uint32_t *)0x2001FFFC) = 0xDEADBEEF; // 128KB SRAM STM32F4XX
     __disable_irq();
+    NVIC_DisableAllIRQs();
+
+    *((uint32_t *)0x2001FFFC) = 0xDEADBEEF; // 128KB SRAM STM32F4XX
+
     NVIC_SystemReset();
 }
 
@@ -94,10 +109,10 @@ void enableGPIOPowerUsageAndNoiseReductions(void)
         RCC_APB1Periph_I2C1 |
         RCC_APB1Periph_I2C2 |
         RCC_APB1Periph_I2C3 |
-        RCC_APB1Periph_CAN1 |
-        RCC_APB1Periph_CAN2 |
+        // RCC_APB1Periph_CAN1 |
+        // RCC_APB1Periph_CAN2 |
         RCC_APB1Periph_PWR |
-        RCC_APB1Periph_DAC |
+        // RCC_APB1Periph_DAC |
         0, ENABLE);
 
     RCC_APB2PeriphClockCmd(
@@ -109,7 +124,7 @@ void enableGPIOPowerUsageAndNoiseReductions(void)
         RCC_APB2Periph_ADC1 |
         RCC_APB2Periph_ADC2 |
         RCC_APB2Periph_ADC3 |
-        RCC_APB2Periph_SDIO |
+        // RCC_APB2Periph_SDIO |
         RCC_APB2Periph_SPI1 |
         RCC_APB2Periph_SYSCFG |
         RCC_APB2Periph_TIM9 |
@@ -119,7 +134,7 @@ void enableGPIOPowerUsageAndNoiseReductions(void)
 
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_StructInit(&GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; // default is un-pulled input
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 
     GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_All;
     GPIO_InitStructure.GPIO_Pin &= ~(GPIO_Pin_11 | GPIO_Pin_12); // leave USB D+/D- alone

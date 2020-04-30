@@ -17,6 +17,10 @@
 
 #pragma once
 
+#include <stdbool.h>
+
+#include "common/time.h"
+
 typedef enum disarmReason_e {
     DISARM_NONE         = 0,
     DISARM_TIMEOUT      = 1,
@@ -29,10 +33,16 @@ typedef enum disarmReason_e {
     DISARM_REASON_COUNT
 } disarmReason_t;
 
+
 void handleInflightCalibrationStickPosition(void);
 
-void mwDisarm(disarmReason_t disarmReason);
-void mwArm(void);
+void disarm(disarmReason_t disarmReason);
+void tryArm(void);
 disarmReason_t getDisarmReason(void);
 
+void emergencyArmingUpdate(bool armingSwitchIsOn);
+
 bool isCalibrating(void);
+float getFlightTime(void);
+
+void fcReboot(bool bootLoader);

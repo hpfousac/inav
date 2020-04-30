@@ -102,12 +102,12 @@ static void mpu6000AccAndGyroInit(gyroDev_t *gyro)
     busWrite(busDev, MPU_RA_SMPLRT_DIV, config->gyroConfigValues[1]);
     delayMicroseconds(15);
 
-    // Gyro +/- 1000 DPS Full Scale
+    // Gyro +/- 2000 DPS Full Scale
     busWrite(busDev, MPU_RA_GYRO_CONFIG, INV_FSR_2000DPS << 3);
     delayMicroseconds(15);
 
-    // Accel +/- 8 G Full Scale
-    busWrite(busDev, MPU_RA_ACCEL_CONFIG, INV_FSR_8G << 3);
+    // Accel +/- 16 G Full Scale
+    busWrite(busDev, MPU_RA_ACCEL_CONFIG, INV_FSR_16G << 3);
     delayMicroseconds(15);
 
     busWrite(busDev, MPU_RA_INT_PIN_CFG, 0 << 7 | 0 << 6 | 0 << 5 | 1 << 4 | 0 << 3 | 0 << 2 | 0 << 1 | 0 << 0);  // INT_ANYRD_2CLEAR
@@ -133,7 +133,7 @@ static void mpu6000AccAndGyroInit(gyroDev_t *gyro)
 
 static void mpu6000AccInit(accDev_t *acc)
 {
-    acc->acc_1G = 512 * 8;
+    acc->acc_1G = 512 * 4;
 }
 
 bool mpu6000AccDetect(accDev_t *acc)
@@ -162,7 +162,7 @@ static bool mpu6000DeviceDetect(busDevice_t * busDev)
     busSetSpeed(busDev, BUS_SPEED_INITIALIZATION);
 
     busWrite(busDev, MPU_RA_PWR_MGMT_1, BIT_H_RESET);
-    
+
     do {
         delay(150);
 

@@ -105,6 +105,15 @@ $(OBJECT_DIR)/common/maths.o : \
 	$(CC) $(C_FLAGS) $(TEST_CFLAGS) -c $(USER_DIR)/common/maths.c -o $@
 
 
+$(OBJECT_DIR)/common/calibration.o : \
+	$(USER_DIR)/common/calibration.c \
+	$(USER_DIR)/common/calibration.h \
+	$(GTEST_HEADERS)
+
+	@mkdir -p $(dir $@)
+	$(CC) $(C_FLAGS) $(TEST_CFLAGS) -c $(USER_DIR)/common/calibration.c -o $@
+
+
 $(OBJECT_DIR)/common/bitarray.o : \
 	$(USER_DIR)/common/bitarray.c \
 	$(USER_DIR)/common/bitarray.h \
@@ -612,14 +621,6 @@ $(OBJECT_DIR)/build/debug.o : \
 	@mkdir -p $(dir $@)
 	$(CC) $(C_FLAGS) $(TEST_CFLAGS) -c $(USER_DIR)/build/debug.c -o $@
 
-$(OBJECT_DIR)/drivers/gyro_sync.o : \
-	$(USER_DIR)/drivers/gyro_sync.c \
-	$(USER_DIR)/drivers/gyro_sync.h \
-	$(GTEST_HEADERS)
-
-	@mkdir -p $(dir $@)
-	$(CC) $(C_FLAGS) $(TEST_CFLAGS) -c $(USER_DIR)/drivers/gyro_sync.c -o $@
-
 $(OBJECT_DIR)/drivers/accgyro/accgyro_fake.o : \
 	$(USER_DIR)/drivers/accgyro/accgyro_fake.c \
 	$(USER_DIR)/drivers/accgyro/accgyro_fake.h \
@@ -647,8 +648,8 @@ $(OBJECT_DIR)/sensor_gyro_unittest.o : \
 $(OBJECT_DIR)/sensor_gyro_unittest : \
 	$(OBJECT_DIR)/build/debug.o \
 	$(OBJECT_DIR)/common/maths.o \
-    $(OBJECT_DIR)/common/filter.o \
-	$(OBJECT_DIR)/drivers/gyro_sync.o \
+	$(OBJECT_DIR)/common/calibration.o \
+	$(OBJECT_DIR)/common/filter.o \
 	$(OBJECT_DIR)/drivers/accgyro/accgyro_fake.o \
 	$(OBJECT_DIR)/sensors/gyro.o \
 	$(OBJECT_DIR)/sensors/boardalignment.o \
@@ -695,7 +696,6 @@ $(OBJECT_DIR)/rcdevice_unittest : \
 	$(OBJECT_DIR)/io/rcdevice.o \
 	$(OBJECT_DIR)/io/rcdevice_cam.o \
 	$(OBJECT_DIR)/fc/rc_modes.o \
-	$(OBJECT_DIR)/rx/rx.o \
 	$(OBJECT_DIR)/common/maths.o \
 	$(OBJECT_DIR)/gtest_main.a 
 
@@ -738,6 +738,26 @@ $(OBJECT_DIR)/bitarray_unittest : \
 	$(OBJECT_DIR)/gtest_main.a
 
 	$(CXX) $(CXX_FLAGS) $^ -o $(OBJECT_DIR)/$@
+
+$(OBJECT_DIR)/common/olc.o : $(USER_DIR)/common/olc.c $(USER_DIR)/common/olc.h $(GTEST_HEADERS)
+	@mkdir -p $(dir $@)
+	$(CC) $(C_FLAGS) $(TEST_CFLAGS) -c $(USER_DIR)/common/olc.c -o $@
+
+$(OBJECT_DIR)/olc_unittest.o : \
+	$(TEST_DIR)/olc_unittest.cc \
+	$(USER_DIR)/common/olc.h \
+	$(GTEST_HEADERS)
+
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXX_FLAGS) $(TEST_CFLAGS) -c $(TEST_DIR)/olc_unittest.cc -o $@
+
+$(OBJECT_DIR)/olc_unittest : \
+	$(OBJECT_DIR)/common/olc.o \
+	$(OBJECT_DIR)/olc_unittest.o \
+	$(OBJECT_DIR)/gtest_main.a
+
+	$(CXX) $(CXX_FLAGS) $^ -o $(OBJECT_DIR)/$@
+
 
 
 test: $(TESTS:%=test-%)

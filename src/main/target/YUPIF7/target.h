@@ -15,9 +15,9 @@
  * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #pragma once
 #define TARGET_BOARD_IDENTIFIER "YPF7"
-
 #define USBD_PRODUCT_STRING     "YUPIF7"
 
 #define LED0                    PB4
@@ -32,7 +32,7 @@
 
 // Gyro interrupt
 #define USE_EXTI
-#define GYRO_INT_EXTI		PC4
+#define GYRO_INT_EXTI           PC4
 #define USE_MPU_DATA_READY_SIGNAL
 #define ENSURE_MPU_DATA_READY_IS_LOW
 
@@ -42,8 +42,6 @@
 
 #define USE_GYRO_MPU6500
 #define USE_ACC_MPU6500
-#define ICM20689_CS_PIN         SPI1_NSS_PIN
-#define ICM20689_EXTI_PIN       PC4
 
 #define USE_ACC
 #define USE_ACC_SPI_MPU6500
@@ -58,6 +56,8 @@
 #define USE_MAG_HMC5883
 #define MAG_HMC5883_ALIGN       CW270_DEG_FLIP
 #define USE_MAG_QMC5883
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C1
 
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
@@ -92,7 +92,14 @@
 
 #define USE_ESCSERIAL
 #define ESCSERIAL_TIMER_TX_HARDWARE 0
-// #define ESCSERIAL_TIMER_TX_PIN  PC8 // (Hardware=0, PPM)
+
+#define UG2864_I2C_BUS          BUS_I2C1
+#define USE_DASHBOARD
+#define USE_OLED_UG2864
+#define DASHBOARD_ARMED_BITMAP
+
+#define USE_PITOT
+#define PITOT_I2C_BUS           BUS_I2C1
 
 //SPI ports
 #define USE_SPI
@@ -119,37 +126,33 @@
 // OSD
 #define USE_OSD
 #define USE_MAX7456
-#define MAX7456_SPI_BUS		BUS_SPI1
-#define MAX7456_CS_PIN		PA14
+#define MAX7456_SPI_BUS         BUS_SPI1
+#define MAX7456_CS_PIN          PA14
 
 // Dataflash
 #define M25P16_CS_PIN           SPI3_NSS_PIN
-#define M25P16_SPI_BUS		BUS_SPI3
+#define M25P16_SPI_BUS          BUS_SPI3
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
 // ADC inputs
 #define USE_ADC
-#define ADC_CHANNEL_1_PIN 	PC0 
-#define ADC_CHANNEL_2_PIN	PC1 
-#define ADC_CHANNEL_3_PIN	PC2 
+#define ADC_CHANNEL_1_PIN       PC0
+#define ADC_CHANNEL_2_PIN       PC1
+#define ADC_CHANNEL_3_PIN       PC2
 #define RSSI_ADC_CHANNEL                ADC_CHN_1
 #define VBAT_ADC_CHANNEL                ADC_CHN_2
 #define CURRENT_METER_ADC_CHANNEL       ADC_CHN_3
-#define CURRENT_METER_SCALE 		235
+#define CURRENT_METER_SCALE             235
 
 // LED Strip can run off Pin 5 (PB1) of the motor outputs
 #define USE_LED_STRIP
 #define WS2811_PIN                      PB1
-#define WS2811_TIMER                    TIM8
-#define WS2811_TIMER_CHANNEL            TIM_CHANNEL_3
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST2_HANDLER
-#define WS2811_DMA_STREAM               DMA1_Stream2
-#define WS2811_DMA_CHANNEL              DMA_CHANNEL_5
-#define WS2811_TIMER_GPIO_AF            GPIO_AF3_TIM8
 
-// #################################################
+// DSHOT
+#define USE_DSHOT
+#define USE_ESC_SENSOR
 
 // Default configuration
 #define SERIALRX_PROVIDER       SERIALRX_SBUS
@@ -160,13 +163,10 @@
 // Target IO and timers
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
-#define MAX_PWM_OUTPUT_PORTS	9
-#define TARGET_MOTOR_COUNT	6
+#define MAX_PWM_OUTPUT_PORTS    9
+#define TARGET_MOTOR_COUNT      6
 
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         (BIT(2))
-
-#define USABLE_TIMER_CHANNEL_COUNT 9
-#define USED_TIMERS             (TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(5) | TIM_N(8) | TIM_N(12))

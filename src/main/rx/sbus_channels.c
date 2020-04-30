@@ -68,12 +68,15 @@ uint8_t sbusChannelsDecode(rxRuntimeConfig_t *rxRuntimeConfig, const sbusChannel
         sbusChannelData[17] = SBUS_DIGITAL_CHANNEL_MIN;
     }
 
-    if (channels->flags & SBUS_FLAG_SIGNAL_LOSS) {
-    }
     if (channels->flags & SBUS_FLAG_FAILSAFE_ACTIVE) {
         // internal failsafe enabled and rx failsafe flag set
         // RX *should* still be sending valid channel data, so use it.
         return RX_FRAME_COMPLETE | RX_FRAME_FAILSAFE;
+    }
+
+    if (channels->flags & SBUS_FLAG_SIGNAL_LOSS) {
+        // The received data is a repeat of the last valid data so can be considered complete.
+        return RX_FRAME_COMPLETE | RX_FRAME_DROPPED;
     }
 
     return RX_FRAME_COMPLETE;
@@ -86,11 +89,11 @@ static uint16_t sbusChannelsReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, 
     return (5 * rxRuntimeConfig->channelData[chan] / 8) + 880;
 }
 
-void sbusChannelsInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+void sbusChannelsInit(rxRuntimeConfig_t *rxRuntimeConfig)
 {
     rxRuntimeConfig->rcReadRawFn = sbusChannelsReadRawRC;
     for (int b = 0; b < SBUS_MAX_CHANNEL; b++) {
-        rxRuntimeConfig->channelData[b] = (16 * rxConfig->midrc) / 10 - 1408;
+        rxRuntimeConfig->channelData[b] = (16 * PWM_RANGE_MIDDLE) / 10 - 1408;
     }
 }
 #endif

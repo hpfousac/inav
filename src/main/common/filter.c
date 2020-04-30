@@ -20,6 +20,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "platform.h"
+
 #include "common/filter.h"
 #include "common/maths.h"
 #include "common/utils.h"
@@ -28,10 +30,17 @@
 #define BIQUAD_Q 1.0f / sqrtf(2.0f)     /* quality factor - butterworth*/
 
 // NULL filter
-
 float nullFilterApply(void *filter, float input)
 {
     UNUSED(filter);
+    return input;
+}
+
+float nullFilterApply4(void *filter, float input, float f_cut, float dt)
+{
+    UNUSED(filter);
+    UNUSED(f_cut);
+    UNUSED(dt);
     return input;
 }
 
@@ -40,16 +49,25 @@ float nullFilterApply(void *filter, float input)
 // f_cut = cutoff frequency
 void pt1FilterInitRC(pt1Filter_t *filter, float tau, float dT)
 {
+    filter->state = 0.0f;
     filter->RC = tau;
     filter->dT = dT;
 }
 
-void pt1FilterInit(pt1Filter_t *filter, uint8_t f_cut, float dT)
+void pt1FilterInit(pt1Filter_t *filter, float f_cut, float dT)
 {
     pt1FilterInitRC(filter, 1.0f / (2.0f * M_PIf * f_cut), dT);
 }
 
-float pt1FilterApply(pt1Filter_t *filter, float input)
+void pt1FilterSetTimeConstant(pt1Filter_t *filter, float tau) {
+    filter->RC = tau;
+}
+
+float pt1FilterGetLastOutput(pt1Filter_t *filter) {
+    return filter->state;
+}
+
+float FAST_CODE NOINLINE pt1FilterApply(pt1Filter_t *filter, float input)
 {
     filter->state = filter->state + filter->dT / (filter->RC + filter->dT) * (input - filter->state);
     return filter->state;
@@ -62,7 +80,7 @@ float pt1FilterApply3(pt1Filter_t *filter, float input, float dT)
     return filter->state;
 }
 
-float pt1FilterApply4(pt1Filter_t *filter, float input, uint16_t f_cut, float dT)
+float FAST_CODE NOINLINE pt1FilterApply4(pt1Filter_t *filter, float input, float f_cut, float dT)
 {
     // Pre calculate and store RC
     if (!filter->RC) {
@@ -161,16 +179,57 @@ void biquadFilterInit(biquadFilter_t *filter, uint16_t filterFreq, uint32_t samp
     }
 
     // zero initial samples
-    filter->d1 = filter->d2 = 0;
+    filter->x1 = filter->x2 = 0;
+    filter->y1 = filter->y2 = 0;
+}
+
+FAST_CODE float biquadFilterApplyDF1(biquadFilter_t *filter, float input)
+{
+    /* compute result */
+    const float result = filter->b0 * input + filter->b1 * filter->x1 + filter->b2 * filter->x2 - filter->a1 * filter->y1 - filter->a2 * filter->y2;
+
+    /* shift x1 to x2, input to x1 */
+    filter->x2 = filter->x1;
+    filter->x1 = input;
+
+    /* shift y1 to y2, result to y1 */
+    filter->y2 = filter->y1;
+    filter->y1 = result;
+
+    return result;
 }
 
 // Computes a biquad_t filter on a sample
-float biquadFilterApply(biquadFilter_t *filter, float input)
+float FAST_CODE NOINLINE biquadFilterApply(biquadFilter_t *filter, float input)
 {
-    const float result = filter->b0 * input + filter->d1;
-    filter->d1 = filter->b1 * input - filter->a1 * result + filter->d2;
-    filter->d2 = filter->b2 * input - filter->a2 * result;
+    const float result = filter->b0 * input + filter->x1;
+    filter->x1 = filter->b1 * input - filter->a1 * result + filter->x2;
+    filter->x2 = filter->b2 * input - filter->a2 * result;
     return result;
+}
+
+float biquadFilterReset(biquadFilter_t *filter, float value)
+{
+    filter->x1 = value - (value * filter->b0);
+    filter->x2 = (filter->b2 - filter->a2) * value;
+    return value;
+}
+
+FAST_CODE void biquadFilterUpdate(biquadFilter_t *filter, float filterFreq, uint32_t refreshRate, float Q, biquadFilterType_e filterType)
+{
+    // backup state
+    float x1 = filter->x1;
+    float x2 = filter->x2;
+    float y1 = filter->y1;
+    float y2 = filter->y2;
+
+    biquadFilterInit(filter, filterFreq, refreshRate, Q, filterType);
+
+    // restore state
+    filter->x1 = x1;
+    filter->x2 = x2;
+    filter->y1 = y1;
+    filter->y2 = y2;
 }
 
 /*

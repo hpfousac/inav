@@ -51,14 +51,7 @@ typedef struct {
 typedef enum {
     /* Actual tasks */
     TASK_SYSTEM = 0,
-#ifdef USE_ASYNC_GYRO_PROCESSING
-    TASK_PID,
-    TASK_GYRO,
-    TASK_ACC,
-    TASK_ATTI,
-#else
     TASK_GYROPID,
-#endif
     TASK_RX,
     TASK_SERIAL,
     TASK_BATTERY,
@@ -93,7 +86,7 @@ typedef enum {
 #ifdef USE_LED_STRIP
     TASK_LEDSTRIP,
 #endif
-#ifdef USE_PMW_SERVO_DRIVER
+#ifdef USE_PWM_SERVO_DRIVER
     TASK_PWMDRIVER,
 #endif
 #ifdef STACK_CHECK
@@ -105,7 +98,7 @@ typedef enum {
 #ifdef USE_CMS
     TASK_CMS,
 #endif
-#ifdef USE_OPTICAL_FLOW
+#ifdef USE_OPFLOW
     TASK_OPFLOW,
 #endif
 #ifdef USE_UAV_INTERCONNECT
@@ -114,10 +107,18 @@ typedef enum {
 #ifdef USE_RCDEVICE
     TASK_RCDEVICE,
 #endif
-#ifdef VTX_CONTROL
+#ifdef USE_VTX_CONTROL
     TASK_VTXCTRL,
 #endif
-
+#ifdef USE_LOGIC_CONDITIONS
+    TASK_LOGIC_CONDITIONS,
+#endif
+#ifdef USE_GLOBAL_FUNCTIONS
+    TASK_GLOBAL_FUNCTIONS,
+#endif
+#ifdef USE_RPM_FILTER
+    TASK_RPM_FILTER,
+#endif
     /* Count of real tasks */
     TASK_COUNT,
 
@@ -162,6 +163,7 @@ void schedulerResetTaskStatistics(cfTaskId_e taskId);
 void schedulerInit(void);
 void scheduler(void);
 void taskSystem(timeUs_t currentTimeUs);
+void taskRunRealtimeCallbacks(timeUs_t currentTimeUs);
 
 #define TASK_PERIOD_HZ(hz) (1000000 / (hz))
 #define TASK_PERIOD_MS(ms) ((ms) * 1000)

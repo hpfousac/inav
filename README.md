@@ -12,12 +12,8 @@
 * Rangefinder support (sonar and laser)
 * Oneshot and Multishot ESC support.
 * Blackbox flight recorder logging (to onboard flash or external SD card).
-* Support for more than 8 RC channels - (e.g. 16 Channels via FrSky X4RSB SBus).
-* Support for N-Position switches via flexible channel ranges - not just 3 like baseflight or 3/6 in MultiWii
 * Lux's new PID (uses float values internally, resistant to looptime variation).
 * Simultaneous Bluetooth configuration and OSD.
-* Better PWM and PPM input and failsafe detection than baseflight.
-* Better FrSky Telemetry than baseflight.
 * LTM Telemetry.
 * Smartport Telemetry.
 * RSSI via ADC - Uses ADC to read PWM RSSI signals, tested with FrSky D4R-II and X8R.
@@ -28,15 +24,15 @@
 * Configurable serial ports for Serial RX, Telemetry, MSP, GPS - Use most devices on any port, softserial too.
 * Multi-color RGB LED Strip support (each LED can be a different color using variable length WS2811 Addressable RGB strips - use for Orientation Indicators, Low Battery Warning, Flight Mode Status, etc)
 * PIDs from CF/BF can be used in INAV, no need to retune for INAV
-* And many more minor bug fixes.
+* And many more!
 
-For a list of features, changes and some discussion please review the thread on RCGroups forums and consult the documentation.
+For a list of features, changes and some discussion please review consult the releases [page](https://github.com/iNavFlight/inav/releases) and the documentation.
 
 ## Tools
 
 ### INAV Configurator
 
-Official too for INAV can be downloaded [here](https://github.com/iNavFlight/inav-configurator/releases). It can be run on Windows, MacOS and Linux machines and standalone application.  
+Official tool for INAV can be downloaded [here](https://github.com/iNavFlight/inav-configurator/releases). It can be run on Windows, MacOS and Linux machines and standalone application.  
 
 ### INAV Blackbox Explorer
 
@@ -51,10 +47,14 @@ Users of FrSky Taranis X9 and Q X7 can use INAV Lua Telemetry screen created by 
 See: https://github.com/iNavFlight/inav/blob/master/docs/Installation.md
 
 ## Documentation, support and learning resources
-
+* [Fixed Wing Guide](docs/INAV_Fixed_Wing_Setup_Guide.pdf)
+* [Autolaunch Guide](docs/INAV_Autolaunch.pdf)
+* [Modes Guide](docs/INAV_Modes.pdf)
+* [Wing Tuning Masterclass](docs/INAV_Wing_Tuning_Masterclass.pdf)
 * [Official documentation](https://github.com/iNavFlight/inav/tree/master/docs)
 * [Official Wiki](https://github.com/iNavFlight/inav/wiki)
-* [Slack channel](https://inavflight.signup.team/)
+* [INAV Official on Telegram](https://t.me/INAVFlight)
+* [INAV Official on Facebook](https://www.facebook.com/groups/INAVOfficial)
 * [RC Groups Support](https://www.rcgroups.com/forums/showthread.php?2495732-Cleanflight-iNav-(navigation-rewrite)-project)
 * [Video series by Painless360](https://www.youtube.com/playlist?list=PLYsWjANuAm4qdXEGFSeUhOZ10-H8YTSnH)
 * [Video series by Paweł Spychalski](https://www.youtube.com/playlist?list=PLOUQ8o2_nCLloACrA6f1_daCjhqY2x0fB)
@@ -68,8 +68,11 @@ Contributions are welcome and encouraged.  You can contribute in many ways:
 * Bug fixes.
 * New features.
 * Telling us your ideas and suggestions.
+* Buying your hardware from this [link](https://inavflight.com/shop/u/bg/)
 
-The best place to start is the IRC channel on freenode (see above), drop in, say hi. Next place is the github issue tracker:
+A good place to start is Telegram channel or Facebook group. Drop in, say hi.
+
+Github issue tracker is a good place to search for existing issues or report a new bug/feature request:
 
 https://github.com/iNavFlight/inav/issues
 

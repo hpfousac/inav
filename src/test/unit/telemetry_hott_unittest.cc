@@ -54,7 +54,7 @@ extern "C" {
     PG_REGISTER(telemetryConfig_t, telemetryConfig, PG_TELEMETRY_CONFIG, 0);
 
     uint16_t testBatteryVoltage = 0;
-    int32_t testAmperage = 0;
+    int16_t testAmperage = 0;
     int32_t testMAhDrawn = 0;
 }
 
@@ -163,7 +163,7 @@ TEST(TelemetryHottTest, PrepareGPSMessage_Altitude1m)
 
 extern "C" {
 
-int16_t debug[DEBUG16_VALUE_COUNT];
+int32_t debug[DEBUG32_VALUE_COUNT];
 
 uint32_t stateFlags;
 
@@ -174,7 +174,7 @@ gpsSolutionData_t gpsSol;
 uint8_t GPS_numSat;
 int32_t GPS_coord[2];
 uint16_t GPS_speed;                 // speed in 0.1m/s
-uint16_t GPS_distanceToHome;        // distance to home point in meters
+uint32_t GPS_distanceToHome;        // distance to home point in meters
 uint16_t GPS_altitude;              // altitude in 0.1m
 uint16_t vbat;
 int16_t GPS_directionToHome;        // direction to home or hol point in degrees
@@ -216,11 +216,15 @@ void serialSetMode(serialPort_t *instance, portMode_t mode) {
 }
 
 
-serialPort_t *openSerialPort(serialPortIdentifier_e identifier, serialPortFunction_e functionMask, serialReceiveCallbackPtr callback, uint32_t baudRate, portMode_t mode, portOptions_t options) {
+serialPort_t *openSerialPort(serialPortIdentifier_e identifier, serialPortFunction_e function,
+                             serialReceiveCallbackPtr rxCallback, void *rxCallbackData,
+                             uint32_t baudRate, portMode_t mode, portOptions_t options)
+{
     UNUSED(identifier);
-    UNUSED(functionMask);
+    UNUSED(function);
+    UNUSED(rxCallback);
+    UNUSED(rxCallbackData);
     UNUSED(baudRate);
-    UNUSED(callback);
     UNUSED(mode);
     UNUSED(options);
 
@@ -266,7 +270,7 @@ uint16_t getBatteryVoltage(void) {
     return testBatteryVoltage;
 }
 
-int32_t getAmperage(void) {
+int16_t getAmperage(void) {
     return testAmperage;
 }
 

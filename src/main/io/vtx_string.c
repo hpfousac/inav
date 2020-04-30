@@ -25,29 +25,30 @@
 #include "platform.h"
 #include "build/debug.h"
 
-#if defined(VTX_COMMON)
+#define VTX_STRING_BAND_COUNT 5
+#define VTX_STRING_CHAN_COUNT 8
 
-const uint16_t vtx58frequencyTable[5][8] =
+const uint16_t vtx58frequencyTable[VTX_STRING_BAND_COUNT][VTX_STRING_CHAN_COUNT] =
 {
-    { 5865, 5845, 5825, 5805, 5785, 5765, 5745, 5725 }, // Boscam A
-    { 5733, 5752, 5771, 5790, 5809, 5828, 5847, 5866 }, // Boscam B
-    { 5705, 5685, 5665, 5645, 5885, 5905, 5925, 5945 }, // Boscam E
-    { 5740, 5760, 5780, 5800, 5820, 5840, 5860, 5880 }, // FatShark
-    { 5658, 5695, 5732, 5769, 5806, 5843, 5880, 5917 }, // RaceBand
+    { 5865, 5845, 5825, 5805, 5785, 5765, 5745, 5725 }, // A
+    { 5733, 5752, 5771, 5790, 5809, 5828, 5847, 5866 }, // B
+    { 5705, 5685, 5665, 5645, 5885, 5905, 5925, 5945 }, // E
+    { 5740, 5760, 5780, 5800, 5820, 5840, 5860, 5880 }, // F
+    { 5658, 5695, 5732, 5769, 5806, 5843, 5880, 5917 }, // R
 };
 
-const char * const vtx58BandNames[] = {
-    "--------",
-    "BOSCAM A",
-    "BOSCAM B",
-    "BOSCAM E",
-    "FATSHARK",
-    "RACEBAND",
+const char * const vtx58BandNames[VTX_STRING_BAND_COUNT + 1] = {
+    "-",
+    "A",
+    "B",
+    "E",
+    "F",
+    "R",
 };
 
-const char vtx58BandLetter[] = "-ABEFR";
+const char vtx58BandLetter[VTX_STRING_BAND_COUNT + 1] = "-ABEFR";
 
-const char * const vtx58ChannelNames[] = {
+const char * const vtx58ChannelNames[VTX_STRING_CHAN_COUNT + 1] = {
     "-", "1", "2", "3", "4", "5", "6", "7", "8",
 };
 
@@ -74,4 +75,15 @@ bool vtx58_Freq2Bandchan(uint16_t freq, uint8_t *pBand, uint8_t *pChannel)
     return false;
 }
 
-#endif
+//Converts band and channel values to a frequency (in MHz) value.
+// band: Band value (1 to 5).
+// channel:  Channel value (1 to 8).
+// Returns frequency value (in MHz), or 0 if band/channel out of range.
+uint16_t vtx58_Bandchan2Freq(uint8_t band, uint8_t channel)
+{
+    if (band > 0 && band <= VTX_STRING_BAND_COUNT &&
+                          channel > 0 && channel <= VTX_STRING_CHAN_COUNT) {
+        return vtx58frequencyTable[band - 1][channel - 1];
+    }
+    return 0;
+}

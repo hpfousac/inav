@@ -25,8 +25,6 @@
 #define BEEPER                  PB4
 #define BEEPER_INVERTED
 
-#define INVERTER_PIN_UART1      PC0 // PC0 used as inverter select GPIO
-
 #define USE_I2C
 #define USE_I2C_DEVICE_2
 #define I2C_DEVICE_2_SHARES_UART3
@@ -58,9 +56,13 @@
 #define MAG_I2C_BUS             BUS_I2C2
 #define MAG_HMC5883_ALIGN       CW90_DEG
 #define USE_MAG_HMC5883
+#define USE_MAG_AK8963
+#define USE_MAG_AK8975
 #define USE_MAG_MAG3110
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
+#define USE_MAG_LIS3MDL
 
 #define USE_BARO
 #define BARO_I2C_BUS             BUS_I2C2
@@ -69,8 +71,9 @@
 #define USE_BARO_MS5611
 
 #define USE_PITOT_ADC
-#define USE_PITOT_MS4525
 #define PITOT_I2C_BUS           BUS_I2C2
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C2
 
 #define M25P16_CS_PIN           PB3
 #define M25P16_SPI_BUS          BUS_SPI3
@@ -82,10 +85,13 @@
 #define VBUS_SENSING_PIN        PC5
 #define VBUS_SENSING_ENABLED
 
+#define USE_UART_INVERTER
+
 #define USE_UART1
 #define UART1_RX_PIN            PA10
 #define UART1_TX_PIN            PA9
 #define UART1_AHB1_PERIPHERALS  RCC_AHB1Periph_DMA2
+#define INVERTER_PIN_UART1_RX   PC0 // PC0 used as inverter select GPIO
 
 #define USE_UART3
 #define UART3_RX_PIN            PB11
@@ -126,12 +132,7 @@
 #define SENSORS_SET (SENSOR_ACC|SENSOR_MAG|SENSOR_BARO)
 
 #define USE_LED_STRIP
-// LED Strip can run off Pin 5 (PA1) of the MOTOR outputs.
-#define WS2811_GPIO_AF                  GPIO_AF_TIM5
 #define WS2811_PIN                      PA1
-#define WS2811_DMA_STREAM               DMA1_Stream4
-#define WS2811_DMA_CHANNEL              DMA_Channel_6
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST4_HANDLER
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
 
@@ -155,5 +156,7 @@
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
 
-#define USABLE_TIMER_CHANNEL_COUNT 12
-#define USED_TIMERS             ( TIM_N(1) | TIM_N(2) | TIM_N(3) | TIM_N(5) | TIM_N(12) | TIM_N(8) | TIM_N(9) )
+#define PCA9685_I2C_BUS         BUS_I2C2
+
+#define USE_DSHOT
+#define USE_ESC_SENSOR

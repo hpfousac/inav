@@ -27,8 +27,6 @@
 #define BEEPER                  PB2
 #define BEEPER_INVERTED
 
-#define INVERTER_PIN_UART1      PC3
-
 #define MPU6000_CS_PIN          PA4
 #define MPU6000_SPI_BUS         BUS_SPI1
 
@@ -52,25 +50,30 @@
 #define USE_MAG_MAG3110
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
+#define USE_MAG_LIS3MDL
 #define MAG_HMC5883_ALIGN       CW270_DEG_FLIP
 
+#define TEMPERATURE_I2C_BUS     BUS_I2C2
+
 #define USE_RANGEFINDER
-#define USE_RANGEFINDER_VL53L0X
-#define VL53L0X_I2C_BUS         BUS_I2C2
+#define RANGEFINDER_I2C_BUS     BUS_I2C2
 
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
 #define USE_BARO_MS5611
 
-#define USE_PITOT_MS4525
 #define PITOT_I2C_BUS           BUS_I2C2
 
 #define USE_VCP
 #define VBUS_SENSING_PIN        PA8
 
+#define USE_UART_INVERTER
+
 #define USE_UART1
 #define UART1_RX_PIN            PA10
 #define UART1_TX_PIN            PA9
+#define INVERTER_PIN_UART1_RX   PC3
 
 #define USE_UART2
 #define UART2_RX_PIN            PA3
@@ -116,16 +119,7 @@
 #define RSSI_ADC_CHANNEL                ADC_CHN_3
 
 #define USE_LED_STRIP
-// LED Strip can run off Pin 6 (PA0) of the ESC outputs.
 #define WS2811_PIN                      PA0
-#define WS2811_TIMER                    TIM5
-#define WS2811_TIMER_CHANNEL            TIM_Channel_1
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST2_HANDLER
-#define WS2811_DMA_STREAM               DMA1_Stream2
-#define WS2811_DMA_FLAG                 DMA_FLAG_TCIF2
-#define WS2811_DMA_IT                   DMA_IT_TCIF2
-#define WS2811_DMA_CHANNEL              DMA_Channel_6
-#define WS2811_DMA_IRQ                  DMA1_Stream2_IRQn
 
 #define SENSORS_SET             (SENSOR_ACC|SENSOR_MAG|SENSOR_BARO)
 
@@ -141,5 +135,8 @@
 #define TARGET_IO_PORTC 0xffff
 #define TARGET_IO_PORTD 0xffff
 
-#define USABLE_TIMER_CHANNEL_COUNT 16
-#define USED_TIMERS  ( TIM_N(2) | TIM_N(3) | TIM_N(5) | TIM_N(12) | TIM_N(8) | TIM_N(9))
+#define PCA9685_I2C_BUS         BUS_I2C2
+
+#ifdef USE_USB_MSC
+# undef USE_USB_MSC
+#endif

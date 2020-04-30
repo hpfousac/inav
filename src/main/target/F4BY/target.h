@@ -27,9 +27,6 @@
 #define BEEPER                  PE5
 #define BEEPER_INVERTED
 
-#define INVERTER_PIN_UART6      PD3
-
-
 
 // MPU6000 interrupts
 #define USE_MPU_DATA_READY_SIGNAL
@@ -38,6 +35,9 @@
 
 #define MPU6000_CS_PIN          PA4
 #define MPU6000_SPI_BUS         BUS_SPI1
+#define ICM20689_CS_PIN         PA4
+#define ICM20689_SPI_BUS        BUS_SPI1
+
 
 #define USE_ACC
 #define USE_ACC_MPU6000
@@ -47,13 +47,23 @@
 #define USE_GYRO_MPU6000
 #define GYRO_MPU6000_ALIGN      CW90_DEG
 
+#define USE_ACC_ICM20689
+#define ACC_ICM20689_ALIGN       CW90_DEG
+
+#define USE_GYRO_ICM20689
+#define GYRO_ICM20689_ALIGN      CW90_DEG
+
 #define USE_MAG
 #define MAG_I2C_BUS             BUS_I2C2
 #define MAG_HMC5883_ALIGN       CW90_DEG
 #define USE_MAG_HMC5883
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
+#define USE_MAG_IST8308
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C2
 
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C2
@@ -61,19 +71,14 @@
 
 
 #define USE_SDCARD
-
-#define SDCARD_SPI_INSTANCE     SPI2
-#define SDCARD_SPI_CS_PIN       PE15
-
-#define SDCARD_DMA_CHANNEL_TX               DMA1_Stream3
-#define SDCARD_DMA_CHANNEL_TX_COMPLETE_FLAG DMA_FLAG_TCIF3
-#define SDCARD_DMA_CLK                      RCC_AHB1Periph_DMA1
-#define SDCARD_DMA_CHANNEL                  DMA_Channel_0
-
-#define USABLE_TIMER_CHANNEL_COUNT 17
+#define USE_SDCARD_SPI
+#define SDCARD_SPI_BUS          BUS_SPI2
+#define SDCARD_CS_PIN           PE15
 
 #define USE_VCP
 #define VBUS_SENSING_PIN        PA9
+
+#define USE_UART_INVERTER
 
 #define USE_UART1
 #define UART1_RX_PIN            PB7
@@ -96,6 +101,7 @@
 #define USE_UART6
 #define UART6_RX_PIN            PC7
 #define UART6_TX_PIN            PC6
+#define INVERTER_PIN_UART6_RX   PD3
 
 #define SERIAL_PORT_COUNT       6 //VCP, UART1, UART2, UART3, UART4,  UART6
 
@@ -151,5 +157,4 @@
 #define TARGET_IO_PORTD         0xffff
 #define TARGET_IO_PORTE         0xffff
 
-#define USED_TIMERS             ( TIM_N(1) |TIM_N(2) | TIM_N(3) | TIM_N(4) | TIM_N(5) | TIM_N(8) | TIM_N(9))
-
+#define PCA9685_I2C_BUS         BUS_I2C2

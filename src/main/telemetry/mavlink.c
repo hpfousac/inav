@@ -52,7 +52,6 @@
 #include "flight/pid.h"
 #include "flight/servos.h"
 
-#include "io/gimbal.h"
 #include "io/gps.h"
 #include "io/ledstrip.h"
 #include "io/serial.h"
@@ -90,12 +89,12 @@ static bool mavlinkTelemetryEnabled =  false;
 static portSharing_e mavlinkPortSharing;
 
 /* MAVLink datastream rates in Hz */
-static const uint8_t mavRates[] = {
-    [MAV_DATA_STREAM_EXTENDED_STATUS] = 2, //2Hz
-    [MAV_DATA_STREAM_RC_CHANNELS] = 5, //5Hz
-    [MAV_DATA_STREAM_POSITION] = 2, //2Hz
-    [MAV_DATA_STREAM_EXTRA1] = 10, //10Hz
-    [MAV_DATA_STREAM_EXTRA2] = 10 //2Hz
+static uint8_t mavRates[] = {
+    [MAV_DATA_STREAM_EXTENDED_STATUS] = 2,      // 2Hz
+    [MAV_DATA_STREAM_RC_CHANNELS] = 5,          // 5Hz
+    [MAV_DATA_STREAM_POSITION] = 2,             // 2Hz
+    [MAV_DATA_STREAM_EXTRA1] = 10,              // 10Hz
+    [MAV_DATA_STREAM_EXTRA2] = 2                // 2Hz
 };
 
 #define MAXSTREAMS (sizeof(mavRates) / sizeof(mavRates[0]))
@@ -169,6 +168,15 @@ void configureMAVLinkTelemetryPort(void)
     mavlinkTelemetryEnabled = true;
 }
 
+static void configureMAVLinkStreamRates(void)
+{
+    mavRates[MAV_DATA_STREAM_EXTENDED_STATUS] = telemetryConfig()->mavlink.extended_status_rate;
+    mavRates[MAV_DATA_STREAM_RC_CHANNELS] = telemetryConfig()->mavlink.rc_channels_rate;
+    mavRates[MAV_DATA_STREAM_POSITION] = telemetryConfig()->mavlink.position_rate;
+    mavRates[MAV_DATA_STREAM_EXTRA1] = telemetryConfig()->mavlink.extra1_rate;
+    mavRates[MAV_DATA_STREAM_EXTRA2] = telemetryConfig()->mavlink.extra2_rate;
+}
+
 void checkMAVLinkTelemetryState(void)
 {
     bool newTelemetryEnabledValue = telemetryDetermineEnabledState(mavlinkPortSharing);
@@ -177,9 +185,10 @@ void checkMAVLinkTelemetryState(void)
         return;
     }
 
-    if (newTelemetryEnabledValue)
+    if (newTelemetryEnabledValue) {
         configureMAVLinkTelemetryPort();
-    else
+        configureMAVLinkStreamRates();
+    } else
         freeMAVLinkTelemetryPort();
 }
 
@@ -227,7 +236,7 @@ void mavlinkSendSystemStatus(void)
         // voltage_battery Battery voltage, in millivolts (1 = 1 millivolt)
         feature(FEATURE_VBAT) ? getBatteryVoltage() * 10 : 0,
         // current_battery Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current
-        feature(FEATURE_CURRENT_METER) ? getAmperage() : -1,
+        isAmperageConfigured() ? getAmperage() : -1,
         // battery_remaining Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot estimate the remaining battery
         feature(FEATURE_VBAT) ? calculateBatteryPercentage() : 100,
         // drop_rate_comm Communication drops in percent, (0%: 0, 100%: 10'000), (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)
@@ -248,29 +257,31 @@ void mavlinkSendSystemStatus(void)
 
 void mavlinkSendRCChannelsAndRSSI(void)
 {
+#define GET_CHANNEL_VALUE(x) ((rxRuntimeConfig.channelCount >= (x + 1)) ? rxGetChannelValue(x) : 0)
     mavlink_msg_rc_channels_raw_pack(mavSystemId, mavComponentId, &mavSendMsg,
         // time_boot_ms Timestamp (milliseconds since system boot)
         millis(),
         // port Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.
         0,
         // chan1_raw RC channel 1 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 1) ? rcData[0] : 0,
+        GET_CHANNEL_VALUE(0),
         // chan2_raw RC channel 2 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 2) ? rcData[1] : 0,
+        GET_CHANNEL_VALUE(1),
         // chan3_raw RC channel 3 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 3) ? rcData[2] : 0,
+        GET_CHANNEL_VALUE(2),
         // chan4_raw RC channel 4 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 4) ? rcData[3] : 0,
+        GET_CHANNEL_VALUE(3),
         // chan5_raw RC channel 5 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 5) ? rcData[4] : 0,
+        GET_CHANNEL_VALUE(4),
         // chan6_raw RC channel 6 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 6) ? rcData[5] : 0,
+        GET_CHANNEL_VALUE(5),
         // chan7_raw RC channel 7 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 7) ? rcData[6] : 0,
+        GET_CHANNEL_VALUE(6),
         // chan8_raw RC channel 8 value, in microseconds
-        (rxRuntimeConfig.channelCount >= 8) ? rcData[7] : 0,
+        GET_CHANNEL_VALUE(7),
         // rssi Receive signal strength indicator, 0: 0%, 255: 100%
         scaleRange(getRSSI(), 0, 1023, 0, 255));
+#undef GET_CHANNEL_VALUE
 
     mavlinkSendMessage();
 }
@@ -414,7 +425,7 @@ void mavlinkSendHUDAndHeartbeat(void)
         // heading Current heading in degrees, in compass units (0..360, 0=north)
         DECIDEGREES_TO_DEGREES(attitude.values.yaw),
         // throttle Current throttle setting in integer percent, 0 to 100
-        scaleRange(constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX), PWM_RANGE_MIN, PWM_RANGE_MAX, 0, 100),
+        scaleRange(constrain(rxGetChannelValue(THROTTLE), PWM_RANGE_MIN, PWM_RANGE_MAX), PWM_RANGE_MIN, PWM_RANGE_MAX, 0, 100),
         // alt Current altitude (MSL), in meters, if we have surface or baro use them, otherwise use GPS (less accurate)
         mavAltitude,
         // climb Current climb rate in meters/second
@@ -428,34 +439,24 @@ void mavlinkSendHUDAndHeartbeat(void)
         mavModes |= MAV_MODE_FLAG_SAFETY_ARMED;
 
     uint8_t mavSystemType;
-    switch (mixerConfig()->mixerMode)
+    switch (mixerConfig()->platformType)
     {
-        case MIXER_TRI:
-            mavSystemType = MAV_TYPE_TRICOPTER;
-            break;
-        case MIXER_QUADP:
-        case MIXER_QUADX:
-        case MIXER_Y4:
-        case MIXER_VTAIL4:
+        case PLATFORM_MULTIROTOR:
             mavSystemType = MAV_TYPE_QUADROTOR;
             break;
-        case MIXER_Y6:
-        case MIXER_HEX6:
-        case MIXER_HEX6X:
-            mavSystemType = MAV_TYPE_HEXAROTOR;
+        case PLATFORM_TRICOPTER:
+            mavSystemType = MAV_TYPE_TRICOPTER;
             break;
-        case MIXER_OCTOX8:
-        case MIXER_OCTOFLATP:
-        case MIXER_OCTOFLATX:
-            mavSystemType = MAV_TYPE_OCTOROTOR;
-            break;
-        case MIXER_FLYING_WING:
-        case MIXER_AIRPLANE:
-        case MIXER_CUSTOM_AIRPLANE:
+        case PLATFORM_AIRPLANE:
             mavSystemType = MAV_TYPE_FIXED_WING;
             break;
-        case MIXER_HELI_120_CCPM:
-        case MIXER_HELI_90_DEG:
+        case PLATFORM_ROVER:
+            mavSystemType = MAV_TYPE_GROUND_ROVER;
+            break;
+        case PLATFORM_BOAT:
+            mavSystemType = MAV_TYPE_SURFACE_BOAT;
+            break;
+        case PLATFORM_HELICOPTER:
             mavSystemType = MAV_TYPE_HELICOPTER;
             break;
         default:
@@ -476,7 +477,7 @@ void mavlinkSendHUDAndHeartbeat(void)
     if (flm != FLM_MANUAL) {
         mavModes |= MAV_MODE_FLAG_STABILIZE_ENABLED;
     }
-    else if (flm == FLM_POSITION_HOLD || flm == FLM_RTH || flm == FLM_MISSION) {
+    if (flm == FLM_POSITION_HOLD || flm == FLM_RTH || flm == FLM_MISSION) {
         mavModes |= MAV_MODE_FLAG_GUIDED_ENABLED;
     }
 

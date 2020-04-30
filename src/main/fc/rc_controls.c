@@ -62,27 +62,31 @@
 #include "sensors/acceleration.h"
 
 #define AIRMODE_DEADBAND 25
-#define MIN_RC_TICK_INTERVAL_MS     20
+#define MIN_RC_TICK_INTERVAL_MS             20
+#define DEFAULT_RC_SWITCH_DISARM_DELAY_MS   250     // Wait at least 250ms before disarming via switch
 
 stickPositions_e rcStickPositions;
 
-int16_t rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
+FASTRAM int16_t rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/YAW
 
-PG_REGISTER_WITH_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig, PG_RC_CONTROLS_CONFIG, 0);
+PG_REGISTER_WITH_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig, PG_RC_CONTROLS_CONFIG, 1);
 
 PG_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig,
     .deadband = 5,
     .yaw_deadband = 5,
     .pos_hold_deadband = 20,
     .alt_hold_deadband = 50,
-    .deadband3d_throttle = 50
+    .deadband3d_throttle = 50,
+    .airmodeHandlingType = STICK_CENTER,
+    .airmodeThrottleThreshold = AIRMODE_THROTTLE_THRESHOLD,
 );
 
-PG_REGISTER_WITH_RESET_TEMPLATE(armingConfig_t, armingConfig, PG_ARMING_CONFIG, 0);
+PG_REGISTER_WITH_RESET_TEMPLATE(armingConfig_t, armingConfig, PG_ARMING_CONFIG, 2);
 
 PG_RESET_TEMPLATE(armingConfig_t, armingConfig,
+    .fixed_wing_auto_arm = 0,
     .disarm_kill_switch = 1,
-    .auto_disarm_delay = 5
+    .switchDisarmDelayMs = DEFAULT_RC_SWITCH_DISARM_DELAY_MS,
 );
 
 bool areSticksInApModePosition(uint16_t ap_mode)
@@ -98,9 +102,9 @@ bool areSticksDeflectedMoreThanPosHoldDeadband(void)
 throttleStatus_e calculateThrottleStatus(void)
 {
     const uint16_t deadband3d_throttle = rcControlsConfig()->deadband3d_throttle;
-    if (feature(FEATURE_3D) && (rcData[THROTTLE] > (rxConfig()->midrc - deadband3d_throttle) && rcData[THROTTLE] < (rxConfig()->midrc + deadband3d_throttle)))
+    if (feature(FEATURE_3D) && (rxGetChannelValue(THROTTLE) > (PWM_RANGE_MIDDLE - deadband3d_throttle) && rxGetChannelValue(THROTTLE) < (PWM_RANGE_MIDDLE + deadband3d_throttle)))
         return THROTTLE_LOW;
-    else if (!feature(FEATURE_3D) && (rcData[THROTTLE] < rxConfig()->mincheck))
+    else if (!feature(FEATURE_3D) && (rxGetChannelValue(THROTTLE) < rxConfig()->mincheck))
         return THROTTLE_LOW;
 
     return THROTTLE_HIGH;
@@ -108,8 +112,8 @@ throttleStatus_e calculateThrottleStatus(void)
 
 rollPitchStatus_e calculateRollPitchCenterStatus(void)
 {
-    if (((rcData[PITCH] < (rxConfig()->midrc + AIRMODE_DEADBAND)) && (rcData[PITCH] > (rxConfig()->midrc -AIRMODE_DEADBAND)))
-            && ((rcData[ROLL] < (rxConfig()->midrc + AIRMODE_DEADBAND)) && (rcData[ROLL] > (rxConfig()->midrc -AIRMODE_DEADBAND))))
+    if (((rxGetChannelValue(PITCH) < (PWM_RANGE_MIDDLE + AIRMODE_DEADBAND)) && (rxGetChannelValue(PITCH) > (PWM_RANGE_MIDDLE -AIRMODE_DEADBAND)))
+            && ((rxGetChannelValue(ROLL) < (PWM_RANGE_MIDDLE + AIRMODE_DEADBAND)) && (rxGetChannelValue(ROLL) > (PWM_RANGE_MIDDLE -AIRMODE_DEADBAND))))
         return CENTERED;
 
     return NOT_CENTERED;
@@ -136,27 +140,27 @@ static void updateRcStickPositions(void)
 {
     stickPositions_e tmp = 0;
 
-    tmp |= ((rcData[ROLL] > rxConfig()->mincheck) ? 0x02 : 0x00) << (ROLL * 2);
-    tmp |= ((rcData[ROLL] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (ROLL * 2);
+    tmp |= ((rxGetChannelValue(ROLL) > rxConfig()->mincheck) ? 0x02 : 0x00) << (ROLL * 2);
+    tmp |= ((rxGetChannelValue(ROLL) < rxConfig()->maxcheck) ? 0x01 : 0x00) << (ROLL * 2);
 
-    tmp |= ((rcData[PITCH] > rxConfig()->mincheck) ? 0x02 : 0x00) << (PITCH * 2);
-    tmp |= ((rcData[PITCH] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (PITCH * 2);
+    tmp |= ((rxGetChannelValue(PITCH) > rxConfig()->mincheck) ? 0x02 : 0x00) << (PITCH * 2);
+    tmp |= ((rxGetChannelValue(PITCH) < rxConfig()->maxcheck) ? 0x01 : 0x00) << (PITCH * 2);
 
-    tmp |= ((rcData[YAW] > rxConfig()->mincheck) ? 0x02 : 0x00) << (YAW * 2);
-    tmp |= ((rcData[YAW] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (YAW * 2);
+    tmp |= ((rxGetChannelValue(YAW) > rxConfig()->mincheck) ? 0x02 : 0x00) << (YAW * 2);
+    tmp |= ((rxGetChannelValue(YAW) < rxConfig()->maxcheck) ? 0x01 : 0x00) << (YAW * 2);
 
-    tmp |= ((rcData[THROTTLE] > rxConfig()->mincheck) ? 0x02 : 0x00) << (THROTTLE * 2);
-    tmp |= ((rcData[THROTTLE] < rxConfig()->maxcheck) ? 0x01 : 0x00) << (THROTTLE * 2);
+    tmp |= ((rxGetChannelValue(THROTTLE) > rxConfig()->mincheck) ? 0x02 : 0x00) << (THROTTLE * 2);
+    tmp |= ((rxGetChannelValue(THROTTLE) < rxConfig()->maxcheck) ? 0x01 : 0x00) << (THROTTLE * 2);
 
     rcStickPositions = tmp;
 }
 
-void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_switch, bool fixed_wing_auto_arm)
+void processRcStickPositions(throttleStatus_e throttleStatus)
 {
     static timeMs_t lastTickTimeMs = 0;
     static uint8_t rcDelayCommand;      // this indicates the number of time (multiple of RC measurement at 50Hz) the sticks must be maintained to run or switch off motors
     static uint32_t rcSticks;           // this hold sticks position for command combos
-    static uint8_t rcDisarmTicks;       // this is an extra guard for disarming through switch to prevent that one frame can disarm it
+    static timeMs_t rcDisarmTimeMs;     // this is an extra guard for disarming through switch to prevent that one frame can disarm it
     const timeMs_t currentTimeMs = millis();
 
     updateRcStickPositions();
@@ -169,59 +173,53 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
                 rcDelayCommand++;
             }
         }
-    } else
+    } else {
         rcDelayCommand = 0;
+    }
 
     rcSticks = stTmp;
 
     // perform actions
-    if (!isUsingSticksForArming()) {
-        if (IS_RC_MODE_ACTIVE(BOXARM)) {
-            rcDisarmTicks = 0;
-            mwArm();
+    bool armingSwitchIsActive = IS_RC_MODE_ACTIVE(BOXARM);
+    emergencyArmingUpdate(armingSwitchIsActive);
+
+    if (STATE(FIXED_WING) && feature(FEATURE_MOTOR_STOP) && armingConfig()->fixed_wing_auto_arm) {
+        // Auto arm on throttle when using fixedwing and motorstop
+        if (throttleStatus != THROTTLE_LOW) {
+            tryArm();
+            return;
+        }
+    }
+    else {
+        if (armingSwitchIsActive) {
+            rcDisarmTimeMs = currentTimeMs;
+            tryArm();
         } else {
             // Disarming via ARM BOX
             // Don't disarm via switch if failsafe is active or receiver doesn't receive data - we can't trust receiver
             // and can't afford to risk disarming in the air
             if (ARMING_FLAG(ARMED) && !IS_RC_MODE_ACTIVE(BOXFAILSAFE) && rxIsReceivingSignal() && !failsafeIsActive()) {
-                rcDisarmTicks++;
-                if (rcDisarmTicks > 3) {    // Wait for at least 3 RX ticks (60ms @ 50Hz RX)
-                    if (disarm_kill_switch || (throttleStatus == THROTTLE_LOW)) {
-                        mwDisarm(DISARM_SWITCH);
+                const timeMs_t disarmDelay = currentTimeMs - rcDisarmTimeMs;
+                if (disarmDelay > armingConfig()->switchDisarmDelayMs) {
+                    if (armingConfig()->disarm_kill_switch || (throttleStatus == THROTTLE_LOW)) {
+                        disarm(DISARM_SWITCH);
                     }
                 }
             }
             else {
-                rcDisarmTicks = 0;
+                rcDisarmTimeMs = currentTimeMs;
             }
         }
-    }
 
-    // KILLSWITCH disarms instantly
-    if (IS_RC_MODE_ACTIVE(BOXKILLSWITCH)) {
-        mwDisarm(DISARM_KILLSWITCH);
+        // KILLSWITCH disarms instantly
+        if (IS_RC_MODE_ACTIVE(BOXKILLSWITCH)) {
+            disarm(DISARM_KILLSWITCH);
+        }
     }
 
     if (rcDelayCommand != 20) {
         return;
     }
-
-   if (isUsingSticksForArming()) {
-        // Disarm on throttle down + yaw
-        if (rcSticks == THR_LO + YAW_LO + PIT_CE + ROL_CE) {
-            // Dont disarm if fixedwing and motorstop
-            if (STATE(FIXED_WING) && feature(FEATURE_MOTOR_STOP) && fixed_wing_auto_arm) {
-                return;
-            }
-            else if (ARMING_FLAG(ARMED)) {
-                mwDisarm(DISARM_STICKS);
-            }
-            else {
-                beeper(BEEPER_DISARM_REPEAT);    // sound tone while stick held
-                rcDelayCommand = 0;              // reset so disarm tone will repeat
-            }
-        }
-   }
 
     if (ARMING_FLAG(ARMED)) {
         // actions during armed
@@ -229,11 +227,10 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
     }
 
     // actions during not armed
-    int i = 0;
 
     // GYRO calibration
     if (rcSticks == THR_LO + YAW_LO + PIT_LO + ROL_CE) {
-        gyroSetCalibrationCycles(CALIBRATING_GYRO_CYCLES);
+        gyroStartCalibration();
         return;
     }
 
@@ -254,16 +251,38 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
 
     // Multiple configuration profiles
     if (feature(FEATURE_TX_PROF_SEL)) {
+
+        uint8_t i = 0;
+
         if (rcSticks == THR_LO + YAW_LO + PIT_CE + ROL_LO)          // ROLL left  -> Profile 1
             i = 1;
         else if (rcSticks == THR_LO + YAW_LO + PIT_HI + ROL_CE)     // PITCH up   -> Profile 2
             i = 2;
         else if (rcSticks == THR_LO + YAW_LO + PIT_CE + ROL_HI)     // ROLL right -> Profile 3
             i = 3;
+
         if (i) {
             setConfigProfileAndWriteEEPROM(i - 1);
             return;
         }
+
+        i = 0;
+
+        // Multiple battery configuration profiles
+        if (rcSticks == THR_HI + YAW_LO + PIT_CE + ROL_LO)          // ROLL left  -> Profile 1
+            i = 1;
+        else if (rcSticks == THR_HI + YAW_LO + PIT_HI + ROL_CE)     // PITCH up   -> Profile 2
+            i = 2;
+        else if (rcSticks == THR_HI + YAW_LO + PIT_CE + ROL_HI)     // ROLL right -> Profile 3
+            i = 3;
+
+        if (i) {
+            setConfigBatteryProfileAndWriteEEPROM(i - 1);
+            batteryDisableProfileAutoswitch();
+            activateBatteryProfile();
+            return;
+        }
+
     }
 
     // Save config
@@ -271,39 +290,17 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
         saveConfigAndNotify();
     }
 
-
-    // Arming by sticks
-    if (isUsingSticksForArming()) {
-        if (STATE(FIXED_WING) && feature(FEATURE_MOTOR_STOP) && fixed_wing_auto_arm) {
-            // Auto arm on throttle when using fixedwing and motorstop
-            if (throttleStatus != THROTTLE_LOW) {
-                mwArm();
-                return;
-            }
-        }
-        else {
-            if (rcSticks == THR_LO + YAW_HI + PIT_CE + ROL_CE) {
-                // Arm via YAW
-                mwArm();
-                return;
-            }
-        }
-    }
-
-
     // Calibrating Acc
     if (rcSticks == THR_HI + YAW_LO + PIT_LO + ROL_CE) {
-        accSetCalibrationCycles(CALIBRATING_ACC_CYCLES);
+        accStartCalibration();
         return;
     }
-
 
     // Calibrating Mag
     if (rcSticks == THR_HI + YAW_HI + PIT_LO + ROL_CE) {
         ENABLE_STATE(CALIBRATE_MAG);
         return;
     }
-
 
     // Accelerometer Trim
     if (rcSticks == THR_HI + YAW_CE + PIT_HI + ROL_CE) {
@@ -325,7 +322,6 @@ void processRcStickPositions(throttleStatus_e throttleStatus, bool disarm_kill_s
     }
 }
 
-int32_t getRcStickDeflection(int32_t axis, uint16_t midrc) {
-    return MIN(ABS(rcData[axis] - midrc), 500);
+int32_t getRcStickDeflection(int32_t axis) {
+    return MIN(ABS(rxGetChannelValue(axis) - PWM_RANGE_MIDDLE), 500);
 }
-

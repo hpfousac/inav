@@ -36,17 +36,12 @@
 #include "drivers/bus.h"
 #include "drivers/light_led.h"
 
-#include "drivers/logging.h"
-
 #include "drivers/sensor.h"
 #include "drivers/compass/compass.h"
 
 #include "drivers/compass/compass_hmc5883l.h"
 
 // HMC5883L, default address 0x1E
-// NAZE Target connections
-// PB12 connected to MAG_DRDY on rev4 hardware
-// PC14 connected to MAG_DRDY on rev5 hardware
 
 /* CTRL_REGA: Control Register A
  * Read Write

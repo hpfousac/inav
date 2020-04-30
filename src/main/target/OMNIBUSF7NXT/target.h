@@ -29,7 +29,6 @@
 #define USBD_PRODUCT_STRING     "OMNIBUS NEXT"
 
 #define USE_TARGET_IMU_HARDWARE_DESCRIPTORS     // Don't use common busdev descriptors for IMU
-#define TARGET_CONFIG
 
 // Status LED
 #define LED0                    PB2
@@ -63,20 +62,19 @@
 #define USE_MAG_QMC5883
 #define USE_MAG_IST8310
 #define USE_MAG_MAG3110
+#define USE_MAG_LIS3MDL
+
+#define TEMPERATURE_I2C_BUS     BUS_I2C1
 
 #define USE_BARO
+#define USE_BARO_LPS25H
+#define LPS25H_SPI_BUS          BUS_SPI2
+#define LPS25H_CS_PIN           PA10
 
-#define USE_BARO_BMP280
-#define BMP280_SPI_BUS        BUS_SPI2
-#define BMP280_CS_PIN         PA10
-
-#define USE_PITOT_MS4525
 #define PITOT_I2C_BUS           BUS_I2C1
 
 #define USE_RANGEFINDER
 #define RANGEFINDER_I2C_BUS     BUS_I2C1
-#define USE_RANGEFINDER_HCSR04_I2C
-#define USE_RANGEFINDER_VL53L0X
 
 #define USE_VCP
 #define VBUS_SENSING_PIN        PC5
@@ -137,7 +135,7 @@
 
 #define USE_OSD
 #define USE_MAX7456
-#define MAX7456_SPI_BUS         BUS_SPI3
+#define MAX7456_SPI_BUS         BUS_SPI2
 #define MAX7456_CS_PIN          PA15
 
 #define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
@@ -161,9 +159,6 @@
 
 #define USE_LED_STRIP
 #define WS2811_PIN                      PA9
-#define WS2811_DMA_HANDLER_IDENTIFER    DMA2_ST2_HANDLER
-#define WS2811_DMA_STREAM               DMA2_Stream2
-#define WS2811_DMA_CHANNEL              DMA_CHANNEL_6
 
 #define DEFAULT_FEATURES                (FEATURE_TX_PROF_SEL | FEATURE_BLACKBOX | FEATURE_VBAT | FEATURE_OSD | FEATURE_CURRENT_METER | FEATURE_SOFTSERIAL | FEATURE_TELEMETRY)
 #define DEFAULT_RX_TYPE                 RX_TYPE_SERIAL
@@ -178,6 +173,10 @@
 
 #define USE_SERIAL_4WAY_BLHELI_INTERFACE
 
+#define USE_DSHOT
+#define USE_ESC_SENSOR
+#define USE_SERIALSHOT
+
 // Number of available PWM outputs
 #define MAX_PWM_OUTPUT_PORTS    6
 #define TARGET_MOTOR_COUNT      6
@@ -186,7 +185,3 @@
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff
 #define TARGET_IO_PORTD         0xffff
-
-#define USABLE_TIMER_CHANNEL_COUNT 8
-
-#define USED_TIMERS             (TIM_N(1) | TIM_N(3) | TIM_N(4) | TIM_N(8))
