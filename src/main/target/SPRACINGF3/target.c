@@ -37,11 +37,11 @@ const timerHardware_t timerHardware[] = {
     DEF_TIM(TIM1,   CH1,    PA8,  TIM_USE_LED,                                                0), // GPIO_TIMER / LED_STRIP
 
     DEF_TIM(TIM2,   CH1,    PA0,  TIM_USE_PWM | TIM_USE_PPM,                                  0), // RC_CH1
-    DEF_TIM(TIM2,   CH2,    PA1,  TIM_USE_PWM | TIM_USE_PPM,                                  0), // RC_CH2
-    DEF_TIM(TIM2,   CH4,    PB11, TIM_USE_PWM,                                                0), // RC_CH3
-    DEF_TIM(TIM2,   CH3,    PB10, TIM_USE_PWM,                                                0), // RC_CH4
-    DEF_TIM(TIM3,   CH1,    PB4,  TIM_USE_PWM,                             0), // RC_CH5
-    DEF_TIM(TIM3,   CH2,    PB5,  TIM_USE_PWM,                             0), // RC_CH6
+    DEF_TIM(TIM2,   CH2,    PA1,  TIM_USE_PWM | TIM_USE_PPM | TIM_USE_FW_SERVO,               0), // RC_CH2
+    DEF_TIM(TIM2,   CH4,    PB11, TIM_USE_PWM | TIM_USE_FW_SERVO,                             0), // RC_CH3
+    DEF_TIM(TIM2,   CH3,    PB10, TIM_USE_PWM | TIM_USE_FW_SERVO,                             0), // RC_CH4
+    DEF_TIM(TIM3,   CH1,    PB4,  TIM_USE_PWM | TIM_USE_FW_SERVO,                             0), // RC_CH5
+    DEF_TIM(TIM3,   CH2,    PB5,  TIM_USE_PWM | TIM_USE_FW_SERVO,                             0), // RC_CH6
     DEF_TIM(TIM3,   CH3,    PB0,  TIM_USE_PWM,                             0), // RC_CH7
     DEF_TIM(TIM3,   CH4,    PB1,  TIM_USE_PWM,                             0), // RC_CH8
 };

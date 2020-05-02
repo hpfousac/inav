@@ -345,3 +345,66 @@ map taer
 ##
  number of servos should be at least as big as number mixers are added
 
+
+# Example Configs
+
+## Model Y - 9ch
+
+Out Channels
+
+ * THRO
+ * Y Left
+ * Y Right
+ * Rudd
+
+ * L Aile
+ * L Flap
+ * R Flap
+ * R Aile
+
+ * Gear
+
+~~~
+# tested for SPK6Ch PPM DSM2/X
+map AETR
+
+feature PWM_OUTPUT_ENABLE
+feature -VBAT
+
+set receiver_type = PPM
+pwmmap 10 ppm
+
+pwmmap 1 servo 1
+pwmmap 2 servo 2
+pwmmap 3 servo 3
+pwmmap 4 servo 4
+pwmmap 5 servo 5
+pwmmap 6 servo 6
+pwmmap 7 servo 7
+pwmmap 8 servo 8
+pwmmap 11 servo 9
+
+pwmmap list
+
+smix reset
+
+smix 0 1 7 100 100
+
+smix 1 2 5 80 80 # 5 - Raw PITCH RC channel
+smix 2 2 6 30 80 # 6 - Raw Yaw RC channel
+
+smix 3 3 5 -80 80
+smix 4 3 6 30 80
+
+smix 5 4 6 100 80
+
+smix 6 5 4 100 100
+
+smix 7 6 9 100 50
+smix 8 7 9 -100 50
+
+smix 9 8 4 100 100
+
+smix 10 9 8 100 100 # 8 - Raw RC channel 5 (FLAP)
+
+~~~
