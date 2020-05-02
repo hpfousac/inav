@@ -338,3 +338,27 @@ map etar
 map rtae
 
 map taer
+
+
+# status
+System Uptime: 57 seconds
+Current Time: 2041-06-28T01:04:00.000+00:00
+Voltage: 0.00V (1S battery - NOT PRESENT)
+CPU Clock=72MHz, GYRO=MPU6050, ACC=MPU6050
+STM32 system clocks:
+  SYSCLK = 72 MHz
+  HCLK   = 72 MHz
+  PCLK1  = 36 MHz
+  PCLK2  = 72 MHz
+Sensor status: GYRO=OK, ACC=OK, MAG=NONE, BARO=NONE, RANGEFINDER=NONE, OPFLOW=NONE, GPS=NONE
+Stack size: 6144, Stack address: 0x10002000, Heap available: 904
+I2C Errors: 0, config size: 4657, max available config: 6144
+ADC channel usage:
+   BATTERY : configured = ADC 1, used = ADC 1
+      RSSI : configured = ADC 3, used = none
+   CURRENT : configured = ADC 2, used = none
+  AIRSPEED : configured = none, used = none
+System load: 14, cycle time: 1014, PID rate: 986, RX rate: 495, System rate: 9
+Arming disabled flags: ACC CLI PWMOUT
+PWM output init error: Not enough servo outputs/timers
+
