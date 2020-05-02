@@ -2938,7 +2938,7 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
     // check if feature is not used yet
     for (int i = 0; i < timerHardwareCount; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
-            cliPrintLinef("pwmmap PWM %d is set on pos %d", pwmtargetindex, i + 1);
+            cliPrintLinef("pwmmap PWM %d is already set on pos %d", pwmtargetindex, i + 1);
             return;
         }
     }
@@ -2962,7 +2962,7 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex, int pwmc
     // check if feature and channel is not used yet
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_FW_SERVO == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
-            cliPrintLinef("pwmmap SERVO %d is set on pos %d", pwmtargetindex, i + 1);
+            cliPrintLinef("pwmmap SERVO %d is already set on pos %d", pwmtargetindex, i + 1);
             return;
         }
     }
@@ -3002,7 +3002,7 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex, int pwmc
     // check if feature and channel is not used
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
-            cliPrintLinef("pwmmap MOTOR %d is set on pos %d", pwmtargetindex, i + 1);
+            cliPrintLinef("pwmmap MOTOR %d is already set on pos %d", pwmtargetindex, i + 1);
             return;
         }
     }
@@ -3026,7 +3026,7 @@ inline static void cliPwmMapSetLed (int pwmindex, int pwmchlimit)
     // check if feature is not used yet
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_LED == timerUsageMapMutable(i)->flag)) {
-            cliPrintLinef("pwmmap LED is set on pos %d", i + 1);
+            cliPrintLinef("pwmmap LED is already set on pos %d", i + 1);
             return;
         }
     }
@@ -3048,7 +3048,7 @@ inline static void cliPwmMapSetBeeper (int pwmindex, int pwmchlimit)
     // check if feature is not used yet
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
-            cliPrintLinef("pwmmap BEEPER is set on pos %d", i + 1);
+            cliPrintLinef("pwmmap BEEPER is already set on pos %d", i + 1);
             return;
         }
     }

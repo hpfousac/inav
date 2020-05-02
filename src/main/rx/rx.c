@@ -68,7 +68,7 @@
 
 //#define DEBUG_RX_SIGNAL_LOSS
 
-const char rcChannelLetters[] = "AERT";
+const char rcChannelLetters[MAX_MAPPABLE_RX_INPUTS] = "AERT"; // See: rc_controls.h: rc_alias_e
 
 static uint16_t rssi = 0;                  // range: [0;1023]
 static timeUs_t lastMspRssiUpdateUs = 0;

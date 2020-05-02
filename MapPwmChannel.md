@@ -238,7 +238,8 @@ Try in CLI
 ## pwmmap servo motor assignment
 
 ~~~
-map TAER
+# tedsted for SPK6Ch PPM DSM2/X
+map AETR
 
 feature PWM_OUTPUT_ENABLE
 feature -VBAT
@@ -264,7 +265,13 @@ pwmmap 1 servo 0
 
 pwmmap list
 
-smix 0 0 1 100 100 0 # THRO@#
+smix reset
+smix 0 1 4 100 100 # 4 - Raw ROLL RC channel (https://github.com/iNavFlight/inav/blob/master/docs/Mixer.md)
+smix 1 2 5 100 100 # 5 - Raw PITCH RC channel
+smix 2 3 6 100 100 # 6 - Raw YAW RC channel
+smix 3 4 7 100 100 # 7 - Raw THRO RC channel
+smix 4 5 8 100 100 # 8 - Raw RC channel 5
+smix 5 6 9 100 100 # 9 - Raw RC channel 6
 
 smix 1 0 4 100 100 # L-AILE - unstabilised
 smix 2 3 4 100 100 # R-AILE - unstabilised
@@ -281,6 +288,9 @@ smix reverse 7 5 r # tady reverzovani na vyskovku funguje
 
 smix 8 6 6 100 100 # RUDD
 
+
+pwmmap list
+smix
 save
 
 #
@@ -305,3 +315,17 @@ pwmmap list
 - kdyz je pwmmap servo 1-8 tak resources ukazuji motor 1-7 (proverit co to znamena) a na pinech je signal tajy jen 1-7.
 - pwmmap 1-6 no res
 - pwmmap 7 servo - motor 1-6, signal 1-7
+
+MAP TAER
+
+ S1 - ELEV Ch3
+ S2 - THRO Ch1
+ S3 - RUDD Ch4
+ S4 - AILE Ch2
+ S5 - GEAR Ch5
+ S6 - FLAP Ch6
+
+map etar
+map rtae
+
+map taer
