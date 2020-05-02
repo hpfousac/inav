@@ -2901,14 +2901,22 @@ unsigned pwmchlimit = feature(FEATURE_PWM_SERVO_DRIVER) ? MAX_PWM_OUTPUT_PORTS :
     }
 }
 
+inline static bool _cliPwmMapFeatureCheck (int pwmindex, timerUsageFlag_e pwmfeature, char *pwmfeaturename)
+{
+    if (0 == (pwmfeature & timerHardware[pwmindex - 1].usageFlags)) {
+        cliPrintLinef("pwmmap pin %d can't be set as %s", pwmindex, pwmfeaturename);
+        return false;
+    }
+    return true;
+}
+
 inline static void cliPwmMapSetPpm (int pwmindex)
 {
     // index check
     ASSERT ((pwmindex >= 1) && (timerHardwareCount >= pwmindex));
 
     // check if pin can be used as PPM (fastest check)
-    if (0 == (TIM_USE_PPM & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as PPM in", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_PPM, "PPM in")) {
         return;
     }
     
@@ -2930,8 +2938,7 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex, int pwmchl
     ASSERT ((pwmindex >= 1) && (timerHardwareCount >= pwmindex));
 
     // check if pin can be used as PWM (fastest check)
-    if (0 == (TIM_USE_PWM & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as PWM in", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_PWM, "PWM in")) {
         return;
     }
     
@@ -2970,8 +2977,7 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex, int pwmc
     ASSERT ((pwmindex >= 1) && (MAX_PWM_OUTPUT_PORTS >= pwmindex));
 
     // check if pin can be used as SERVO (fastest check)
-    if (0 == (TIM_USE_FW_SERVO & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as SERVO out", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_FW_SERVO, "SERVO out")) {
         return;
     }
     
@@ -3010,8 +3016,7 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex, int pwmc
     ASSERT ((pwmindex >= 1) && (MAX_PWM_OUTPUT_PORTS >= pwmindex));
 
     // check if pin can be used as MOTOR (fastest check)
-    if (0 == (TIM_USE_FW_MOTOR & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as MOTOR out", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_FW_MOTOR, "MOTOR out")) {
         return;
     }
     
@@ -3050,8 +3055,7 @@ inline static void cliPwmMapSetLed (int pwmindex, int pwmchlimit)
     ASSERT ((pwmindex >= 1) && (MAX_PWM_OUTPUT_PORTS >= pwmindex));
 
     // check if pin can be used as LED (fastest check)
-    if (0 == (TIM_USE_LED & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as LED", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_LED, "LED")) {
         return;
     }
     
@@ -3073,10 +3077,10 @@ inline static void cliPwmMapSetBeeper (int pwmindex, int pwmchlimit)
     ASSERT ((pwmindex >= 1) && (MAX_PWM_OUTPUT_PORTS >= pwmindex));
 
     // check if pin can be used as BEEPER (fastest check)
-    if (0 == (TIM_USE_BEEPER & timerHardware[pwmindex - 1].usageFlags)) {
-        cliPrintLinef("pwmmap pin %d can't be set as BEEPER", pwmindex);
+    if (false == _cliPwmMapFeatureCheck (pwmindex, TIM_USE_BEEPER, "BEEPER")) {
         return;
     }
+
     // check if feature is not used yet
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_BEEPER == timerUsageMapMutable(i)->flag)) {
