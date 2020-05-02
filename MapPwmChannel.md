@@ -90,6 +90,7 @@ Following list is based on **newly created** enumeration **timerUsageFlag_e**
 
  * **beeper**
 
+ * **reset**
 
 
 #### Automatic/Default assigment
@@ -262,6 +263,14 @@ pwmmap 8 servo 8
 
 pwmmap 9 servo 0
 pwmmap 1 servo 0
+
+# put thro to 1 pin
+pwmmap reset
+
+pwmmap 2 servo 1
+pwmmap 3 servo 2
+pwmmap 4 servo 3
+pwmmap 1 servo 4
 
 pwmmap list
 

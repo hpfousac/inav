@@ -2924,7 +2924,7 @@ inline static void cliPwmMapSetPpm (int pwmindex)
     timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_PPM;
 }
 
-inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
+inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex, int pwmchlimit)
 {
     // index check
     ASSERT ((pwmindex >= 1) && (timerHardwareCount >= pwmindex));
@@ -2939,6 +2939,22 @@ inline static void cliPwmMapSetPwm (int pwmindex, int pwmtargetindex)
     for (int i = 0; i < timerHardwareCount; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
             cliPrintLinef("pwmmap PWM %d is already set on pos %d", pwmtargetindex, i + 1);
+            return;
+        }
+    }
+
+    // check if previous pwm channel is assigned (it is enough to assure config consistency)
+    if (1 < pwmtargetindex) {
+        bool isPrevSet = false;
+
+        for (int i = 0; i < pwmchlimit; ++i) {
+            if ((i != (pwmindex - 1)) && (TIM_USE_PWM == timerUsageMapMutable(i)->flag) && ((pwmtargetindex - 1) == timerUsageMapMutable(i)->devndx)) {
+                isPrevSet = true;
+                break;
+            }
+        }
+        if (false == isPrevSet) {
+            cliPrintLinef("pwmmap PWM-in %d is not set yet", pwmtargetindex - 1);
             return;
         }
     }
@@ -2967,7 +2983,7 @@ inline static void cliPwmMapSetServo (int pwmindex, int pwmtargetindex, int pwmc
         }
     }
 
-    // check if previous channel is assigned (it is enough to assure config consistency)
+    // check if previous servo channel is assigned (it is enough to assure config consistency)
     if (1 < pwmtargetindex) {
         bool isPrevSet = false;
 
@@ -3003,6 +3019,22 @@ inline static void cliPwmMapSetMotor (int pwmindex, int pwmtargetindex, int pwmc
     for (int i = 0; i < pwmchlimit; ++i) {
         if ((i != (pwmindex - 1)) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && (pwmtargetindex == timerUsageMapMutable(i)->devndx)) {
             cliPrintLinef("pwmmap MOTOR %d is already set on pos %d", pwmtargetindex, i + 1);
+            return;
+        }
+    }
+
+    // check if previous motor channel is assigned (it is enough to assure config consistency)
+    if (1 < pwmtargetindex) {
+        bool isPrevSet = false;
+
+        for (int i = 0; i < pwmchlimit; ++i) {
+            if ((i != (pwmindex - 1)) && (TIM_USE_FW_MOTOR == timerUsageMapMutable(i)->flag) && ((pwmtargetindex - 1) == timerUsageMapMutable(i)->devndx)) {
+                isPrevSet = true;
+                break;
+            }
+        }
+        if (false == isPrevSet) {
+            cliPrintLinef("pwmmap MOTOR %d is not set yet", pwmtargetindex - 1);
             return;
         }
     }
@@ -3062,6 +3094,15 @@ inline static void cliPwmMapSetReset (int pwmindex)
     // index check
     ASSERT ((pwmindex >= 1) && (MAX_PWM_OUTPUT_PORTS >= pwmindex));
 
+    // do some cfg consistency checks
+    if (TIM_USE_FW_SERVO == timerUsageMapMutable(pwmindex - 1)->flag) {
+
+    } else if (TIM_USE_FW_MOTOR == timerUsageMapMutable(pwmindex - 1)->flag) {
+
+    } else if (TIM_USE_PWM == timerUsageMapMutable(pwmindex - 1)->flag) {
+
+    }
+
     timerUsageMapMutable(pwmindex - 1)->flag = TIM_USE_ANY;
 }
 
@@ -3114,7 +3155,7 @@ int
         if (-1 == pwmtargetindex) {
             cliPrintLinef("*ERROR* pwmtargetindex must be specified");
         } else {
-            cliPwmMapSetPwm (pwmindex, pwmtargetindex);
+            cliPwmMapSetPwm (pwmindex, pwmtargetindex, pwmchlimit);
         }
     } else if (!sl_strncasecmp(pwmtarget, "servo", 5)) {
         if (-1 == pwmtargetindex) {
