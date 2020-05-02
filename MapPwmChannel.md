@@ -175,11 +175,6 @@ save
 pwmmap list
 ~~~
 
-### Modify PWM pins initialization (individual rx servo channels)
-
-### modify servos + motors initialization
- - **pwmBuildTimerOutputList** this method has to be modified
-
 # Other
 
 ---
@@ -187,6 +182,7 @@ pwmmap list
 ## lowlevel function fastA2I(const char *s) has no indication when non-number is passed in
 
 ## Current Behavior
+
 fastA2I("2"); returns 2; it's OK
 fastA2I("20"); returns 21; it's OK
 fastA2I("2O"); returns 2; it's probably not OK especially for CLI
@@ -216,15 +212,6 @@ Try in CLI
 ## not to assign servo & motor channels without "holes"
 
  The hole in used indexes (field: **devndx**) can cause HW/SW crash.
-
-# default behaviour of FEATURE_PWM_SERVO_DRIVER
-
- See **void pwmServoPreconfigure(void)**, the internal timers is used of external driver.
- The original code does not allows extend internal timers with external driver it is one or second.
-
- * **pwmServoWriteStandard ();**
-
- * **pwmServoWriteExternalDriver ();**
 
 # Tests
 
@@ -281,6 +268,21 @@ smix 2 3 6 100 100 # 6 - Raw YAW RC channel
 smix 3 4 7 100 100 # 7 - Raw THRO RC channel
 smix 4 5 8 100 100 # 8 - Raw RC channel 5
 smix 5 6 9 100 100 # 9 - Raw RC channel 6
+
+
+smix 1 2 5 50 80 # 5 - Raw PITCH RC channel
+smix 2 2 4 50 80 # 4 - Raw ROLL RC channel
+
+smix 3 3 5 -50 80 # 5 - Raw PITCH RC channel
+smix 4 3 4 50 80 # 4 - Raw ROLL RC channel
+
+
+smix 1 2 1 50 80 # 1 - Stabilised PITCH RC channel
+smix 2 2 0 50 80 # 0 - Stabilised ROLL RC channel
+
+smix 3 3 1 -50 80 # 1 - Stabilised PITCH RC channel
+smix 4 3 0 50 80  # 0 - Stabilised ROLL RC channel
+
 
 smix 1 0 4 100 100 # L-AILE - unstabilised
 smix 2 3 4 100 100 # R-AILE - unstabilised
@@ -340,25 +342,6 @@ map rtae
 map taer
 
 
-# status
-System Uptime: 57 seconds
-Current Time: 2041-06-28T01:04:00.000+00:00
-Voltage: 0.00V (1S battery - NOT PRESENT)
-CPU Clock=72MHz, GYRO=MPU6050, ACC=MPU6050
-STM32 system clocks:
-  SYSCLK = 72 MHz
-  HCLK   = 72 MHz
-  PCLK1  = 36 MHz
-  PCLK2  = 72 MHz
-Sensor status: GYRO=OK, ACC=OK, MAG=NONE, BARO=NONE, RANGEFINDER=NONE, OPFLOW=NONE, GPS=NONE
-Stack size: 6144, Stack address: 0x10002000, Heap available: 904
-I2C Errors: 0, config size: 4657, max available config: 6144
-ADC channel usage:
-   BATTERY : configured = ADC 1, used = ADC 1
-      RSSI : configured = ADC 3, used = none
-   CURRENT : configured = ADC 2, used = none
-  AIRSPEED : configured = none, used = none
-System load: 14, cycle time: 1014, PID rate: 986, RX rate: 495, System rate: 9
-Arming disabled flags: ACC CLI PWMOUT
-PWM output init error: Not enough servo outputs/timers
+##
+ number of servos should be at least as big as number mixers are added
 

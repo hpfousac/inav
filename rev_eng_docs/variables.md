@@ -10,6 +10,10 @@ This text describes major variables which was investigated during rev engineerin
 
  * servos.c: int16_t servo[MAX_SUPPORTED_SERVOS]; - preset or calculated value for servo PWM output (range: DEFAULT_SERVO_MIN - DEFAULT_SERVO_MIDDLE - DEFAULT_SERVO_MAX)
 
+ **servoRuleCount** - probably depends on **smix** rules
+
+ **servoMixer_t currentServoMixer[MAX_SERVO_RULES];** 
+
 ## Receivers
 
  Who is filling **rcChannels**?
