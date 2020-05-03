@@ -229,15 +229,15 @@ void pwmBuildTimerOutputList(timMotorServoHardware_t * timOutputs)
 
         switch (timerUsageMapMutable(idx)->flag) {
         case TIM_USE_FW_MOTOR:
-            timOutputs->timMotors[timerUsageMapMutable(idx)->devndx - 1] = timHw;
-            if (timerUsageMapMutable(idx)->devndx > timOutputs->maxTimMotorCount) {
-                timOutputs->maxTimMotorCount = timerUsageMapMutable(idx)->devndx;
+            timOutputs->timMotors[timerUsageMapMutable(idx)->devndx] = timHw;
+            if (timerUsageMapMutable(idx)->devndx >= timOutputs->maxTimMotorCount) {
+                timOutputs->maxTimMotorCount = timerUsageMapMutable(idx)->devndx + 1;
             }
             break;
         case TIM_USE_FW_SERVO:
-            timOutputs->timServos[timerUsageMapMutable(idx)->devndx - 1] = timHw;
-            if (timerUsageMapMutable(idx)->devndx > timOutputs->maxTimServoCount) {
-                timOutputs->maxTimServoCount = timerUsageMapMutable(idx)->devndx;
+            timOutputs->timServos[timerUsageMapMutable(idx)->devndx] = timHw;
+            if (timerUsageMapMutable(idx)->devndx >= timOutputs->maxTimServoCount) {
+                timOutputs->maxTimServoCount = timerUsageMapMutable(idx)->devndx + 1;
             }
             break;
         default:

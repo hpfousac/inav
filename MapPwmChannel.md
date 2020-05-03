@@ -36,15 +36,16 @@ pwmmap <ch/pin> <function> <index>
 
 #### CLI real example
 
- *note* first channel has index **1** on cli, evei internal index is **0**
+ **NOTE:** first channel (of servo, motor and pwm-in) has index **0** on cli, It is numbered in same manner as for servos and motors.
 
 ~~~
-pwmmap 1 cppm 0 # in case of CPPM only 0 is allowed
+pwmmap 0 ppm 
 
-pwmmap 2 servo 1
+pwmmap 1 servo 1
 
 
-pwmmap 1 PPM 0
+pwmmap 0 PPM
+pwmmap 1 SERVO 0
 pwmmap 2 SERVO 1
 pwmmap 3 SERVO 2
 pwmmap 4 SERVO 3
@@ -60,7 +61,7 @@ pwmmap 13 SERVO 12
 pwmmap 14 SERVO 13
 pwmmap 15 SERVO 14
 pwmmap 16 SERVO 15
-pwmmap 17 SERVO 16
+pwmmap 17 motor 0
 pwmmap 18 motor 1
 pwmmap 19 motor 2
 pwmmap 20 motor 3
@@ -68,10 +69,9 @@ pwmmap 21 motor 4
 pwmmap 22 motor 5
 pwmmap 23 motor 6
 pwmmap 24 motor 7
-pwmmap 25 motor 8
-pwmmap 26 ANY 0
-pwmmap 27 beeper
-pwmmap 28 led
+pwmmap 25 ANY
+pwmmap 26 beeper
+pwmmap 27 led
 
 pwmmap list
 ~~~
@@ -168,7 +168,7 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
 ~~~
 set receiver_type = PPM
-pwmmap 10 ppm
+pwmmap 9 ppm
 
 save
 
@@ -233,71 +233,71 @@ feature PWM_OUTPUT_ENABLE
 feature -VBAT
 
 set receiver_type = PPM
-pwmmap 10 ppm
+pwmmap 9 ppm
 
-pwmmap 1 servo 2
+pwmmap 0 servo 0
 
+pwmmap 0 servo 0
+pwmmap 1 servo 0
 pwmmap 1 servo 1
-pwmmap 2 servo 1
 pwmmap 2 servo 2
 pwmmap 3 servo 3
-pwmmap 4 servo 4
 
+pwmmap 4 servo 4
 pwmmap 5 servo 5
 pwmmap 6 servo 6
 pwmmap 7 servo 7
-pwmmap 8 servo 8
 
-pwmmap 9 servo 0
-pwmmap 1 servo 0
+pwmmap 8 servo 0
+pwmmap 0 servo 0
 
 # put thro to 1 pin
 pwmmap reset
 
+pwmmap 1 servo 0
 pwmmap 2 servo 1
 pwmmap 3 servo 2
-pwmmap 4 servo 3
-pwmmap 1 servo 4
+pwmmap 0 servo 3
 
 pwmmap list
 
 smix reset
-smix 0 1 4 100 100 # 4 - Raw ROLL RC channel (https://github.com/iNavFlight/inav/blob/master/docs/Mixer.md)
-smix 1 2 5 100 100 # 5 - Raw PITCH RC channel
-smix 2 3 6 100 100 # 6 - Raw YAW RC channel
-smix 3 4 7 100 100 # 7 - Raw THRO RC channel
-smix 4 5 8 100 100 # 8 - Raw RC channel 5
-smix 5 6 9 100 100 # 9 - Raw RC channel 6
+smix 0 0 4 100 100 # 4 - Raw ROLL RC channel (https://github.com/iNavFlight/inav/blob/master/docs/Mixer.md)
+smix 1 1 5 100 100 # 5 - Raw PITCH RC channel
+smix 2 2 6 100 100 # 6 - Raw YAW RC channel
+smix 3 3 7 100 100 # 7 - Raw THRO RC channel
+smix 4 4 8 100 100 # 8 - Raw RC channel 5
+smix 5 5 9 100 100 # 9 - Raw RC channel 6
 
 
-smix 1 2 5 50 80 # 5 - Raw PITCH RC channel
-smix 2 2 4 50 80 # 4 - Raw ROLL RC channel
+smix 1 1 5 50 80 # 5 - Raw PITCH RC channel
+smix 2 1 4 50 80 # 4 - Raw ROLL RC channel
 
-smix 3 3 5 -50 80 # 5 - Raw PITCH RC channel
-smix 4 3 4 50 80 # 4 - Raw ROLL RC channel
+smix 3 2 5 -50 80 # 5 - Raw PITCH RC channel
+smix 4 2 4 50 80 # 4 - Raw ROLL RC channel
 
 
-smix 1 2 1 50 80 # 1 - Stabilised PITCH RC channel
-smix 2 2 0 50 80 # 0 - Stabilised ROLL RC channel
+smix 1 1 1 50 80 # 1 - Stabilised PITCH RC channel
+smix 2 1 0 50 80 # 0 - Stabilised ROLL RC channel
 
-smix 3 3 1 -50 80 # 1 - Stabilised PITCH RC channel
-smix 4 3 0 50 80  # 0 - Stabilised ROLL RC channel
+smix 3 2 1 -50 80 # 1 - Stabilised PITCH RC channel
+smix 4 2 0 50 80  # 0 - Stabilised ROLL RC channel
 
 
 smix 1 0 4 100 100 # L-AILE - unstabilised
-smix 2 3 4 100 100 # R-AILE - unstabilised
+smix 2 2 4 100 100 # R-AILE - unstabilised
 
-smix 3 1 9 100 50 # elev
-smix 4 2 9 100 50 # R-FLAP
-smix reverse 4 9 r # ? (25.2. not working as expected)
+smix 3 0 9 100 50 # elev
+smix 4 1 9 100 50 # R-FLAP
+smix reverse 3 9 r # ? (25.2. not working as expected)
 
-smix 5 4 5 50 100 # L-Y
-smix 6 4 6 50 100 # L-Y
+smix 5 3 5 50 100 # L-Y
+smix 6 3 6 50 100 # L-Y
 
-smix 7 5 5 50 100 # R-Y
-smix reverse 7 5 r # tady reverzovani na vyskovku funguje
+smix 7 4 5 50 100 # R-Y
+smix reverse 7 4 r # tady reverzovani na vyskovku funguje
 
-smix 8 6 6 100 100 # RUDD
+smix 8 7 6 100 100 # RUDD
 
 
 pwmmap list
@@ -329,12 +329,12 @@ pwmmap list
 
 MAP TAER
 
- S1 - ELEV Ch3
- S2 - THRO Ch1
- S3 - RUDD Ch4
- S4 - AILE Ch2
- S5 - GEAR Ch5
- S6 - FLAP Ch6
+ S0 - ELEV Ch3
+ S1 - THRO Ch1
+ S2 - RUDD Ch4
+ S3 - AILE Ch2
+ S4 - GEAR Ch5
+ S5 - FLAP Ch6
 
 map etar
 map rtae
@@ -369,11 +369,13 @@ Out Channels
 map AETR
 
 feature PWM_OUTPUT_ENABLE
+feature GPS
 feature -VBAT
 
 set receiver_type = PPM
-pwmmap 10 ppm
+pwmmap 9 ppm
 
+pwmmap 0 servo 0
 pwmmap 1 servo 1
 pwmmap 2 servo 2
 pwmmap 3 servo 3
@@ -381,30 +383,57 @@ pwmmap 4 servo 4
 pwmmap 5 servo 5
 pwmmap 6 servo 6
 pwmmap 7 servo 7
-pwmmap 8 servo 8
-pwmmap 11 servo 9
+pwmmap 10 servo 8
 
 pwmmap list
 
 smix reset
 
-smix 0 1 7 100 100
+smix 0 0 7 100 100
 
-smix 1 2 5 80 80 # 5 - Raw PITCH RC channel
-smix 2 2 6 30 80 # 6 - Raw Yaw RC channel
+smix 1 1 5 80 80 # 5 - Raw PITCH RC channel
+smix 2 1 6 30 80 # 6 - Raw Yaw RC channel
 
-smix 3 3 5 -80 80
-smix 4 3 6 30 80
+smix 3 2 5 -80 80
+smix 4 2 6 30 80
 
-smix 5 4 6 100 80
+smix 5 3 6 100 80
 
-smix 6 5 4 100 100
+smix 6 4 4 100 100
 
-smix 7 6 9 100 50
-smix 8 7 9 -100 50
+smix 7 5 9 100 50
+smix 8 6 9 -100 50
 
-smix 9 8 4 100 100
+smix 9 7 4 100 100
 
-smix 10 9 8 100 100 # 8 - Raw RC channel 5 (FLAP)
+smix 10 8 8 100 100 # 8 - Raw RC channel 5 (FLAP)
 
+~~~
+
+ Mixes with stabilisation
+
+~~~
+smix 0 0 7 100 100 0
+smix 1 1 1 80 80 0
+smix 2 1 2 30 80 0
+smix 3 2 1 -80 80 0
+smix 4 2 2 30 80 0
+smix 5 3 2 100 80 0
+smix 6 4 0 100 100 0
+smix 7 5 9 100 50 0
+smix 8 6 9 -100 50 0
+smix 9 7 0 100 100 0
+smix 10 8 8 100 100 0
+~~~ 
+
+
+specific setting for  rotations whole circle per ~5 sec
+~~~
+set roll_rate 	7
+set pitch_rate 	7
+set yaw_rate 7
+
+set nav_fw_cruise_roll_rate 7
+set nav_fw_cruise_pitch_rate 7
+set nav_fw_cruise_yaw_rate 7
 ~~~
