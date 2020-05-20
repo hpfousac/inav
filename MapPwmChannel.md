@@ -314,6 +314,8 @@ pwmmap list
 
  - rozpracovane nastaveni PPM in kanalu, otestovat na povolenych pinech, **otestovano na pin 1 a 10**, podle kodu soudim ze to bude fungovat i jinde
 
+ - PWM inputs **timer.c: timerPWMConfigChannel()**
+
  - podivat se na vystupni piny "pwmmap pinNo servo Ch"
 
  pwmMotorAndServoInit () -> pwmBuildTimerOutputList()
