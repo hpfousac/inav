@@ -164,6 +164,11 @@ Method **pwmBuildTimerOutputList()** passes list of PWM timers and assigns outpu
 
  **timer.c:timerGetByUsageFlag ()** - function was modified to select timer-channel based on pwmmap configuration
 
+### PWM in is not supported anymore
+
+ The function **void pwmInConfig(const timerHardware_t *timerHardwarePtr, uint8_t channel);** should be returned back from older versions of 
+ flight controller and sequential init has to be proceeded.
+
 #### Modify settings with feature 
 
 ~~~
