@@ -1,7 +1,7 @@
 # Dead end branch for ModelY (9ch out) with SPM4649T #
 
- **Dead end** means the banc wil; not be mergeable to the master
- and other branches dur to significant deletions.
+ **Dead end** means the branch will not be mergeable to the master
+ and other branches due to significant changes/deletions.
 
 ## Steps ##
 
@@ -77,7 +77,6 @@
 
   * disable **USE_RX_PWM** and **USE_RX_PPM**
   **TIM_USE_PWM** **TIM_USE_PPM**
-
 
  * TBD: replace standard output task with specific one
 
